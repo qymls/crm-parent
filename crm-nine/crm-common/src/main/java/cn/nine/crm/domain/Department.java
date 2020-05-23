@@ -6,4 +6,5 @@ import lombok.Data;
 public class Department extends BaseDomain {
     private String name;
     private String sn;
+
 }
