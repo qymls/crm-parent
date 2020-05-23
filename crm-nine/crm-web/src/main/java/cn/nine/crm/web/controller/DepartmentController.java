@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @ResponseBody
 @RequestMapping("/dept")
-@CrossOrigin
+@CrossOrigin//解决跨域请求
 public class DepartmentController extends BaseController<Department,Long, DepartmentQuery>{
 
 }
