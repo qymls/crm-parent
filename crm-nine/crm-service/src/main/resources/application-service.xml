@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!--导入application-mapper.xml-->
+    <import resource="classpath:application-mapper.xml" />
+    <!--事务管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!--注入DataSource-->
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+    <!--开启注解标签支持-->
+    <!--<tx:annotation-driven transaction-manager="transactionManager" />-->
+    <!--使用aop的方式配置事物-->
+    <aop:config >
+        <!--切点：谁要有事务？service-->
+        <aop:pointcut id="crudPointcut" expression="execution(* cn.nine.crm.service.*.*(..))"/>
+        <!--事务通知: pointcut-ref:使用哪个切点-->
+        <aop:advisor advice-ref="crudAdvice" pointcut-ref="crudPointcut" />
+    </aop:config>
+
+    <!--事务通知-->
+    <tx:advice id="crudAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <!--查询方法使用只读事务-->
+            <tx:method name="select*" read-only="true"/>
+            <tx:method name="count*" read-only="true"/>
+            <tx:method name="find*" read-only="true"/>
+            <tx:method name="get*" read-only="true"/>
+            <tx:method name="list*" read-only="true"/>
+            <!--其他方法使用默认的事务-->
+            <tx:method name="*"  propagation="REQUIRED" />
+        </tx:attributes>
+    </tx:advice>
+    <!--Service的IOC自动扫描包-->
+    <context:component-scan base-package="cn.nine.crm.service" />
+</beans>
