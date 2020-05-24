@@ -17,7 +17,7 @@ public class BaseController<T, ID extends Serializable, Q> {
     @Autowired
     private BaseService<T, ID, Q> baseService;
 
-    //查找所有数据
+    //查找所有数据1
     @RequestMapping(value = "/all", method = RequestMethod.GET)
     public JSONResult selectAll() {
         try {
