@@ -1,0 +1,14 @@
+package cn.nine.crm.domain;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Department extends BaseDomain {
+
+    private String name;
+    private String sn;
+}

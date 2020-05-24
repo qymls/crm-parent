@@ -2,3 +2,6 @@
 target
 *.properties
 *.iml
+node_modules
+/crm-parent/crm-mapper/src/main/resources/jdbc.properties
+/crm-parent/crm-mapper/*.iml
