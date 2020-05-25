@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.nine.crm.mapper.EmployeeMapper">
+
+    <resultMap id="baseMap" type="cn.nine.crm.domain.Employee">
+        <!--员工-->
+        <id column="te_id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="realName" property="realName"/>
+        <result column="tel" property="tel"/>
+        <result column="email" property="email"/>
+        <result column="inputTime" property="inputTime"/>
+        <result column="state" property="state"/>
+        <result column="salt" property="salt"/>
+        <!--部门-->
+        <association property="department" javaType="cn.nine.crm.domain.Department">
+                <id column="td_id" property="id"/>
+                <result column="td_name" property="name"/>
+        </association>
+    </resultMap>
+    <!--查询所有数据-->
+    <select id="findAll" resultMap="baseMap">
+        select
+            te.id AS te_id,
+            te.username,
+            te.password,
+            te.realName,
+            te.tel,
+            te.email,
+            te.inputTime,
+            te.state,
+            te.salt,
+            te.tenant_id,
+
+            td.id AS td_id,
+            td.name AS td_name,
+
+            tt.companyName
+        from
+            t_employee te
+            JOIN t_department  td ON te.department_id = td.id
+            JOIN t_tenant  tt ON tt.id=te.tenant_id
+    </select>
+
+
+    <!--抽取sql-->
+    <sql id="baseWhere">
+        <where>
+            <if test=" keyword !=null ">
+          and username like  CONCAT("%",#{keyword},"%")
+            </if>
+        </where>
+    </sql>
+    <!--查询总条数-->
+    <select id="selectForCount" resultType="java.lang.Long">
+        SELECT count(id) FROM t_employee
+        <include refid="baseWhere"/>
+    </select>
+    <!--分页查询-->
+    <select id="selectForList" resultMap="baseMap">
+        select
+            te.id AS te_id,
+            te.username,
+            te.password,
+            te.realName,
+            te.tel,
+            te.email,
+            te.inputTime,
+            te.state,
+            te.salt,
+            te.tenant_id,
+
+            td.id AS td_id,
+            td.name AS td_name,
+
+            tt.companyName
+        from
+            t_employee te
+            JOIN t_department  td ON te.department_id = td.id
+            JOIN t_tenant  tt ON tt.id=te.tenant_id
+        <include refid="baseWhere"/>
+        LIMIT #{start} , #{pageSize}
+    </select>
+
+    <!--分页查询-->
+</mapper>
