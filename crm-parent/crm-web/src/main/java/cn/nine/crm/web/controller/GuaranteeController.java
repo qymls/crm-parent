@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @ResponseBody
-@RequestMapping("/Guarantee")
-@SuppressWarnings(value = "all")/*抑制警告*/
+@RequestMapping("/guarantee")
 public class GuaranteeController extends BaseController<Guarantee, Long, GuaranteeQuery> {
 }
