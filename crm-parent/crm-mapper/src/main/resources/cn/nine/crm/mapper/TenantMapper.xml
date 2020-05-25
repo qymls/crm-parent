@@ -15,7 +15,7 @@
                 #{state},
                 #{address},
                 #{logo},
-                #{meal_id},
+                #{meal.id},
                 #{ispay})
     </insert>
     <update id="update">
@@ -48,8 +48,8 @@
             <if test="logo != null">
                 logo = #{logo},
             </if>
-            <if test="meal_id != null">
-                meal_id = #{meal_id},
+            <if test="meal != null and meal.id != null">
+                meal_id = #{meal.id},
             </if>
             <if test="ispay != null">
                 ispay = #{ispay},
@@ -68,20 +68,48 @@
             #{id}
         </foreach>
     </delete>
-    <select id="findAll" resultType="cn.nine.crm.domain.Tenant">
-        SELECT id,
-               companyName,
-               companyTel,
-               companyNum,
-               email,
-               sysName,
-               registerTime,
-               state,
-               address,
-               logo,
-               meal_id,
-               ispay
-        FROM tenant
+
+    <!--关联结果映射-->
+    <resultMap id="baseResultMap" type="cn.nine.crm.domain.Tenant">
+        <id column="t_id" property="id"/>
+        <result column="companyName" property="companyName"/>
+        <result column="companyTel" property="companyTel"/>
+        <result column="companyNum" property="companyNum"/>
+        <result column="sysName" property="sysName"/>
+        <result column="registerTime" property="registerTime"/>
+        <result column="state" property="state"/>
+        <result column="address" property="address"/>
+        <result column="logo" property="logo"/>
+        <result column="ispay" property="ispay"/>
+        <association property="meal" javaType="cn.nine.crm.domain.Meal">
+            <id column="t_id" property="id"></id>
+            <result column="name" property="name"/>
+            <result column="price" property="price"/>
+            <result column="expire_date" property="expireDate"/>
+            <result column="status" property="status"/>
+        </association>
+    </resultMap>
+
+    <select id="findAll" resultMap="baseResultMap">
+        SELECT t.id AS t_id,
+               t.companyName,
+               t.companyTel,
+               t.companyNum,
+               t.email,
+               t.sysName,
+               t.registerTime,
+               t.state,
+               t.address,
+               t.logo,
+               t.ispay,
+
+               m.id AS m_id,
+               m.name,
+               m.price,
+               m.expire_date,
+               m.status
+        FROM tenant t
+                 JOIN meal m on t.meal_id = m.id
     </select>
     <select id="findOne" resultType="cn.nine.crm.domain.Tenant">
         SELECT id,
@@ -111,10 +139,26 @@
         SELECT count(id) FROM tenant
         <include refid="base_where"/>
     </select>
-    <select id="selectForList" resultType="cn.nine.crm.domain.Tenant">
-        SELECT id, companyName, companyTel, companyNum, email, sysName, registerTime, state, address, logo, meal_id,
-        ispay
-        FROM tenant
+    <select id="selectForList" resultMap="baseResultMap">
+        SELECT t.id AS t_id,
+        t.companyName,
+        t.companyTel,
+        t.companyNum,
+        t.email,
+        t.sysName,
+        t.registerTime,
+        t.state,
+        t.address,
+        t.logo,
+        t.ispay,
+
+        m.id AS m_id,
+        m.name,
+        m.price,
+        m.expire_date,
+        m.status
+        FROM tenant t
+        JOIN meal m on t.meal_id = m.id
         <include refid="base_where"/>
         limit #{start},#{pageSize}
     </select>
