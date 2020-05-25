@@ -38,7 +38,7 @@ module.exports = {
     },
     proxy: {/* 跨域*/
       [process.env.VUE_APP_BASE_API]: {
-        target: 'http://127.0.0.1:8080/CRM',
+        target: 'http://127.0.0.1:80',
         changeOrigin: true,
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: ''
