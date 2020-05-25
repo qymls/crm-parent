@@ -38,7 +38,7 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'dashboard', icon: 'dashboard' },
+      meta: { title: 'dashboard', icon: 'ios-alarm-outline' },
       Affix: true,
       noCache: true
     }]
@@ -48,12 +48,12 @@ export const constantRoutes = [
     path: '',
     component: Layout,
     name: '系统管理',
-    meta: { title: '系统管理', icon: 'example' },
+    meta: { title: '系统管理', icon: 'ios-apps-outline' },
     children: [{
       path: '/department',
       name: '部门管理',
       component: () => import('@/views/department/index'),
-      meta: { title: '部门管理', icon: 'dashboard' }
+      meta: { title: '部门管理', icon: 'ios-apps-outline' }
     },
       {
         path: '/employee',
