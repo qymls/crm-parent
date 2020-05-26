@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * 业务管理-订单合同管理--订单 实体类
+ * 订单合同管理--订单 实体类
  * 租户公司的客户交了订金后，需要签订定金订单
  */
 @Data
@@ -26,7 +26,7 @@ public class Order extends BaseDomain {
     //摘要
     private String intro;
     //租户对象 显示租户的公司名称
-    private Tenant tenant;
+    private Long tenant;
 
 
 

@@ -1,45 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
 <mapper namespace="cn.nine.crm.mapper.MenuMapper">
-    <resultMap id="result" type="cn.nine.crm.domain.Menu">
-        <result property="id" column="id"/>
-        <result property="name" column="name"></result>
-        <result property="url" column="url"></result>
-        <result property="label" column="label"/>
-        <result property="englishName" column="english_Name"/>
-        <result property="createTime" column="create_Time"/>
-        <result property="description" column="description"/>
-        <result property="operator" column="operator"/>
-        <result property="firstmenuid" column="firstmenuid"/>
-        <result property="rank" column="rank"/>
-        <!--自连接查询-->
-        <association property="parent"
-                     column="parent_id"
-                     select="findAllByParentId"
-                     javaType="cn.nine.crm.domain.Menu"
-        />
-    </resultMap>
-    <!--通过parent_id查询父菜单-->
-    <select id="findAllByParentId" parameterType="long" resultMap="result">
-        select
-        <include refid="base_cloumn"/>
-        from menu where id = #{parent_id}
-    </select>
 
-
-    <select id="findAll" resultMap="result">
+    <select id="findAll" resultType="cn.nine.crm.domain.Menu">
         select
-        <include refid="base_cloumn"/>
-        from menu order by rank
-    </select>
-
-    <select id="selectForPage" parameterType="cn.nine.crm.query.MenuQuery" resultMap="result">
-        select
-        <include refid="base_cloumn"/>
+        *
         from menu
-        <include refid="base_where"/> order by rank
+    </select>
+
+    <select id="selectForList" parameterType="cn.nine.crm.query.MenuQuery" resultType="cn.nine.crm.domain.Menu">
+        select *
+        from menu
+        <include refid="base_where"/>
         limit #{start},#{pageSize}
 
     </select>
@@ -51,43 +24,34 @@
         <include refid="base_where"/>
     </select>
 
-    <sql id="base_cloumn">
-        id, name, url, icon, parent_id, label, english_name, create_time, description, operator, firstmenuid,rank
-    </sql>
     <!--抽取where-->
     <sql id="base_where">
         <where>
             <if test="keyword != null">
                 and name like CONCAT("%",#{keyword},"%")
             </if>
-            <if test="time != null">
-                ${time}
-            </if>
-            and firstmenuid = 0
         </where>
     </sql>
 
-    <select id="findOne" parameterType="long" resultMap="result">
+    <select id="findOne" parameterType="long" resultType="cn.nine.crm.domain.Menu">
         select
        *
         from menu  where id = #{id}
     </select>
 
+
     <insert id="save" parameterType="cn.nine.crm.domain.Menu"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
-        insert into menu (name, url, icon, parent_id, label, english_name, create_time, description, operator, firstmenuid,rank)
-        values (#{name},#{url},#{icon},#{parent.id},#{label},#{englishName},#{createTime},#{description},#{operator},#{firstmenuid},#{rank})
+        insert into menu
+        ()
+        values
+        ()
     </insert>
 
     <update id="update" parameterType="cn.nine.crm.domain.Menu">
         update menu
         set name = #{name},
-        url = #{url},
-        icon = #{icon},
-        label = #{name},
-        english_name=#{englishName},
-        description = #{description},
-        rank = #{rank}
+        sn = #{sn}
         where id = #{id}
     </update>
 
@@ -102,26 +66,6 @@
             #{id}
         </foreach>
     </delete>
-    <!--业务方法-->
-    <!--通过名称找菜单-->
-    <select id="findByName" parameterType="string" resultType="cn.nine.crm.domain.Menu">
-        select  <include refid="base_cloumn"/>
-        from menu where name = #{name}
-    </select>
-    <!--获取所有的一级菜单-->
-    <select id="getStairMenu" resultMap="result">
-            select  <include refid="base_cloumn"/>
-             from menu where firstmenuid = 0 order by rank
-    </select>
-    <!--通过员工id获取菜单-->
-    <select id="findMenuByEmployeeId" resultType="cn.nine.crm.domain.Menu">
-
-    </select>
-
-    <!--通过角色id查找权限菜单-->
-    <select id="findAllRolePermissionMenuByRoleId" resultType="cn.nine.crm.domain.Menu">
-
-    </select>
 
 
 </mapper>

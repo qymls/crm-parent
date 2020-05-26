@@ -7,9 +7,6 @@ import cn.nine.crm.service.Impl.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * 合同明细 ServiceImpl层
- */
 @Service
 @Transactional
 public class ContractItemServiceImpl extends BaseServiceImpl<ContractItem,Long, ContractItemQuery> implements IContractItemService {

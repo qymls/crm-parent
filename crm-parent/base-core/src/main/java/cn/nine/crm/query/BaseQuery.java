@@ -16,4 +16,6 @@ public class BaseQuery {
     public Integer getStart() {
         return (this.currentPage - 1) * this.pageSize;
     }
+
+
 }
