@@ -85,6 +85,14 @@
             #{id}
         </foreach>
     </delete>
+    <!--其他类扩展方法-->
 
+    <select id="findPermissionsByMenu" resultType="cn.nine.crm.domain.Permission">
+        select distinct p.sn from Employee e  join e.roleList r join r.permissionList p where e.id=#{id}
+    </select>
+
+    <select id="findPermissionsByID" resultType="long">
+        select p from Permission p where p.menu.id =#{id}
+    </select>
 
 </mapper>

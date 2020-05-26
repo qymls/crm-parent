@@ -2,6 +2,9 @@ package cn.nine.crm.mapper;
 
 import cn.nine.crm.domain.Permission;
 import cn.nine.crm.query.PermissionQuery;
+
+import java.util.Set;
+
 /**
  * (Permission)表数据库访问层
  *
@@ -10,4 +13,7 @@ import cn.nine.crm.query.PermissionQuery;
  */
 public interface PermissionMapper extends BaseMapper<Permission,Long,PermissionQuery>{
 
+    Set<String> findPermissionsByID(Long id);
+
+    Set<Permission> findPermissionsByMenu(Long id);
 }
