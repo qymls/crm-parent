@@ -59,7 +59,7 @@
         <include refid="baseWhere"/>
     </select>
     <!--分页查询-->
-    <select id="selectForList" resultMap="baseMap">
+    <select id="selectForPage" resultMap="baseMap">
         select
             te.id AS te_id,
             te.username,

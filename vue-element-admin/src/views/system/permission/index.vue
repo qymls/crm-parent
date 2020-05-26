@@ -1,272 +1,338 @@
+<style>
+  .page_class .ivu-icon {
+    line-height: unset;
+  }
+</style>
 <template>
   <div style="height: calc(100vh - 84px);">
-    <el-card class="box-card" style="height: 100%">
-      <div slot="header" class="clearfix">
-        <span>信息管理</span>
-      </div>
-      <el-row>
-        <el-col :span="3">
-          <el-button
-            type="primary"
-            icon="el-icon-plus"
-            size="small"
-            style="float: left;"
-            @click="handleShowAddDialog"
-          >新增
-          </el-button>
-          <el-popconfirm
-            v-if="row.length>0"
-            icon="el-icon-info"
-            icon-color="red"
-            title="你确定要离我而去？"
-            placement="right"
-            @onConfirm="handleBatchRemove"
-          >
-            <el-button slot="reference" type="danger" icon="el-icon-delete" size="small" style="float: left;margin: auto 3px 20px 20px;">
-              删除
-            </el-button>
-          </el-popconfirm>
-        </el-col>
-        <el-col :span="21" class="toolbar">
-          <el-form
-            :inline="true"
-            :model="searchForm"
-            size="small"
-            class="demo-form-inline"
-            style="float: left;"
-          >
-            <el-form-item label="用户名">
-              <el-input v-model="searchForm.name" placeholder="用户名" clearable />
-            </el-form-item>
-            
-            <el-form-item>
-              <el-button type="primary" icon="el-icon-search" @click="loadListData">查询</el-button>
-            </el-form-item>
-          </el-form>
-        </el-col>
-      </el-row>
-      <el-table v-loading="loading" border :data="tableData" style="width: 100%" max-height="690" @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="100" align="center" />
-         <el-table-column type="index" width="50"  label="序号" align='center'/>
-                  <el-table-column prop="name" label="name" />
-                      <el-table-column prop="url" label="url" />
-                      <el-table-column prop="descs" label="descs" />
-                      <el-table-column prop="sn" label="sn" />
-                      <el-table-column prop="menuId" label="menuId" />
-                      <el-table-column fixed="right" label="操作" width="150" align="center">
-          <template slot-scope="scope">
-            <el-button type="primary" size="small" @click="handleShowEditDialog(scope.row)">编辑</el-button>
-            <el-popconfirm
-              confirm-button-text="确认"
-              cancel-button-text="取消"
-              icon="el-icon-info"
-              icon-color="red"
-              title="你确定要删除当前数据？"
-              transition
-              placement="top"
-              @onConfirm="handleRemove(scope.row)"
-            >
-              <el-button slot="reference" type="danger" size="small">删除</el-button>
-            </el-popconfirm>
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-pagination
-        style="float: right;margin: 20px;overflow: hidden"
-        background
-        :current-page="page"
-        :page-sizes="[5,10, 20]"
-        :page-size="pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      >
-      </el-pagination>
-      <!--  新增、编辑-->
-      <el-dialog title="信息管理" :visible.sync="dialogFormVisible" :close-on-click-modal="false" width="35%">
-        <el-form ref="addForm" :model="addForm" label-width="100px" :rules="rules">
-          <el-form-item v-show="false" prop="id">
-            <el-input v-model="addForm.id" />
-          </el-form-item>
-                    <el-form-item label="name" prop="name">
-            <el-input v-model="addForm.name" autocomplete="off" />
-          </el-form-item>
-                    <el-form-item label="url" prop="url">
-            <el-input v-model="addForm.url" autocomplete="off" />
-          </el-form-item>
-                    <el-form-item label="descs" prop="descs">
-            <el-input v-model="addForm.descs" autocomplete="off" />
-          </el-form-item>
-                    <el-form-item label="sn" prop="sn">
-            <el-input v-model="addForm.sn" autocomplete="off" />
-          </el-form-item>
-                    <el-form-item label="menuId" prop="menuId">
-            <el-input v-model="addForm.menuId" autocomplete="off" />
-          </el-form-item>
-                    <el-form-item>
-            <el-button type="primary" @click="submitForm('addForm')">确认提交</el-button>
-            <el-button @click="resetForm('addForm')">重置</el-button>
-          </el-form-item>
-        </el-form>
+    <Card  style="height: 100%">
+      <p slot="title">
+        <Icon type="ios-list-box-outline" size="20"></Icon>
+        {{title}}
+      </p>
 
-      </el-dialog>
-    </el-card>
+      <Row>
+        <i-col span="3">
+          <i-button type="primary" icon="md-add" @click="newAdd">添加</i-button>
+          <Poptip
+            confirm
+            placement="right"
+            transfer
+            title="您确认删除这些信息吗?"
+            @on-ok="deletePermission">
+            <i-button v-if="rows.length>0" type="error" icon="ios-trash">删除</i-button>
+          </Poptip>
+        </i-col>
+
+        <i-col span="21">
+          <i-Form ref="formInline" :model="formInline" inline style="margin-left: 20px;" @submit.native.prevent>
+            <Form-Item prop="name">
+              <i-Input type="text" v-model="formInline.name" placeholder="请输入查找的名称" @on-enter="click_enter">
+                <Icon type="ios-menu" slot="prepend"></Icon>
+              </i-Input>
+            </Form-Item>
+
+            <Form-Item>
+              <i-Button type="info" icon="ios-search" @click="handleSubmit('formInline')">查找</i-Button>
+            </Form-Item>
+          </i-Form>
+        </i-col>
+
+      </Row>
+
+      <Row justify="center" align="middle">
+        <div style="margin-top:20px">
+          <i-Table :columns="columns" :data="PermissionData" border max-height="650"
+                   @on-selection-change="deleteRows"
+                   @on-row-dblclick="updateModelShow">
+            <template slot-scope="{ row, index }" slot="menuName">
+              {{getMenuName(row)}}
+            </template>
+          </i-Table>
+        </div>
+        <div style="margin: 10px;overflow: hidden">
+          <div style="float: right;">
+            <Page :total="total" show-total :page-size="pageSize" :page-size-opts="[5,10,20]" :current="page"
+                  show-sizer transfer show-elevator
+                  @on-change="changePage" @on-page-size-change="sizeChange"
+                  class-name="page_class" style="margin-top: 10px;"></Page>
+          </div>
+        </div>
+        <Modal title="添加信息" v-model="updateModel" class-name="vertical-center-modal" footer-hide draggable>
+          <i-Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
+            <Form-Item prop="id" v-show=false>
+              <input type="text" v-model="formValidate.id"/>
+            </Form-Item>
+            <Form-Item label="name" prop="name">
+              <i-Input v-model="formValidate.name" placeholder="请输入相关值"></i-Input>
+            </Form-Item>
+            <Form-Item label="url" prop="url">
+              <i-Input v-model="formValidate.url" placeholder="请输入相关值"></i-Input>
+            </Form-Item>
+            <Form-Item label="sn" prop="sn">
+              <i-Input v-model="formValidate.sn" placeholder="请输入相关值"></i-Input>
+            </Form-Item>
+            <Form-Item label="descs" prop="descs">
+              <i-Input v-model="formValidate.descs" placeholder="请输入相关值"></i-Input>
+            </Form-Item>
+            <Form-Item label="menuId" prop="menuId">
+              <i-Select v-model="formValidate.menuId">
+                <i-Option :key="item.id" v-for="item in menuItem"  :value="item.id">{{item.name}}
+                </i-Option>
+              </i-Select>
+            </Form-Item>
+            <Form-Item>
+              <i-Button type="primary" @click="handleSubmitUpdate('formValidate')">确认</i-Button>
+              <i-Button @click="handleReset('formValidate')" style="margin-left: 8px">重置</i-Button>
+            </Form-Item>
+          </i-Form>
+
+        </Modal>
+
+      </Row>
+
+    </Card>
   </div>
 </template>
 <script>
-export default {
-  data() {
-    return {
-      page: 1, // 第几页
-      pageSize: 5, // 每页条数
-      total: 0,
-      tableData: [],
-      loading: false,
-      row: [],
-      searchForm: {
-        name: ''
+  export default({
+    data: function () {
+      return {
+        title: "信息管理",
+        rows: [],
+        updateModel: false,
+        formValidate: {
+          id: '',
+          name: '',
+          url: '',
+          descs: '',
+          sn: '',
+          menuId: '',
+
+        },
+        ruleValidate: {
+          name: [
+            {required: true, message: '请输入对应的值', trigger: 'blur'},
+          ],
+          url: [
+            {required: true, message: '请输入对应的值', trigger: 'blur'},
+          ],
+          sn: [
+            {required: true, message: '请输入对应的值', trigger: 'blur'},
+          ],
+        },
+        formInline: {
+          name: '',
+        },
+        columns: [
+          {
+            type: 'selection',
+            width: 60,
+            align: 'center'
+          },
+          {
+            title: '序号',
+            type: 'index',
+            width: 100,
+            align: 'center',
+          },
+          {
+            title: 'name',
+            key: 'name',
+          },
+          {
+            title: 'url',
+            key: 'url',
+          },
+          {
+            title: 'descs',
+            key: 'descs',
+          },
+          {
+            title: 'sn',
+            key: 'sn',
+          },
+          {
+            title: '菜单名称',
+            slot: 'menuName',
+          },
+        ],
+        PermissionData: [],
+        total: 0,
+        page: 1,/*当前页默认为1*/
+        pageSize: 5,/* 默认5条*/
+        menuItem: []/*查询所有最后一级菜单*/
+      }
+    },
+    created() {
+      this.getFirstMenuData(this.page, this.pageSize);
+    },
+    methods: {
+      findMenuItem() {/*查询所有最后一级菜单*/
+        var $page = this;
+        $.ajax({
+          type: "POST",
+          contentType: "application/x-www-form-urlencoded",
+          url: "Admin/Permission/findMenuItem",
+          dataType: 'json',
+          async: false,/*取消异步加载*/
+          success: function (result) {
+            $page.menuItem = result;
+          }
+        });
       },
-      dialogFormVisible: false,
-      addForm: {
-              id:'',
-              name:'',
-              url:'',
-              descs:'',
-              sn:'',
-              menuId:'',
-            },
-      rules: {
-      name: [
-          { required: true, message: '请输入名称', trigger: 'blur' }
-        ]
-      }
-    }
-  },
-  mounted() {
-    this.loadListData()
-  },
-  methods: {
-    // 显示添加弹窗
-    handleShowAddDialog() {
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['addForm'].resetFields()/* 清空*/
-      })
-    },
-    // 编辑显示弹窗
-    handleShowEditDialog(row) {
-      // 数据回显
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['addForm'].resetFields()/* 清空*/
-        this.addForm = Object.assign({}, row)/* 复制*/
-      })
-    },
-
-    submitForm(formName) { /* 确认保存*/
-      var refs = this.$refs;
-      var http = this.$http;
-      var message = this.$message;
-      refs[formName].validate((valid) => {
-        const param = Object.assign({}, this.addForm)
-        let url = '/permission/save'
-        if (this.addForm.id) {
-          url = '/permission/update'
+      getMenuName(row) {//格式化菜单
+        if (row.menu) {
+          return row.menu.name
+        } else {
+          return "暂无菜单"
         }
-        if (valid) {
-          http.post(url, param).then(res => {
-            if (res.data.success) {
-              this.dialogFormVisible = false
-              this.loadListData()
-              message({ message: res.data.message, center: true, type: 'success', showClose: true })
-            } else {
-              message.error('操作失败[' + res.data.message + ']')
+      },
+      click_enter() {/*键盘事件,调用查找方法*/
+        this.handleSubmit();
+      },
+      updateModelShow(data) {
+        this.$refs['formValidate'].resetFields();/*清除model的表单数据,打开model就清空*/
+        this.findMenuItem();/*所有最后一级菜单*/
+        this.updateModel = true;
+        this.formValidate = data;
+        if (data.menu) {/*如果有菜单，就回显*/
+          this.formValidate.menuId = data.menu.id
+        }
+      },
+      handleSubmitUpdate: function (name) {//提交方法
+        var refs = this.$refs;
+        refs[name].validate((valid) => {
+          if (valid) {
+            var $page = this;
+            var messagePage = this.$Message;
+            var param = $.extend({}, this.formValidate)/*复制一份，因为要删除*/
+            if (param.menuId) {
+              param['menu.id'] = param.menuId;
             }
-          }).catch(error => {
-            message.error('操作失败[' + error.message + ']')
-          })
-        } else {
-         message.error("请按照规则填写表单")
-        }
-      })
-    },
-    resetForm(formName) { /* 重置*/
-      this.$nextTick(() => {
-        var refs= this.$refs
-        refs[formName].resetFields()/* 清空*/
-      })
-    },
-    handleSelectionChange(selection) {
-      this.row = selection
-    },
-    // 批量删除
-    handleBatchRemove() {
-      // 把对象数组转成 id数组
-      const ids = this.row.map(function(obj, index, arr) {
-        return obj.id
-      })
-      const param = { ids: ids }
-      var http = this.$http
-      var notify = this.$notify;
-      http.post('/permission/batchDelete', param).then(res => {
-        if (res.data.success) {
-          notify({ title: '删除成功', message: '恭喜你，你已经成功删除', type: 'success', offset: 100 })
-          this.loadListData()
-        } else {
-          notify({ title: '删除失败', message: res.data.message, type: 'error', offset: 100 })
-        }
-      }).catch(error => {
-        notify({ title: '删除失败', message: error.message, type: 'error', offset: 100 })
-      })
-    },
+            delete param["menuId"]
+            delete param["menu"]
+            var url;
+            if (this.formValidate.id) {/*修改*/
+              url = "Admin/Permission/update"
+              param.action = "update"/*传递这个参数是配合 @ModelAttribute注解使用的，只用于修改*/
+            } else {/*添加*/
+              var url = "Admin/Permission/save";
+              param.action = "save";
+            }
+            $.ajax({
+              type: "POST",
+              contentType: "application/x-www-form-urlencoded",
+              url: url,
+              data: param,
+              dataType: "json",
+              async: false,/*取消异步加载*/
+              traditional: true,//防止深度序列化
+              success: function (result) {
+                if (result.msg) {/*操作失败，无权限*/
+                  messagePage.error(result.msg);
+                } else {
+                  $page.$Message.success('操作数据成功');
+                  $page.updateModel = false;
+                  $page.getFirstMenuData($page.page, $page.pageSize);/*修改完成后,刷新数据*/
+                }
+              }
+            });
+          } else {
+            this.$Message.error("请按照表单要求填写");
+          }
+        })
+      },
 
-    handleRemove(row) {
-      var http = this.$http
-      var notify = this.$notify;
-       http.delete('/permission/delete/' + row.id).then(res => {
-        if (res.data.success) {
-          notify({ title: '删除成功', message: '恭喜你，你已经成功删除', type: 'success', offset: 100 })
-          this.loadListData()
-        } else {
-          notify({ title: '删除失败', message: res.data.message, type: 'error', offset: 100 })
+      handleReset: function (name) {//重置方法
+        var ref = this.$refs;
+        ref[name].resetFields();
+      },
+
+      handleSubmit() {
+        this.getFirstMenuData(this.page, this.pageSize)
+      },
+      changePage(page) {
+        this.page = page/*改变就设置值*/
+        this.getFirstMenuData(page, this.pageSize);
+      },
+      sizeChange(pageSize) {/*改变就设置值*/
+        this.pageSize = pageSize
+        this.getFirstMenuData(this.page, pageSize);/*改变后page默认会变成1*/
+      },
+
+      getFirstMenuData(page, pageSize) {
+        var $page = this;
+        var notice = this.$Notice;
+        $.ajax({
+          type: "POST",
+          contentType: "application/json",
+          url: "permission/selectForPage",
+          data: JSON.stringify({
+            "keyword": this.formInline.name,
+            "currentPage": page,
+            "pageSize": pageSize
+          }),
+          dataType: 'json',
+          traditional: true,//防止深度序列化
+          async: false,/*取消异步加载*/
+          success: function (result) {/*用了框架的*/
+            if (result.msg) {/*操作失败，无权限*/
+              notice.error({
+                title: '通知提醒',
+                desc: result.msg,
+              });
+            } else {
+              $page.PermissionData = result.content;
+              $page.total = result.totalElements;
+              $page.page = result.number + 1/*处理一个小bug*/
+            }
+
+          }
+        });
+      },
+
+      newAdd: function () {
+        this.$refs['formValidate'].resetFields();/*清除model的表单数据,打开model就清空*/
+        this.findMenuItem();/*所有最后一级菜单*/
+        this.updateModel = true;
+      },
+      deleteRows: function (selection) {
+        this.rows = [];
+        for (let i = 0; i < selection.length; i++) {
+          this.rows.push(selection[i].id)
         }
-      }).catch(error => {
-         notify({ title: '删除失败', message: error.message, type: 'error', offset: 100 })
-      })
-    },
-    handleSizeChange(val) {
-      this.pageSize = val
-      this.loadListData()
-    },
-    handleCurrentChange(val) {
-      this.page = val
-      this.loadListData()
-    },
-    loadListData() {
-      this.loading = true
-      // vue加载完成，发送ajax请求动态获取数据
-      const param = {
-        'currentPage': this.page,
-        'pageSize': this.pageSize,
-        'keyword': this.searchForm.name
+      },
+
+      deletePermission() {
+        var $page = this;
+        var notice = this.$Notice;
+        $.ajax({
+          type: "POST",
+          contentType: "application/x-www-form-urlencoded",
+          url: "Admin/Permission/delete",
+          data: {"ids": this.rows.toString()},
+          dataType: 'json',
+          traditional: true,//防止深度序列化
+          async: false,/*取消异步加载*/
+          success: function (result) {/*用了框架的*/
+            if (result.msg) {/*操作失败，无权限*/
+              notice.error({
+                title: '通知提醒',
+                desc: result.msg,
+              });
+            } else {
+              notice.success({
+                title: '通知提醒',
+                desc: "删除成功",
+              });
+              $page.getFirstMenuData($page.page, $page.pageSize);/*修改完成后,刷新数据*/
+              $page.rows = [];
+            }
+          }
+        });
       }
-      var http = this.$http;
-      var message = this.$message
-      http.post('/permission/selectForPage', param).then(res => {
-        if (res.data.success) {
-          this.tableData = res.data.data.list
-          this.total = res.data.data.totalRows
-          this.page = res.data.data.currentPage
-          this.loading = false
-        } else {
-          message.error('查询失败[' + res.data.message + ']')
-        }
-      }).catch(error => {
-        message.error('查询失败[' + error.message + ']')
-      })
     }
-  }
 
-}
+  });
 </script>

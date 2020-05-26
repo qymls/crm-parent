@@ -20,7 +20,7 @@
     </select>
 
     <!-- 分页查询 -->
-    <select id="selectForList" parameterType="cn.nine.crm.query.GuaranteeItemQuery" resultType="cn.nine.crm.domain.GuaranteeItem">
+    <select id="selectForPage" parameterType="cn.nine.crm.query.GuaranteeItemQuery" resultType="cn.nine.crm.domain.GuaranteeItem">
         select *
         from t_guarantee_item
         <include refid="base_where"/>
