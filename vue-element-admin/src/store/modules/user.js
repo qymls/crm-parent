@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
-import { login, logout, getInfo ,getMenus} from '@/api/user'
-import { getToken, setToken, removeToken } from '@/utils/auth'
-import { resetRouter } from '@/router'
+import {login, logout, getInfo, getMenus} from '@/api/user'
+import {getToken, setToken, removeToken} from '@/utils/auth'
+import {resetRouter} from '@/router'
 import Layout from '@/layout/index'
 
 const state = {
@@ -28,9 +28,9 @@ const mutations = {
 
 const actions = {
   // user login
-  login({ commit }, userInfo) {
+  login({commit}, userInfo) {
     // eslint-disable-next-line no-unused-vars
-    const { username, password } = userInfo
+    const {username, password} = userInfo
     return new Promise((resolve, reject) => {
       /* login({ username: username.trim(), password: password }).then(response => {
         const { data } = response
@@ -40,7 +40,7 @@ const actions = {
       }).catch(error => {
         reject(error)
       })*/
-      const data = { token: 'admin-token' }
+      const data = {token: 'admin-token'}
       commit('SET_TOKEN', data.token)
       setToken(data.token)
       resolve()
@@ -48,7 +48,7 @@ const actions = {
   },
 
   // get user info
-  getInfo({ commit, state }) {
+  getInfo({commit, state}) {
     return new Promise((resolve, reject) => {
       /*getInfo(state.token).then(response => {
        const { data } = response
@@ -56,15 +56,23 @@ const actions = {
      }).catch(error => {
        reject(error)
      })*/
-      getMenus({ id: '2'}).then(response => {
-        console.log(response)
+      getMenus({id: '2'}).then(response => {
+         var menudata = response.resrult
+         formatData(menudata)
+         console.log(menudata)
+         const data = { name: '娃哈哈', avatar: '123', menus: menudata }
+         const { name, avatar, menus } = data
+         commit('SET_NAME', name)
+         commit('SET_AVATAR', avatar)
+         commit('SET_MENUS', menus)
+         resolve(data)
+
       }).catch(error => {
         reject(error)
       })
-      const menusDate = [{
+  /*    const menusDate = [{
         path: '/nested',
         component: 'Layout',
-        redirect: '/nested/menu1',
         name: 'Nested',
         meta: {
           title: 'Nested',
@@ -73,30 +81,30 @@ const actions = {
         children: [
           {
             path: 'menu1',
-            component: 'nested/menu1/index',
             name: 'menu1',
             meta: { title: 'menu1' },
+            component: 'nested/menu1',
             children: [
               {
-                path: 'menu1-1',
+                path: 'Menu1-1',
                 component: 'nested/menu1/menu1-1',
                 name: 'Menu1-1',
                 meta: { title: 'Menu1-1' }
               },
               {
-                path: 'menu1-2',
+                path: 'Menu1-2',
                 component: 'nested/menu1/menu1-2',
                 name: 'Menu1-2',
                 meta: { title: 'Menu1-2' },
                 children: [
                   {
-                    path: 'menu1-2-1',
+                    path: 'Menu1-2-1',
                     component: 'nested/menu1/menu1-2/menu1-2-1',
                     name: 'Menu1-2-1',
                     meta: { title: 'Menu1-2-1' }
                   },
                   {
-                    path: 'menu1-2-2',
+                    path: 'Menu1-2-2',
                     component: 'nested/menu1/menu1-2/menu1-2-2',
                     name: 'Menu1-2-2',
                     meta: { title: 'Menu1-2-2' }
@@ -129,17 +137,17 @@ const actions = {
             }
           ]
         }]
-      const data = { name: '娃哈哈', avatar: '123', menus: menusDate }
-      const { name, avatar, menus } = data
+      //formatData(menusDate)
+      const data = {name: '娃哈哈', avatar: '123', menus: menusDate}
+      const {name, avatar, menus} = data
       commit('SET_NAME', name)
       commit('SET_AVATAR', avatar)
       commit('SET_MENUS', menus)
-      resolve(data)
+      resolve(data)*/
     })
   },
-
   // user logout
-  logout({ commit, state }) {
+  logout({commit, state}) {
     return new Promise((resolve, reject) => {
       /*      logout(state.token).then(() => {
         commit('SET_TOKEN', '')
@@ -157,7 +165,7 @@ const actions = {
   },
 
   // remove token
-  resetToken({ commit }) {
+  resetToken({commit}) {
     return new Promise(resolve => {
       commit('SET_TOKEN', '')
       removeToken()
@@ -165,6 +173,29 @@ const actions = {
     })
   }
 
+}
+
+function formatData(data) {
+  for (let i = 0; i < data.length; i++) {
+    if (data[i].children && data[i].children.length > 0) {
+      var pathdata = data[i].url.split("/");
+      var finalldata = pathdata[pathdata.length-1];
+      data[i] = $.extend({}, data[i], {path:finalldata, component: data[i].url, meta: {title: data[i].name, icon: data[i].icon}})
+      if (data[i].firstmenuid ==0 ){
+        data[i].component = 'Layout'
+        data[i].path = '/'+finalldata
+      }
+      formatData(data[i].children)
+    } else {
+      var pathdata = data[i].url.split("/");
+      var finalldata = pathdata[pathdata.length-1];
+      data[i] = $.extend({}, data[i], {path: finalldata, component: data[i].url, meta: {title: data[i].name, icon: data[i].icon}})
+      if (data[i].firstmenuid ==0 ){/*一级菜单添加Layout*/
+        data[i].component = 'Layout'
+        data[i].path = '/'+finalldata
+      }
+    }
+  }
 }
 
 export default {
