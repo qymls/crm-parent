@@ -11,15 +11,15 @@
         <result column="amount" property="amount"></result>
         <result column="intro" property="intro"></result>
         <!--关联客户-->
-        <association property="customer" javaType="cn.nine.crm.domain.Customer">
+       <!-- <association property="customer" javaType="cn.nine.crm.domain.Customer">
                 <id column="c_id" property="id"/>
                 <result column="c_name" property="name"/>
         </association>
-        <!--关联营销人员 姓名-->
+        &lt;!&ndash;关联营销人员 姓名&ndash;&gt;
         <association property="employee" javaType="cn.nine.crm.domain.Employee">
                 <id column="e_id" property="id"/>
                 <result column="username" property="username"/>
-        </association>
+        </association>-->
         <!--关联租户 公司名称-->
         <association property="tenant" javaType="cn.nine.crm.domain.Tenant">
                 <id column="t_id" property="id"/>

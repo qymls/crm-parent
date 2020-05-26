@@ -8,16 +8,16 @@ import lombok.Data;
  */
 @Data
 public class Permission extends BaseDomain{
-    
+
     private String name;
-    
+
     private String url;
-    
+
     private String descs;
-    
+
     private String sn;
-    
-    private Long menuId;
+
+    private Menu menu;
 
 
 

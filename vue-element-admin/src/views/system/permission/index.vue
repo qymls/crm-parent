@@ -27,8 +27,7 @@
         <i-col span="21">
           <i-Form ref="formInline" :model="formInline" inline style="margin-left: 20px;" @submit.native.prevent>
             <Form-Item prop="name">
-              <i-Input type="text" v-model="formInline.name" placeholder="请输入查找的名称" @on-enter="click_enter">
-                <Icon type="ios-menu" slot="prepend"></Icon>
+              <i-Input type="text" v-model="formInline.name" clearable style="cursor: pointer" placeholder="请输入查找的名称" @on-enter="click_enter">
               </i-Input>
             </Form-Item>
 
@@ -164,6 +163,12 @@
         menuItem: []/*查询所有最后一级菜单*/
       }
     },
+    mounted(){
+      this.$Notice.config({/*统一配置右侧弹出的位置，延迟关闭时间*/
+        top: 100,
+        duration: 3
+      })
+    },
     created() {
       this.getFirstMenuData(this.page, this.pageSize);
     },
@@ -173,7 +178,7 @@
         $.ajax({
           type: "POST",
           contentType: "application/x-www-form-urlencoded",
-          url: "Admin/Permission/findMenuItem",
+          url: "/permission/findMenuItem",
           dataType: 'json',
           async: false,/*取消异步加载*/
           success: function (result) {
@@ -207,24 +212,25 @@
             var $page = this;
             var messagePage = this.$Message;
             var param = $.extend({}, this.formValidate)/*复制一份，因为要删除*/
+            delete param["menu"]
             if (param.menuId) {
-              param['menu.id'] = param.menuId;
+              //param['menu.id'] = param.menuId;
+              param["menu"] = {id:param.menuId}
             }
             delete param["menuId"]
-            delete param["menu"]
             var url;
             if (this.formValidate.id) {/*修改*/
-              url = "Admin/Permission/update"
-              param.action = "update"/*传递这个参数是配合 @ModelAttribute注解使用的，只用于修改*/
+              url = "/permission/update"
+              param.action = "update"
             } else {/*添加*/
-              var url = "Admin/Permission/save";
+              var url = "/permission/save";
               param.action = "save";
             }
             $.ajax({
               type: "POST",
-              contentType: "application/x-www-form-urlencoded",
+              contentType: "application/json",
               url: url,
-              data: param,
+              data: JSON.stringify(param),
               dataType: "json",
               async: false,/*取消异步加载*/
               traditional: true,//防止深度序列化
@@ -267,7 +273,7 @@
         $.ajax({
           type: "POST",
           contentType: "application/json",
-          url: "permission/selectForPage",
+          url: "/permission/selectForPage",
           data: JSON.stringify({
             "keyword": this.formInline.name,
             "currentPage": page,
@@ -283,9 +289,9 @@
                 desc: result.msg,
               });
             } else {
-              $page.PermissionData = result.content;
-              $page.total = result.totalElements;
-              $page.page = result.number + 1/*处理一个小bug*/
+              $page.PermissionData = result.data.list;
+              $page.total = result.data.totalRows;
+              $page.page = result.data.currentPage/*处理一个小bug*/
             }
 
           }
@@ -309,9 +315,9 @@
         var notice = this.$Notice;
         $.ajax({
           type: "POST",
-          contentType: "application/x-www-form-urlencoded",
-          url: "Admin/Permission/delete",
-          data: {"ids": this.rows.toString()},
+          contentType: "application/json",
+          url: "/permission/batchDelete",
+          data: JSON.stringify({"ids": this.rows}),
           dataType: 'json',
           traditional: true,//防止深度序列化
           async: false,/*取消异步加载*/
@@ -322,12 +328,20 @@
                 desc: result.msg,
               });
             } else {
-              notice.success({
-                title: '通知提醒',
-                desc: "删除成功",
-              });
-              $page.getFirstMenuData($page.page, $page.pageSize);/*修改完成后,刷新数据*/
-              $page.rows = [];
+              if (result.success){
+                notice.success({
+                  title: '通知提醒',
+                  desc: "删除成功",
+                });
+                $page.getFirstMenuData($page.page, $page.pageSize);/*修改完成后,刷新数据*/
+                $page.rows = [];
+              }else {
+                notice.error({
+                  title: '通知提醒',
+                  desc: "删除失败"+result.message,
+                });
+              }
+
             }
           }
         });

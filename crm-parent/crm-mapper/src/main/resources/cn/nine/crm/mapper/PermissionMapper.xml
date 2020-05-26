@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="cn.nine.crm.mapper.PermissionMapper">
 
-    <select id="findAll" resultType="cn.nine.crm.domain.Permission">
+    <resultMap id="result" type="cn.nine.crm.domain.Permission">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="url" column="url"/>
+        <result property="descs" column="descs"/>
+        <result property="sn" column="sn"/>
+        <association property="menu" select="cn.nine.crm.mapper.MenuMapper.findOne"
+                     column="menu_id" javaType="cn.nine.crm.domain.Menu"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="result">
         select
-        *
+        <include refid="base_cloumn"/>
         from permission
     </select>
 
-    <select id="selectForPage" parameterType="cn.nine.crm.query.PermissionQuery" resultType="cn.nine.crm.domain.Permission">
-        select *
+    <select id="selectForPage" parameterType="cn.nine.crm.query.PermissionQuery" resultMap="result">
+        select
+        <include refid="base_cloumn"/>
         from permission
         <include refid="base_where"/>
         limit #{start},#{pageSize}
@@ -24,6 +36,9 @@
         <include refid="base_where"/>
     </select>
 
+    <sql id="base_cloumn">
+        id, name, url, descs, sn, menu_id
+    </sql>
     <!--抽取where-->
     <sql id="base_where">
         <where>
@@ -33,7 +48,7 @@
         </where>
     </sql>
 
-    <select id="findOne" parameterType="long" resultType="cn.nine.crm.domain.Permission">
+    <select id="findOne" parameterType="long" resultMap="result">
         select
        *
         from permission  where id = #{id}
@@ -43,15 +58,19 @@
     <insert id="save" parameterType="cn.nine.crm.domain.Permission"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         insert into permission
-        ()
-        values
-        ()
+        (name, url, descs, sn, menu_id) values
+        (#{name},#{url},#{descs},#{sn},#{menu.id})
+
+
     </insert>
 
     <update id="update" parameterType="cn.nine.crm.domain.Permission">
         update permission
         set name = #{name},
-        sn = #{sn}
+        url = #{url},
+        descs =#{descs},
+        sn = #{sn},
+        menu_id = #{menu.id}
         where id = #{id}
     </update>
 
