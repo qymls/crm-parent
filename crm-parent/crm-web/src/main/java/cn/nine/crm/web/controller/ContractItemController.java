@@ -6,6 +6,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+/**
+    合同明细 Controller 层
+*/
 @Controller
 @ResponseBody
 @RequestMapping("/contractitem")

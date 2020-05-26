@@ -7,6 +7,9 @@ import cn.nine.crm.service.Impl.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * 订金订单 ServiceImpl层
+ */
 @Service
 @Transactional
 public class OrderServiceImpl extends BaseServiceImpl<Order,Long, OrderQuery> implements IOrderService {
