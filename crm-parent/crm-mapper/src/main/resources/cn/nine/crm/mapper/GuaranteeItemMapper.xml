@@ -7,10 +7,19 @@
     <sql id="base_where">
         <where>
             <if test="keyword != null">
-                and name like CONCAT("%",#{keyword},"%")
+                and guaranteeSn like CONCAT("%",#{keyword},"%")
             </if>
         </where>
     </sql>
+
+    <!-- 关联查询 -->
+    <resultMap id="baseResultMap" type="cn.nine.crm.domain.GuaranteeItem">
+        <id column="id" property="id"/>
+        <result column="input_date" property="inputDate"/>
+        <result column="guarantee_sn" property="guaranteeSn"/>
+        <result column="details" property="details"/>
+        <result column="status" property="status"/>
+    </resultMap>
 
     <!-- 查询全部数据 -->
     <select id="findAll" resultType="cn.nine.crm.domain.GuaranteeItem">
@@ -20,9 +29,14 @@
     </select>
 
     <!-- 分页查询 -->
-    <select id="selectForPage" parameterType="cn.nine.crm.query.GuaranteeItemQuery" resultType="cn.nine.crm.domain.GuaranteeItem">
-        select *
-        from t_guarantee_item
+    <select id="selectForPage" parameterType="cn.nine.crm.query.GuaranteeItemQuery" resultMap="baseResultMap">
+        SELECT
+            gi.id,
+            gi.input_date,
+            gi.guarantee_sn,
+            gi.details,
+            gi.status
+        FROM t_guarantee_item gi
         <include refid="base_where"/>
         limit #{start},#{pageSize}
     </select>

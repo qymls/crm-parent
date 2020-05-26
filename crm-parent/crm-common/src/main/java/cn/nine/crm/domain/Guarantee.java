@@ -2,6 +2,7 @@ package cn.nine.crm.domain;
 
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class Guarantee extends BaseDomain {
     private Date endDate;
 
     //保修明细
-    private List<GuaranteeItem> guaranteeItems;
+    private List<GuaranteeItem> guaranteeItemList = new ArrayList<>();
 
     //所属合同
     private Contract contract;

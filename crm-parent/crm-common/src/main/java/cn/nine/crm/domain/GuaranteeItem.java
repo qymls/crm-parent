@@ -17,11 +17,11 @@ public class GuaranteeItem extends BaseDomain {
     //正在处理
     public static final Integer STATUS_INPROCESS = 2;
 
-    //所属保修单号
+    //所属保修单
     private String guaranteeSn;
 
-    //保修时间
-    private Date date;
+    //保修时间【填写日期】
+    private Date inputDate = new Date();
 
     //保修内容
     private String details;
