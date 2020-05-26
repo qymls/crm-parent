@@ -63,7 +63,7 @@ public class BaseServiceImpl<T, ID extends Serializable, Q> implements IBaseServ
         PageList<T> pageList = new PageList<>(baseQuery.getCurrentPage(), baseQuery.getPageSize(), Integer.parseInt(String.valueOf(count)));
         baseQuery.setCurrentPage(pageList.getCurrentPage());
         baseQuery.setPageSize(pageList.getPageSize());
-        List<T> list = baseMapper.selectForList((Q) baseQuery);
+        List<T> list = baseMapper.selectForPage((Q) baseQuery);
         pageList.setList(list);
         return pageList;
     }
