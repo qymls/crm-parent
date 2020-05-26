@@ -21,8 +21,7 @@
         <Col span="21">
           <Form ref="searchForm" :model="searchForm" inline style="margin-left: 20px;" @submit.native.prevent>
             <FormItem prop="name">
-              <Input v-model="searchForm.name" type="text" clearable style="cursor: pointer" placeholder="请输入查找的名称"
-                     @on-enter="click_enter">
+              <Input v-model="searchForm.name" type="text" clearable style="cursor: pointer" placeholder="请输入查找的名称" @on-enter="click_enter">
               </Input>
             </FormItem>
 
@@ -75,37 +74,13 @@
             <FormItem v-show="false" prop="id">
               <Input v-model="addForm.id" type="text"></Input>
             </FormItem>
-            <FormItem label="name" prop="name">
+                        <FormItem label="name" prop="name">
               <Input v-model="addForm.name" placeholder="请输入相关值"></Input>
             </FormItem>
-            <FormItem label="url" prop="url">
-              <Input v-model="addForm.url" placeholder="请输入相关值"></Input>
+                        <FormItem label="sn" prop="sn">
+              <Input v-model="addForm.sn" placeholder="请输入相关值"></Input>
             </FormItem>
-            <FormItem label="icon" prop="icon">
-              <Input v-model="addForm.icon" placeholder="请输入相关值"></Input>
-            </FormItem>
-            <FormItem label="parentId" prop="parentId">
-              <Input v-model="addForm.parentId" placeholder="请输入相关值"></Input>
-            </FormItem>
-            <FormItem label="label" prop="label">
-              <Input v-model="addForm.label" placeholder="请输入相关值"></Input>
-            </FormItem>
-            <FormItem label="englishName" prop="englishName">
-              <Input v-model="addForm.englishName" placeholder="请输入相关值"></Input>
-            </FormItem>
-            <FormItem label="createTime" prop="createTime">
-              <Input v-model="addForm.createTime" placeholder="请输入相关值"></Input>
-            </FormItem>
-            <FormItem label="description" prop="description">
-              <Input v-model="addForm.description" placeholder="请输入相关值"></Input>
-            </FormItem>
-            <FormItem label="operator" prop="operator">
-              <Input v-model="addForm.operator" placeholder="请输入相关值"></Input>
-            </FormItem>
-            <FormItem label="firstmenuid" prop="firstmenuid">
-              <Input v-model="addForm.firstmenuid" placeholder="请输入相关值"></Input>
-            </FormItem>
-            <FormItem>
+                        <FormItem>
               <Button type="primary" @click="submitForm('addForm')">确认</Button>
               <Button style="margin-left: 8px" @click="resetForm('addForm')">重置</Button>
             </FormItem>
@@ -131,18 +106,10 @@
         },
         dialogFormVisible: false,
         addForm: {
-          id: '',
-          name: '',
-          url: '',
-          icon: '',
-          parentId: '',
-          label: '',
-          englishName: '',
-          createTime: '',
-          description: '',
-          operator: '',
-          firstmenuid: ''
-        },
+                 id:'',
+                 name:'',
+                 sn:'',
+                },
         columns: [
           {
             type: 'selection',
@@ -155,57 +122,17 @@
             width: 100,
             align: 'center'
           },
-          {
-            title: 'name',
-            key: 'name',
-            align: 'center'
-          },
-          {
-            title: 'url',
-            key: 'url',
-            align: 'center'
-          },
-          {
-            title: 'icon',
-            key: 'icon',
-            align: 'center'
-          },
-          {
-            title: 'parentId',
-            key: 'parentId',
-            align: 'center'
-          },
-          {
-            title: 'label',
-            key: 'label',
-            align: 'center'
-          },
-          {
-            title: 'englishName',
-            key: 'englishName',
-            align: 'center'
-          },
-          {
-            title: 'createTime',
-            key: 'createTime',
-            align: 'center'
-          },
-          {
-            title: 'description',
-            key: 'description',
-            align: 'center'
-          },
-          {
-            title: 'operator',
-            key: 'operator',
-            align: 'center'
-          },
-          {
-            title: 'firstmenuid',
-            key: 'firstmenuid',
-            align: 'center'
-          },
-          {
+                         {
+              title:'name',
+              key:'name',
+              align:'center'
+              },
+                          {
+              title:'sn',
+              key:'sn',
+              align:'center'
+              },
+                      {
             title: '操作',
             slot: 'action',
             align: 'center',
@@ -220,11 +147,11 @@
       }
     },
     mounted() {
-      var Notice = this.$Notice
+    var Notice = this.$Notice
       Notice.config({/*统一配置右侧弹出的位置，延迟关闭时间*/
         top: 100,
         duration: 3
-      })
+        })
       this.loadListData()
     },
     methods: {
@@ -250,9 +177,9 @@
         var Message = this.$Message
         refs[formName].validate((valid) => {
           const param = Object.assign({}, this.addForm)
-          let url = '/menu/save'
+          let url = '/role/save'
           if (this.addForm.id) {
-            url = '/menu/update'
+            url = '/role/update'
           }
           if (valid) {
             http.post(url, param).then(res => {
@@ -287,14 +214,14 @@
         var http = this.$http
         var Notice = this.$Notice
         const param = { ids: ids }
-        http.post('/menu/batchDelete', param).then(res => {
+        http.post('/role/batchDelete', param).then(res => {
           if (res.data.success) {
             Notice.success({
               title: '操作成功通知',
               desc: '恭喜你，你已经成功删除该项'
             })
             this.loadListData()
-            this.row = []
+            this.row = [];
           } else {
             Notice.error({
               title: '操作失败通知',
@@ -312,7 +239,7 @@
       handleRemove(row) {
         var http = this.$http
         var Notice = this.$Notice
-        http.delete('/menu/delete/' + row.id).then(res => {
+        http.delete('/role/delete/' + row.id).then(res => {
           if (res.data.success) {
             this.loadListData()
             Notice.success({
@@ -350,7 +277,7 @@
           'pageSize': this.pageSize,
           'keyword': this.searchForm.name
         }
-        http.post('/menu/selectForPage', param).then(res => {
+        http.post('/role/selectForPage', param).then(res => {
           if (res.data.success) {
             this.tableData = res.data.data.list
             this.total = res.data.data.totalRows

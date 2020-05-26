@@ -14,7 +14,7 @@ public class Contract extends BaseDomain{
     //合同编号 自动生成
     private String sn;
     //合同客户 显示客户姓名
-    private Customer customer;
+    //private Customer customer;
     //签订合同的时间
     private Date signTime;
     //营销人员 显示姓名

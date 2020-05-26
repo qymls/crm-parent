@@ -34,4 +34,7 @@ export default {
   .ivu-table-border td, .ivu-table-border th {
     border-right: 1px solid #e8eaec;
   }
+  #app .hideSidebar .el-submenu>.el-submenu__title {
+    text-align: center;
+  }
 </style>

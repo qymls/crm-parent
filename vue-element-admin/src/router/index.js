@@ -44,47 +44,35 @@ export const constantRoutes = [
     }]
   },
 
-  {
-    path: '',
+  /*{
+    path: '/system',
     component: Layout,
     name: '系统管理',
     meta: { title: '系统管理', icon: 'ios-apps-outline' },
     children: [{
-      path: '/department',
+      path: 'system/department',
       name: '部门管理',
       component: () => import('@/views/department/index'),
-      meta: { title: '部门管理', icon: 'ios-apps-outline' }
+      meta: { title: '部门管理', icon: 'ios-apps-outline' },
     },
       {
-        path: '/employee',
+        path: 'system/employee',
         name: '员工管理',
         component: () => import('@/views/employee/index'),
         meta: { title: '员工管理', icon: 'dashboard' }
       },
       {
-        path: '/menu',
+        path: 'system/menu',
         name: '菜单管理',
-        component: () => import('@/views/menu/index'),
+        component: () => import('@/views/menu/menu'),
         meta: { title: '菜单管理', icon: 'dashboard' }
       }
     ]
-  },
+  },*/
 
 
-  {
-    path: '/form',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/menu/menu'),
-        meta: { title: 'Form', icon: 'form' }
-      }
-    ]
-  },
   // 404 page must be placed at the end !!!
- /* { path: '*', redirect: '/404', hidden: true }*/
+  /*{ path: '*', redirect: '/404', hidden: true }*/
 ]
 
 

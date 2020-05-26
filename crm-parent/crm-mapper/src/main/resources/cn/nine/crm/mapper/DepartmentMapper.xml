@@ -7,12 +7,12 @@
         select
         id,
         name ,
-        sn from t_department
+        sn from department
     </select>
 
     <select id="selectForList" parameterType="cn.nine.crm.query.DepartmentQuery" resultType="cn.nine.crm.domain.Department">
         select id,name ,sn
-        from t_department
+        from department
         <include refid="base_where"/>
         limit #{start},#{pageSize}
 
@@ -21,7 +21,7 @@
     <select id="selectForCount" resultType="long">
         select
         count(*)
-        from t_department
+        from department
         <include refid="base_where"/>
     </select>
 
@@ -38,32 +38,32 @@
         select
         id,
         name ,
-        sn from t_department  where id = #{id}
+        sn from department  where id = #{id}
     </select>
 
 
     <insert id="save" parameterType="cn.nine.crm.domain.Department"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
-        insert into t_department
+        insert into department
         (name, sn)
         values
         (#{name},#{sn})
     </insert>
 
     <update id="update" parameterType="cn.nine.crm.domain.Department">
-        update t_department
+        update department
         set name = #{name},
         sn = #{sn}
         where id = #{id}
     </update>
 
     <delete id="delete" parameterType="long">
-        delete from t_department where id = #{id}
+        delete from department where id = #{id}
     </delete>
 
     <delete id="batchDelete">
         <!--open最前面的字符,close在最后的字符separator分隔符,每次循环使用什么分隔-->
-        delete from t_department where id in
+        delete from department where id in
         <foreach collection="list" open="(" item="id" close=")" separator=",">
             #{id}
         </foreach>
