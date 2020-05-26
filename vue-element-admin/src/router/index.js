@@ -50,10 +50,10 @@ export const constantRoutes = [
     name: '系统管理',
     meta: { title: '系统管理', icon: 'ios-apps-outline' },
     children: [{
-      path: 'system/department',
+      path: '/department',
       name: '部门管理',
       component: () => import('@/views/department/index'),
-      meta: { title: '部门管理', icon: 'ios-apps-outline' },
+      meta: { title: '部门管理', icon: 'ios-apps-outline' }
     },
       {
         path: 'system/employee',
@@ -68,6 +68,32 @@ export const constantRoutes = [
         meta: { title: '菜单管理', icon: 'dashboard' }
       }
     ]
+  },
+  {
+    path: '',
+    component: Layout,
+    name: '订单合同管理',
+    meta: { title: '订单合同管理', icon: 'ios-apps-outline' },
+    children: [{
+      path: '/order',
+      name: '订金订单管理',
+      component: () => import('@/views/department/index'),
+      meta: { title: '订金订单管理', icon: 'ios-apps-outline' }
+    },
+      {
+        path: '/contract',
+        name: '合同管理',
+        component: () => import('@/views/contract/index'),
+        meta: { title: '合同管理', icon: 'dashboard' }
+      },
+      {
+        path: '/contractitem',
+        name: '菜单管理',
+        component: () => import('@/views/contractitem/index'),
+        meta: { title: '合同明细管理', icon: 'dashboard' }
+      }
+    ]
+  },
   },*/
 
 
