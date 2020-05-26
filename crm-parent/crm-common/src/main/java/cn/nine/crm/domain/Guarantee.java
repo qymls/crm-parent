@@ -13,10 +13,7 @@ import java.util.List;
 public class Guarantee extends BaseDomain {
 
     //保修单编号【自动生成】
-    private String sn;
-
-    //签订日期【合同签订日期】
-    private Date beginDate;
+    private String sn = String.valueOf(System.currentTimeMillis());
 
     //结束日期【+1年】
     private Date endDate;
