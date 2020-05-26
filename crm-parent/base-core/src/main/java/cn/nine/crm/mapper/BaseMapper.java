@@ -6,8 +6,6 @@ import java.util.List;
 public interface BaseMapper<T, ID extends Serializable, Q> {
     List<T> findAll();
 
-    List<T> selectForPage(Q query);
-
     List<T> selectForList(Q query);
 
     Long selectForCount(Q query);

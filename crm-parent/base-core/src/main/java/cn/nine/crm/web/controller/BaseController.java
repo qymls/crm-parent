@@ -113,6 +113,5 @@ public class BaseController<T, ID extends Serializable, Q> {
             e.printStackTrace();
             return Result.error("服务器异常");
         }
-
     }
 }

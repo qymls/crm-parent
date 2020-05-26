@@ -139,7 +139,7 @@
         SELECT count(id) FROM tenant
         <include refid="base_where"/>
     </select>
-    <select id="selectForPage" resultMap="baseResultMap">
+    <select id="selectForList" resultMap="baseResultMap">
         SELECT t.id AS t_id,
         t.companyName,
         t.companyTel,
