@@ -22,7 +22,7 @@
           <Form ref="searchForm" :model="searchForm" inline style="margin-left: 20px;" @submit.native.prevent>
             <FormItem prop="name">
               <Input v-model="searchForm.name" type="text" clearable
-                     style="cursor: pointer" placeholder="请输入查找的名称"
+                     style="cursor: pointer" placeholder="请输入查找的客户姓名"
                      @on-enter="click_enter">
               </Input>
             </FormItem>
@@ -81,17 +81,17 @@
             <FormItem label="客户姓名" prop="name">
               <Input v-model="addForm.name" placeholder="请输入客户姓名"></Input>
             </FormItem>
-            <FormItem label="签定时间" prop="name">
-              <Input v-model="addForm.name" placeholder="请选择签定时间"></Input>
+            <FormItem label="签定时间" prop="signTime">
+              <Input v-model="addForm.signTime" placeholder="请选择签定时间"></Input>
             </FormItem>
             <FormItem label="营销人员姓名" prop="name">
               <Input v-model="addForm.name" placeholder="请输入营销人员姓名"></Input>
             </FormItem>
-            <FormItem label="合同总金额" prop="name">
-              <Input v-model="addForm.name" placeholder="请输入合同总金额"></Input>
+            <FormItem label="订金金额" prop="amount">
+              <Input v-model="addForm.amount" placeholder="请输入订金金额"></Input>
             </FormItem>
-            <FormItem label="摘要" prop="sn">
-              <Input v-model="addForm.sn" placeholder="请输入摘要"></Input>
+            <FormItem label="摘要" prop="intro">
+              <Input v-model="addForm.intro" placeholder="请输入摘要"></Input>
             </FormItem>
 
             <FormItem>
@@ -123,7 +123,7 @@
         addForm: {
           id: '',
           name: '',
-          sn: ''
+          intro: ''
         },
         columns: [
           {
@@ -156,19 +156,13 @@
             key: 'seller.username'
           },
           {
-            title: '合同金额',
+            title: '订金金额',
             width: 100,
             align: 'center',
-            key: 'totalAmount'
+            key: 'amount'
           },
           {
             title: '摘要',
-            width: 100,
-            align: 'center',
-            key: 'intro'
-          },
-          {
-            title: '合同明细',
             width: 100,
             align: 'center',
             key: 'intro'
@@ -198,10 +192,10 @@
             { required: true, message: '请输入营销人员姓名', trigger: 'blur' }
           ],
           totalAmount: [
-            { required: true, message: '请输入合同金额', trigger: 'blur' }
+            { required: true, message: '请输入订金金额', trigger: 'blur' }
           ],
           intro: [
-            { required: true, message: '请输入合同摘要', trigger: 'blur' }
+            { required: true, message: '请输入订单摘要', trigger: 'blur' }
           ],
         }
       }
@@ -236,9 +230,9 @@
         var Message = this.$Message
         refs[formName].validate((valid) => {
           const param = Object.assign({}, this.addForm)
-          let url = '/department/save'
+          let url = '/order/save'
           if (this.addForm.id) {
-            url = '/department/update'
+            url = '/order/update'
           }
           if (valid) {
             http.post(url, param).then(res => {
@@ -273,7 +267,7 @@
         var http = this.$http
         var Notice = this.$Notice
         const param = { ids: ids }
-        http.post('/department/batchDelete', param).then(res => {
+        http.post('/order/batchDelete', param).then(res => {
           if (res.data.success) {
             Notice.success({
               title: '操作成功通知',
@@ -298,7 +292,7 @@
       handleRemove(row) {
         var http = this.$http
         var Notice = this.$Notice
-        http.delete('/department/delete/' + row.id).then(res => {
+        http.delete('/order/delete/' + row.id).then(res => {
           if (res.data.success) {
             this.loadListData()
             Notice.success({
@@ -336,7 +330,7 @@
           'pageSize': this.pageSize,
           'keyword': this.searchForm.name
         }
-        http.post('/department/selectForPage', param).then(res => {
+        http.post('/order/selectForPage', param).then(res => {
           if (res.data.success) {
             this.tableData = res.data.data.list
             this.total = res.data.data.totalRows

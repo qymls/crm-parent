@@ -74,11 +74,17 @@
             <FormItem v-show="false" prop="id">
               <Input v-model="addForm.id" type="text"></Input>
             </FormItem>
-            <FormItem label="名称" prop="name">
-              <Input v-model="addForm.name" placeholder="请输入相关值"></Input>
+            <FormItem label="合同编号" prop="sn">
+              <Input v-model="addForm.sn" placeholder="请输入合同编号"></Input>
             </FormItem>
-            <FormItem label="sn" prop="sn">
-              <Input v-model="addForm.sn" placeholder="请输入相关值"></Input>
+            <FormItem label="付款时间" prop="name">
+              <Input v-model="addForm.name" placeholder="请选择付款时间"></Input>
+            </FormItem>
+            <FormItem label="所占比例" prop="name">
+              <Input v-model="addForm.name" placeholder="请输入所占比例"></Input>
+            </FormItem>
+            <FormItem label="是否支付" prop="name">
+              <Input v-model="addForm.name" placeholder="请选择是否支付"></Input>
             </FormItem>
             <FormItem>
               <Button type="primary" @click="submitForm('addForm')">确认</Button>
@@ -107,8 +113,11 @@
         dialogFormVisible: false,
         addForm: {
           id: '',
-          name: '',
-          sn: ''
+          payTime:'',
+          sn: '',
+          scale:'',
+          isPayment:''
+
         },
         columns: [
           {
@@ -123,12 +132,28 @@
             align: 'center'
           },
           {
-            title: '名称',
-            key: 'name'
+            title: '合同编号',
+            width: 100,
+            align: 'center',
+            key: 'sn'
           },
           {
-            title: 'sn',
-            key: 'sn'
+            title: '付款时间',
+            width: 100,
+            align: 'center',
+            key: 'payTime'
+          },
+          {
+            title: '所占比例',
+            width: 100,
+            align: 'center',
+            key: 'scale'
+          },
+          {
+            title: '是否支付',
+            width: 100,
+            align: 'center',
+            key: 'isPayment'
           },
           {
             title: '操作',
@@ -138,8 +163,17 @@
           }
         ],
         rules: {
-          name: [
-            { required: true, message: '请输入名称', trigger: 'blur' }
+          sn: [
+            { required: true, message: '请输入合同编号', trigger: 'blur' }
+          ],
+          payTime: [
+            { required: true, message: '请选择支付时间', trigger: 'blur' }
+          ],
+          scale: [
+            { required: true, message: '请输入所占比例', trigger: 'blur' }
+          ],
+          isPayment: [
+            { required: true, message: '请选择是否支付', trigger: 'blur' }
           ]
         }
       }
@@ -174,9 +208,9 @@
         var Message = this.$Message
         refs[formName].validate((valid) => {
           const param = Object.assign({}, this.addForm)
-          let url = '/department/save'
+          let url = '/contractitem/save'
           if (this.addForm.id) {
-            url = '/department/update'
+            url = '/contractitem/update'
           }
           if (valid) {
             http.post(url, param).then(res => {
@@ -211,7 +245,7 @@
         var http = this.$http
         var Notice = this.$Notice
         const param = { ids: ids }
-        http.post('/department/batchDelete', param).then(res => {
+        http.post('/contractitem/batchDelete', param).then(res => {
           if (res.data.success) {
             Notice.success({
               title: '操作成功通知',
@@ -236,7 +270,7 @@
       handleRemove(row) {
         var http = this.$http
         var Notice = this.$Notice
-        http.delete('/department/delete/' + row.id).then(res => {
+        http.delete('/contractitem/delete/' + row.id).then(res => {
           if (res.data.success) {
             this.loadListData()
             Notice.success({
@@ -274,7 +308,7 @@
           'pageSize': this.pageSize,
           'keyword': this.searchForm.name
         }
-        http.post('/department/selectForPage', param).then(res => {
+        http.post('/contractitem/selectForPage', param).then(res => {
           if (res.data.success) {
             this.tableData = res.data.data.list
             this.total = res.data.data.totalRows
