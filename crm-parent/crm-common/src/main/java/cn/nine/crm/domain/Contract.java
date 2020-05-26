@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * 合同实体类
+ * 业务管理-合同实体类
  * 租户的客户交了定金后，并确定要购买产品,则需要签订购买合同
  */
 @Data
@@ -24,7 +24,7 @@ public class Contract extends BaseDomain{
     //合同摘要
     private String intro;
     //合同订单明细数据对象--付款明细  按钮  点击 进入合同明细表
-    private ContractItem details;
+    private ContractItem contractItem;
     //所属租户
     private Tenant tenant;
 

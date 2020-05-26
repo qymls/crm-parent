@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.nine.crm.mapper.ContractMapper">
+    <!--关联-->
+    <resultMap id="baseMap" type="cn.nine.crm.domain.Contract">
+        <!--合同-->
+        <id column="co_id" property="id"></id>
+        <result column="sn" property="sn"></result>
+        <result column="signTime" property="signTime"></result>
+        <result column="totalAmount" property="totalAmount"></result>
+        <result column="intro" property="intro"></result>
+        <!--关联客户  后期需要更改列名和字段属性名-->
+        <association property="customer" javaType="cn.nine.crm.domain.Customer">
+            <id column="c_id" property="id"/>
+            <result column="c_name" property="name"/>
+        </association>
+        <!--关联营销人员 姓名-->
+        <association property="employee" javaType="cn.nine.crm.domain.Employee">
+            <id column="e_id" property="id"/>
+            <result column="username" property="username"/>
+        </association>
+        <!--关联合同明细 -->
+        <association property="contractitem" javaType="cn.nine.crm.domain.ContractItem">
+            <id column="ci_id" property="id"/>
+            <result column="username" property="username"/>
+        </association>
+
+        <!--关联租户 公司名称-->
+        <association property="tenant" javaType="cn.nine.crm.domain.Tenant">
+            <id column="t_id" property="id"/>
+            <result column="pay" property="pay"/>
+        </association>
+
+    </resultMap>
+    <!--查询所有数据-->
+    <select id="findAll" resultMap="baseMap">
+        select
+            co.id as co_id,
+            sn,
+
+            c.id as c_id,
+            c.name,
+
+            signTime,
+
+            e.id as e_id,
+            e.username,
+
+            co.totalAmount,
+            co.intro,
+
+            ci.id as ci_id,
+            ci.pay
+
+            t.id as t_id,
+            t.companyName
+
+        from contract co
+        JOIN customer c ON  o.customer_id = c.id
+        JOIN employee e ON o.seller_id = e.id
+        JOIN contractitem ci ON o.contractitem = ci.id
+        JOIN tenant t ON o.tenant_id = t.id
+    </select>
+
+    <!--抽取sql 查询-->
+    <sql id="baseWhere">
+        /*查询 ：客户姓名 营销人员姓名 后期补充：查询签订时间*/
+        <where>
+            <if test=" keyword !=null ">
+                and (c.name like  CONCAT("%",#{keyword},"%") OR e.name like  CONCAT("%",#{keyword},"%"))
+            </if>
+        </where>
+    </sql>
+    <!--查询总条数-->
+    <select id="selectForCount" resultType="java.lang.Long">
+        SELECT count(id) FROM contract
+        <include refid="baseWhere"/>
+    </select>
+    <!--分页查询-->
+    <select id="selectForList" resultMap="baseMap">
+        select
+        co.id as co_id,
+        sn,
+
+        c.id as c_id,
+        c.name,
+
+        signTime,
+
+        e.id as e_id,
+        e.username,
+
+        co.totalAmount,
+        co.intro,
+
+        ci.id as ci_id,
+        ci.pay
+
+        t.id as t_id,
+        t.companyName
+
+        from contract co
+        JOIN customer c ON  o.customer_id = c.id
+        JOIN employee e ON o.seller_id = e.id
+        JOIN contractitem ci ON o.contractitem = ci.id
+        JOIN tenant t ON o.tenant_id = t.id
+        <include refid="baseWhere"/>
+        LIMIT #{start} , #{pageSize}
+    </select>
+    <!--添加-->
+    <insert id="insert" parameterType="cn.nine.crm.domain.Contract">
+        INSERT INTO contract
+        (
+        sn
+        customer_id
+        signTime
+        seller_id
+        totalAmount
+        intro
+        contractitem_id
+        tenant_id
+
+
+        )
+        VALUES
+        (
+        #{sn},
+        #{customer.id},
+        #{signTime},
+        #{seller.id},
+        #{totalAmount},
+        #{intro},
+        #{contractitem.id}
+        #{tenant.id}
+        )
+    </insert>
+    <!--更改-->
+    <update id="update" parameterType="cn.nine.crm.domain.Contract">
+        UPDATE contract
+        <set>
+            <if test="sn != null">
+                sn = #{sn},
+            </if>
+            <if test="customer != null and customer.id != null">
+                customer_id = #{customer.id},
+            </if>
+            <if test="signTime != null">
+                signTime = #{signTime},
+            </if>
+            <if test="seller != null seller.id != null">
+                seller_id = #{seller.id},
+            </if>
+            <if test="totalAmount != null">
+                totalAmount = #{totalAmount},
+            </if>
+            <if test="intro != null">
+                intro = #{intro},
+            </if>
+            <if test="contractitem != null and contractitem.id != null">
+                contractitem_id = #{contractitem.id},
+            </if>
+            <if test="tenant != null and tenant.id != null">
+                tenant_id = #{tenant.id}
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    <!--删除-->
+    <delete id="delete" parameterType="long">
+        DELETE FROM contract WHERE id = #{id}
+    </delete>
+    <!--批量删除-->
+    <delete id="batchDdelete">
+        DELETE FROM contract WHERE id IN
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
