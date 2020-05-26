@@ -11,4 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ResponseBody
 @RequestMapping("/employee")
 public class EmployeeController extends BaseController<Employee,Long,EmployeeQuery> {
+
+
+
 }

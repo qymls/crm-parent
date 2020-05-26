@@ -9,4 +9,5 @@ import cn.nine.crm.query.DepartmentQuery;
  */
 public interface DepartmentMapper extends BaseMapper<Department,Long, DepartmentQuery>{
 
+
 }

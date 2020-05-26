@@ -43,5 +43,4 @@ public class Result {
         result.setData(data);
         return result;
     }
-
 }

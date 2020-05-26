@@ -10,16 +10,16 @@
         <result column="signTime" property="signTime"></result>
         <result column="amount" property="amount"></result>
         <result column="intro" property="intro"></result>
-        <!--&lt;!&ndash;关联客户&ndash;&gt;-->
-        <!--<association property="customer" javaType="cn.nine.crm.domain.Customer">-->
-                <!--<id column="c_id" property="id"/>-->
-                <!--<result column="c_name" property="name"/>-->
-        <!--</association>-->
-        <!--关联营销人员 姓名-->
+        <!--关联客户-->
+       <!-- <association property="customer" javaType="cn.nine.crm.domain.Customer">
+                <id column="c_id" property="id"/>
+                <result column="c_name" property="name"/>
+        </association>
+        &lt;!&ndash;关联营销人员 姓名&ndash;&gt;
         <association property="employee" javaType="cn.nine.crm.domain.Employee">
                 <id column="e_id" property="id"/>
                 <result column="username" property="username"/>
-        </association>
+        </association>-->
         <!--关联租户 公司名称-->
         <association property="tenant" javaType="cn.nine.crm.domain.Tenant">
                 <id column="t_id" property="id"/>
@@ -32,9 +32,9 @@
         select
           o.id as o_id,
           o.sn,
---
---           c.id as c_id,
---           c.name,
+
+          c.id as c_id,
+          c.name,
 
           o.signTime,
 
@@ -48,7 +48,7 @@
           t.companyName
 
         from order o
---             JOIN customer c ON  o.customer_id = c.id
+            JOIN customer c ON  o.customer_id = c.id
             JOIN employee e ON o.seller_id = e.id
             JOIN tenant t ON o.tenant_id = t.id
     </select>
@@ -58,7 +58,7 @@
         /*查询 ：客户姓名 营销人员姓名 后期补充：查询签订时间*/
         <where>
             <if test=" keyword !=null ">
---               and (c.name like  CONCAT("%",#{keyword},"%") OR e.name like  CONCAT("%",#{keyword},"%"))
+              and (c.name like  CONCAT("%",#{keyword},"%") OR e.name like  CONCAT("%",#{keyword},"%"))
             </if>
         </where>
     </sql>
@@ -72,9 +72,9 @@
         select
             o.id as o_id,
             o.sn,
---
---             c.id as c_id,
---             c.name,
+
+            c.id as c_id,
+            c.name,
 
             o.signTime,
 
@@ -87,7 +87,7 @@
             t.id as t_id,
             t.companyName
         from order o
---             JOIN customer c ON  o.customer_id = c.id
+            JOIN customer c ON  o.customer_id = c.id
             JOIN employee e ON o.seller_id = e.id
             JOIN tenant t ON o.tenant_id = t.id
         <include refid="baseWhere"/>
@@ -98,7 +98,7 @@
         INSERT INTO order
         (
             sn,
---             customer_id,
+            customer_id,
             signTime,
             seller_id,
             amount,
@@ -109,7 +109,7 @@
         VALUES
         (
             #{sn},
---             #{customer.id},
+            #{customer.id},
             #{signTime},
             #{seller.id},
             #{amount},
@@ -124,9 +124,9 @@
             <if test="sn != null">
                 sn = #{sn},
             </if>
-            <!--<if test="customer != null and customer.id != null">-->
-                <!--customer_id = #{customer.id},-->
-            <!--</if>-->
+            <if test="customer != null and customer.id != null">
+                customer_id = #{customer.id},
+            </if>
             <if test="signTime != null">
                 signTime = #{signTime},
             </if>

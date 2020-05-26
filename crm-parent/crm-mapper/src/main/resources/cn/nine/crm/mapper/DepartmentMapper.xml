@@ -5,11 +5,12 @@
 
     <select id="findAll" resultType="cn.nine.crm.domain.Department">
         select
-        name
-        from department
+        id,
+        name ,
+        sn from department
     </select>
 
-    <select id="selectForList" parameterType="cn.nine.crm.query.DepartmentQuery" resultType="cn.nine.crm.domain.Department">
+    <select id="selectForPage" parameterType="cn.nine.crm.query.DepartmentQuery" resultType="cn.nine.crm.domain.Department">
         select id,name ,sn
         from department
         <include refid="base_where"/>
