@@ -3,7 +3,7 @@
     <Card style="height: 100%">
       <p slot="title">
         <Icon type="ios-list-box-outline" size="20"/>
-        订单信息管理
+        合同信息管理
       </p>
       <Row>
         <Col span="3">
@@ -21,9 +21,7 @@
         <Col span="21">
           <Form ref="searchForm" :model="searchForm" inline style="margin-left: 20px;" @submit.native.prevent>
             <FormItem prop="name">
-              <Input v-model="searchForm.name" type="text" clearable
-                     style="cursor: pointer" placeholder="请输入查找的客户姓名"
-                     @on-enter="click_enter">
+              <Input v-model="searchForm.customer.name" type="text" clearable style="cursor: pointer" placeholder="请输入查找的名称" @on-enter="click_enter">
               </Input>
             </FormItem>
 
@@ -34,7 +32,7 @@
         </Col>
 
       </Row>
-      <!--列表-->
+
       <Row justify="center" align="middle">
         <div style="margin-top:20px">
           <Table border :loading="loading" :columns="columns" :data="tableData" max-height="690"
@@ -50,9 +48,18 @@
                 <Button type="error" size="small">删除</Button>
               </Poptip>
             </template>
+            <!--列属性关联获取-->
+            <template slot-scope="{ row, index }" slot="customer">
+              {{row.customer.name}}
+            </template>
+            <template slot-scope="{ row, index }" slot="seller">
+              {{row.seller.username}}
+            </template>
+            <template slot-scope="{ row, index }" slot="tenant">
+              {{row.tenant.companyName}}
+            </template>
           </Table>
         </div>
-        <!--分页-->
         <div style="overflow: hidden">
           <div style="float: right;">
             <Page
@@ -71,7 +78,6 @@
             />
           </div>
         </div>
-        <!--弹出框-->
         <Modal v-model="dialogFormVisible" title="添加信息" class-name="vertical-center-modal" footer-hide draggable
                :styles="{top: '200px'}">
           <Form ref="addForm" :model="addForm" :rules="rules" :label-width="80">
@@ -82,18 +88,25 @@
               <Input v-model="addForm.name" placeholder="请输入客户姓名"></Input>
             </FormItem>
             <FormItem label="签定时间" prop="signTime">
-              <Input v-model="addForm.signTime" placeholder="请选择签定时间"></Input>
+              <div class="block" >
+                <el-date-picker
+                  v-model="addForm.signTime"
+                  align="right"
+                  type="date"
+                  placeholder="请选择日期"
+                  :picker-options="pickerOptions">
+                </el-date-picker>
+              </div>
             </FormItem>
-            <FormItem label="营销人员姓名" prop="name">
-              <Input v-model="addForm.name" placeholder="请输入营销人员姓名"></Input>
+            <FormItem label="营销人员" prop="username">
+              <Input v-model="addForm.seller.username" placeholder="请输入营销人员姓名"></Input>
             </FormItem>
-            <FormItem label="订金金额" prop="amount">
-              <Input v-model="addForm.amount" placeholder="请输入订金金额"></Input>
+            <FormItem label="合同金额" prop="totalAmount">
+              <Input v-model="addForm.totalAmount" placeholder="请输入合同总金额"></Input>
             </FormItem>
             <FormItem label="摘要" prop="intro">
               <Input v-model="addForm.intro" placeholder="请输入摘要"></Input>
             </FormItem>
-
             <FormItem>
               <Button type="primary" @click="submitForm('addForm')">确认</Button>
               <Button style="margin-left: 8px" @click="resetForm('addForm')">重置</Button>
@@ -115,15 +128,44 @@
         tableData: [],
         loading: false,
         row: [],
+        //时间选择
+        pickerOptions: {
+          disabledDate(time) {
+            return time.getTime() > Date.now();
+          },
+          shortcuts: [{
+            text: '今天',
+            onClick(picker) {
+              picker.$emit('pick', new Date());
+            }
+          }, {
+            text: '昨天',
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() - 3600 * 1000 * 24);
+              picker.$emit('pick', date);
+            }
+          }, {
+            text: '一周前',
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', date);
+            }
+          }]
+        },
+        signTime:'',//签订时间测试
         searchForm: {
-          name: ''
+          customer:{name: ''},
         },
         dialogFormVisible: false,
-
         addForm: {
           id: '',
-          name: '',
-          intro: ''
+          customer:{name: ''},
+          seller:{username:''},
+          intro: '',
+          signTime:'',
+          totalAmount:''
         },
         columns: [
           {
@@ -141,11 +183,11 @@
             title: '客户姓名',
             width: 100,
             align: 'center',
-            key: 'customer.name'
+            slot: 'customer'
           },
           {
             title: '签订时间',
-            width: 100,
+            width: 120,
             align: 'center',
             key: 'signTime'
           },
@@ -153,13 +195,13 @@
             title: '营销人员',
             width: 100,
             align: 'center',
-            key: 'seller.username'
+            slot: 'seller'
           },
           {
-            title: '订金金额',
+            title: '合同金额',
             width: 100,
             align: 'center',
-            key: 'amount'
+            key: 'totalAmount'
           },
           {
             title: '摘要',
@@ -168,12 +210,17 @@
             key: 'intro'
           },
           {
-            title: '所属公司',
+            title: '合同明细',
             width: 100,
             align: 'center',
-            key: 'tenant.companyName'
+            key: 'intro'
           },
-
+          {
+            title: '所属公司',
+            width: 150,
+            align: 'center',
+            slot: 'tenant'
+          },
           {
             title: '操作',
             slot: 'action',
@@ -182,21 +229,21 @@
           }
         ],
         rules: {
-          name: [
-            { required: true, message: '请输入客户姓名', trigger: 'blur' }
-          ],
-          signTime: [
-            { required: true, message: '请选择签订时间', trigger: 'blur' }
-          ],
-          seller: [
-            { required: true, message: '请输入营销人员姓名', trigger: 'blur' }
-          ],
+          // name: [
+          //   { required: true, message: '请输入客户姓名', trigger: 'blur' }
+          // ],
+          // signTime: [
+          //   { required: true, message: '请选择签订时间', trigger: 'blur' }
+          // ],
+          // username: [
+          //   { required: true, message: '请输入营销人员姓名', trigger: 'blur' }
+          // ],
           totalAmount: [
-            { required: true, message: '请输入订金金额', trigger: 'blur' }
+            { required: true, message: '请输入合同金额', trigger: 'blur' }
           ],
-          intro: [
-            { required: true, message: '请输入订单摘要', trigger: 'blur' }
-          ],
+          // intro: [
+          //   { required: true, message: '请输入合同摘要', trigger: 'blur' }
+          // ]
         }
       }
     },
@@ -230,9 +277,9 @@
         var Message = this.$Message
         refs[formName].validate((valid) => {
           const param = Object.assign({}, this.addForm)
-          let url = '/order/save'
+          let url = '/contract/save'
           if (this.addForm.id) {
-            url = '/order/update'
+            url = '/contract/update'
           }
           if (valid) {
             http.post(url, param).then(res => {
@@ -267,7 +314,7 @@
         var http = this.$http
         var Notice = this.$Notice
         const param = { ids: ids }
-        http.post('/order/batchDelete', param).then(res => {
+        http.post('/contract/batchDelete', param).then(res => {
           if (res.data.success) {
             Notice.success({
               title: '操作成功通知',
@@ -292,7 +339,7 @@
       handleRemove(row) {
         var http = this.$http
         var Notice = this.$Notice
-        http.delete('/order/delete/' + row.id).then(res => {
+        http.delete('/contract/delete/' + row.id).then(res => {
           if (res.data.success) {
             this.loadListData()
             Notice.success({
@@ -330,7 +377,7 @@
           'pageSize': this.pageSize,
           'keyword': this.searchForm.name
         }
-        http.post('/order/selectForPage', param).then(res => {
+        http.post('/contract/selectForPage', param).then(res => {
           if (res.data.success) {
             this.tableData = res.data.data.list
             this.total = res.data.data.totalRows

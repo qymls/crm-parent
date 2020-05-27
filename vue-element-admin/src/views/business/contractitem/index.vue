@@ -15,13 +15,15 @@
             title="您确认删除这些信息吗?"
             @on-ok="handleBatchRemove"
           >
-            <Button v-if="row.length>0" type="error" icon="ios-trash">删除</Button>
+            <Button v-if="row.length>0" type="error" icon="ios-trash">批量删除</Button>
           </Poptip>
         </Col>
+        <!--查询操作展示列-->
         <Col span="21">
           <Form ref="searchForm" :model="searchForm" inline style="margin-left: 20px;" @submit.native.prevent>
+            <!-- -->
             <FormItem prop="name">
-              <Input v-model="searchForm.name" type="text" clearable style="cursor: pointer" placeholder="请输入查找的名称" @on-enter="click_enter">
+              <Input v-model="searchForm.contract.sn" type="text" clearable style="cursor: pointer" placeholder="请输入查找的名称" @on-enter="click_enter">
               </Input>
             </FormItem>
 
@@ -38,8 +40,8 @@
           <Table border :loading="loading" :columns="columns" :data="tableData" max-height="690"
                  @on-selection-change="handleSelectionChange">
             <template slot-scope="{ row, index }" slot="action">
-              <Button type="primary" size="small" style="margin-right: 5px" @click="handleShowEditDialog(row)">编辑
-              </Button>
+              <Button type="primary" size="small" style="margin-right: 5px"
+                      @click="handleShowEditDialog(row)">编辑</Button>
               <Poptip
                 confirm
                 title="您确认删除这些信息吗?"
@@ -47,6 +49,9 @@
                 @on-ok="handleRemove(row)">
                 <Button type="error" size="small">删除</Button>
               </Poptip>
+            </template>
+            <template slot-scope="{ row, index }" slot="contract">
+              {{row.contract.sn}}
             </template>
           </Table>
         </div>
@@ -71,20 +76,36 @@
         <Modal v-model="dialogFormVisible" title="添加信息" class-name="vertical-center-modal" footer-hide draggable
                :styles="{top: '200px'}">
           <Form ref="addForm" :model="addForm" :rules="rules" :label-width="80">
+            <!--id 值隐藏-->
             <FormItem v-show="false" prop="id">
               <Input v-model="addForm.id" type="text"></Input>
             </FormItem>
             <FormItem label="合同编号" prop="sn">
-              <Input v-model="addForm.sn" placeholder="请输入合同编号"></Input>
+              <Input v-model="addForm.contract.sn" placeholder="请输入合同编号"></Input>
             </FormItem>
-            <FormItem label="付款时间" prop="name">
-              <Input v-model="addForm.name" placeholder="请选择付款时间"></Input>
+            <FormItem label="付款时间" prop="payTime">
+              <div class="block" >
+                <el-date-picker
+                  v-model="addForm.payTime"
+                  align="right"
+                  type="date"
+                  placeholder="请选择日期"
+                  :picker-options="pickerOptions">
+                </el-date-picker>
+              </div>
             </FormItem>
-            <FormItem label="所占比例" prop="name">
-              <Input v-model="addForm.name" placeholder="请输入所占比例"></Input>
+            <FormItem label="所占比例" prop="scale">
+              <Input v-model="addForm.scale" placeholder="请输入所占比例(%)"></Input>
             </FormItem>
-            <FormItem label="是否支付" prop="name">
-              <Input v-model="addForm.name" placeholder="请选择是否支付"></Input>
+            <FormItem label="是否支付" prop="isPayment" :formatter = "formatterPay">
+              <el-select v-model="addForm.isPayment" placeholder="请选择">
+                <el-option
+                  v-for="item in options"
+                  :key="item.isPayment"
+                  :label="item.label"
+                  :value="item.isPayment">
+                </el-option>
+              </el-select>
             </FormItem>
             <FormItem>
               <Button type="primary" @click="submitForm('addForm')">确认</Button>
@@ -107,14 +128,55 @@
         tableData: [],
         loading: false,
         row: [],
+        //时间选择
+        pickerOptions: {
+          disabledDate(time) {
+            return time.getTime() > Date.now();
+          },
+          shortcuts: [{
+            text: '今天',
+            onClick(picker) {
+              picker.$emit('pick', new Date());
+            }
+          }, {
+            text: '昨天',
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() - 3600 * 1000 * 24);
+              picker.$emit('pick', date);
+            }
+          }, {
+            text: '一周前',
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', date);
+            }
+          }]
+        },
+        payTime:'',//付款时间测试
+        /*是否支付下拉框*/
+        options: [{
+          value: '0',
+          label: '未支付'
+        }, {
+          value: '1',
+          label: '已支付'
+        }],
+        isPayment: '',
+        //查询
         searchForm: {
-          name: ''
+          contract:{
+            sn:''
+          },
         },
         dialogFormVisible: false,
         addForm: {
           id: '',
+          contract:{
+            sn:''
+          },
           payTime:'',
-          sn: '',
           scale:'',
           isPayment:''
 
@@ -135,17 +197,17 @@
             title: '合同编号',
             width: 100,
             align: 'center',
-            key: 'sn'
+            slot: 'contract'
           },
           {
             title: '付款时间',
-            width: 100,
+            width: 120,
             align: 'center',
             key: 'payTime'
           },
           {
-            title: '所占比例',
-            width: 100,
+            title: '所占比例(%)',
+            width: 120,
             align: 'center',
             key: 'scale'
           },
@@ -162,19 +224,20 @@
             width: 150
           }
         ],
+        /*添加规则*/
         rules: {
           sn: [
             { required: true, message: '请输入合同编号', trigger: 'blur' }
           ],
-          payTime: [
-            { required: true, message: '请选择支付时间', trigger: 'blur' }
-          ],
+          // payTime: [
+          //   { required: true, message: '请选择支付时间', trigger: 'blur' }
+          // ],
           scale: [
-            { required: true, message: '请输入所占比例', trigger: 'blur' }
+            { required: true, message: '请输入所占比例(%)', trigger: 'blur' }
           ],
-          isPayment: [
-            { required: true, message: '请选择是否支付', trigger: 'blur' }
-          ]
+          // isPayment: [
+          //   { required: true, message: '请选择是否支付', trigger: 'blur' }
+          // ]
         }
       }
     },
@@ -186,6 +249,16 @@
       this.loadListData()
     },
     methods: {
+      /*是否支付*/
+      formatterPay(row,colum){
+        if (row.isPayment == 0){
+          return "未支付";
+        }
+        if(row.isPayment == 1){
+          return "已支付";
+        }
+
+      },
       click_enter() { /* 键盘事件,调用查找方法*/
         this.loadListData()
       },
@@ -201,7 +274,7 @@
         this.$refs['addForm'].resetFields()/* 清空*/
         this.addForm = Object.assign({}, row)/* 复制*/
       },
-
+      /*添加、更新 提交*/
       submitForm(formName) { /* 确认保存*/
         var refs = this.$refs
         var http = this.$http
@@ -209,7 +282,7 @@
         refs[formName].validate((valid) => {
           const param = Object.assign({}, this.addForm)
           let url = '/contractitem/save'
-          if (this.addForm.id) {
+          if (this.addForm.id) {//id存在则更新
             url = '/contractitem/update'
           }
           if (valid) {
@@ -236,7 +309,7 @@
       handleSelectionChange(selection) {
         this.row = selection
       },
-      // 批量删除
+      //批量删除事件
       handleBatchRemove() {
         // 把对象数组转成 id数组
         const ids = this.row.map(function(obj, index, arr) {
@@ -266,7 +339,7 @@
           })
         })
       },
-
+      /*列表删除数据*/
       handleRemove(row) {
         var http = this.$http
         var Notice = this.$Notice
@@ -290,14 +363,17 @@
           })
         })
       },
+      /*处理每页展示页数改变*/
       handleSizeChange(val) {
         this.pageSize = val
         this.loadListData()
       },
+      /*处理当前页改变*/
       handleCurrentChange(val) {
         this.page = val
         this.loadListData()
       },
+      /*查询事件*/
       loadListData() {
         var http = this.$http
         var Message = this.$Message
@@ -310,6 +386,7 @@
         }
         http.post('/contractitem/selectForPage', param).then(res => {
           if (res.data.success) {
+            console.log(res);
             this.tableData = res.data.data.list
             this.total = res.data.data.totalRows
             this.page = res.data.data.currentPage
