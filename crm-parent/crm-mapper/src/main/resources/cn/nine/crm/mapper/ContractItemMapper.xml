@@ -10,7 +10,7 @@
         <result column="payMoney" property="payMoney"></result>
         <result column="scale" property="scale"></result>
         <result column="isPayment" property="isPayment"></result>
-        <!--关联合同-->
+        <!--关联合同 仅关联合同id-->
         <association property="contract" javaType="cn.nine.crm.domain.Contract">
             <id column="co_id" property="id"/>
         </association>
@@ -19,9 +19,9 @@
     <!--查询所有数据-->
     <select id="findAll" resultMap="baseMap">
         select
-        ci.id,
+        ci.id as ci_id,
 
-        co.id,
+        co.id as co_id,
 
         ci.payTime,
         ci.payMoney,
@@ -29,7 +29,7 @@
         ci.isPayment
 
         from contractitem ci
-        JOIN contract co ON  co.contract_id = ci.id
+        JOIN contract co ON  co.id = ci.contract_id
 
     </select>
 
@@ -48,11 +48,11 @@
 
     </select>
     <!--分页查询-->
-    <select id="selectForList" resultMap="baseMap">
+    <select id="selectForPage" resultMap="baseMap">
         select
-        ci.id,
+        ci.id as ci_id,
 
-        co.id,
+        co.id as co_id,
 
         ci.payTime,
         ci.payMoney,
@@ -60,7 +60,7 @@
         ci.isPayment
 
         from contractitem ci
-        JOIN contract co ON  co.contract_id = ci.id
+        JOIN contract co ON  ci.contract_id = co.id
         <include refid="baseWhere"/>
         LIMIT #{start} , #{pageSize}
     </select>
