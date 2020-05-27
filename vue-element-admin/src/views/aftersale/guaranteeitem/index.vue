@@ -1,12 +1,13 @@
 <template>
   <div style="height: calc(100vh - 84px);">
-    <el-card class="box-card" style="height: 100%">
-      <div slot="header" class="clearfix">
-        <span>保修单明细</span>
-      </div>
+    <Card class="box-card" tyle="height: 100%">
+      <p slot="title">
+        <Icon type="ios-list-box-outline" size="20" />
+        {{ title }}
+      </p>
 
       <!-- 顶部工具条【查询，新增，批量删除】 -->
-      <el-row>
+      <row>
         <el-col :span="3">
           <el-button
             type="primary"
@@ -50,20 +51,40 @@
             </el-form-item>
           </el-form>
         </el-col>
-      </el-row>
+      </row>
 
-      <!-- 数据 v-loading="loading" -->
-      <el-table v-loading="loading" border :data="tableData" style="width: 100%" max-height="690" @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="60" align="center" />
-        <el-table-column type="index" label="序号" width="80" align="center" />
-        <el-table-column prop="guaranteeSn" label="保修单号" width="200" align="center" />
-        <el-table-column prop="inputDate" label="保修日期" width="250" align="center" />
-        <el-table-column prop="details" label="保修内容" align="center" />
-        <el-table-column prop="status" label="保修状态" width="100" align="center" />
+      <!-- 表中数据 -->
+      <Table :columns="columns" :data="tableData" border>
+        <!-- 保修单号 -->
+        <template slot="guaranteeSn" slot-scope="{ row, index }">
+          <span>{{ row.guaranteeSn }}</span>
+        </template>
 
-        <el-table-column fixed="right" label="操作" width="150" align="center">
-          <template slot-scope="scope">
-            <el-button type="primary" size="small" @click="handleShowEditDialog(scope.row)">编辑</el-button>
+        <!-- 时间 -->
+        <template slot="inputDate" slot-scope="{ row, index }">
+          <DatePicker v-if="editIndex === index"v-model="editInputDate" type="datetime" style="width: 200px" />
+          <span v-else>{{ row.inputDate }}</span>
+        </template>
+
+        <!-- 内容 -->
+        <template slot="details" slot-scope="{ row, index }">
+          <Input v-if="editIndex === index" v-model="editDetails" type="text" />
+          <span v-else>{{ row.details }}</span>
+        </template>
+
+        <!-- 状态【需要格式化】 -->
+        <template slot="status" slot-scope="{ row, index }">
+          <Input v-if="editIndex === index" v-model="editStatus" type="text" />
+          <span v-else>{{ row.status }}</span>
+        </template>
+
+        <template slot="action" slot-scope="{ row, index }">
+          <div v-if="editIndex === index">
+            <Button @click="editIndex = -1">取消</Button>
+            <Button type="success" @click="handleSave(index)">保存</Button>
+          </div>
+          <div v-else>
+            <Button type="primary" @click="handleEdit(row, index)">编辑</Button>
             <el-popconfirm
               confirm-button-text="确认"
               cancel-button-text="取消"
@@ -73,64 +94,111 @@
               transition
               placement="top"
               @onConfirm="handleRemove(scope.row)"
-            >
-              <el-button slot="reference" type="danger" size="small">删除</el-button>
+            ><el-button slot="reference" type="danger" size="small">删除</el-button>
             </el-popconfirm>
-          </template>
-        </el-table-column>
-      </el-table>
+          </div>
+        </template>
+      </Table>
 
       <!-- 分页条 -->
-      <el-pagination
+      <Page
         style="float: right;margin: 20px;overflow: hidden"
         background
+        layout="total, sizes, prev, pager, next, jumper"
         :current-page="page"
         :page-sizes="[5,10, 20]"
         :page-size="pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
         :total="total"
+        show-total
+        show-elevator
+        show-sizer
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       />
 
       <!--  新增、编辑-->
-      <el-dialog title="信息管理" :visible.sync="dialogFormVisible" :close-on-click-modal="false" width="35%">
-        <el-form ref="addForm" :model="addForm" label-width="50px" :rules="rules">
-          <el-form-item v-show="false" prop="id">
-            <el-input v-model="addForm.id" />
-          </el-form-item>
-          <el-form-item label="单号" prop="sn">
-            <el-input v-model="addForm.sn" autocomplete="off" />
-          </el-form-item>
-          <el-form-item label="日期" prop="date">
-            <el-input v-model="addForm.date" autocomplete="off" />
-          </el-form-item>
-          <el-form-item label="内容" prop="details">
-            <el-input v-model="addForm.details" autocomplete="off" />
-          </el-form-item>
-          <el-form-item label="状态" prop="status">
-            <el-input v-model="addForm.status" autocomplete="off" />
-          </el-form-item>
+      <dialog title="信息管理" :visible.sync="dialogFormVisible" :close-on-click-modal="false" width="35%">
+        <form ref="addForm" :model="addForm" label-width="50px" :rules="rules">
+          <form-item v-show="false" prop="id">
+            <input v-model="addForm.id">
+          </form-item>
+          <form-item label="单号" prop="sn">
+            <el-input v-model="addForm.guaranteeSn" autocomplete="off" />
+          </form-item>
+          <form-item label="内容" prop="details">
+            <input v-model="addForm.details" autocomplete="off">
+          </form-item>
+          <form-item label="状态" prop="status">
+            <input v-model="addForm.status" autocomplete="off">
+          </form-item>
           <el-form-item>
             <el-button type="primary" @click="submitForm('addForm')">确认提交</el-button>
             <el-button @click="resetForm('addForm')">重置</el-button>
           </el-form-item>
-        </el-form>
-
-      </el-dialog>
-    </el-card>
+        </form>
+      </dialog>
+    </Card>
   </div>
 </template>
 <script>
 export default {
   data() {
     return {
+      columns: [
+        {
+          type: 'selection',
+          width: 80,
+          align: 'center'
+        },
+        {
+          title: '序号',
+          type: 'index',
+          width: 80,
+          align: 'center'
+        },
+        {
+          title: '保修单号',
+          slot: 'guaranteeSn',
+          width: 200,
+          align: 'center'
+        },
+        {
+          title: '保修日期',
+          slot: 'inputDate',
+          width: 250,
+          align: 'center'
+        },
+        {
+          title: '保修内容',
+          slot: 'details',
+          align: 'center'
+        },
+        {
+          title: '保修状态',
+          slot: 'status',
+          width: 150,
+          align: 'center'
+        },
+        {
+          title: '操作',
+          slot: 'action',
+          width: 200,
+          align: 'center'
+        }
+      ],
+      title: '保修单明细',
       page: 1, // 第几页
       pageSize: 5, // 每页条数
       total: 0,
       tableData: [],
       loading: false,
       row: [],
+
+      editGuaranteeSn: '',
+      editInputDate: '',
+      editDetails: '',
+      editStatus: '',
+      editIndex: -1,
 
       // 搜索框
       searchForm: {
@@ -158,6 +226,14 @@ export default {
     this.loadListData()
   },
   methods: {
+
+    handleEdit(row, index) {
+      this.editInputDate = row.inputDate
+      this.editDetails = row.details
+      this.editStatus = row.status
+      this.editIndex = index
+    },
+
     // 显示添加弹窗
     handleShowAddDialog() {
       this.dialogFormVisible = true
@@ -165,6 +241,7 @@ export default {
         this.$refs['addForm'].resetFields()/* 清空*/
       })
     },
+
     // 编辑显示弹窗
     handleShowEditDialog(row) {
       // 数据回显
@@ -202,6 +279,7 @@ export default {
         }
       })
     },
+
     resetForm(formName) { /* 重置*/
       this.$nextTick(() => {
         var refs = this.$refs

@@ -52,12 +52,12 @@
 
       <!-- 数据 -->
       <el-table v-loading="loading" border :data="tableData" style="width: 100%" max-height="690" @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="100" align="center" />
+        <el-table-column type="selection" width="80" align="center" />
         <el-table-column type="index" label="序号" width="80" align="center" />
         <el-table-column prop="sn" label="保修单号" width="200" align="center" />
         <el-table-column prop="contract.signTime" label="保修开始日期" align="center" />
         <el-table-column prop="endDate" label="保修截止日期" align="center" />
-        <el-table-column prop="contract." label="所属合同单号" align="center" />
+        <el-table-column prop="contract.sn" label="所属合同单号" align="center" />
         <el-table-column prop="contract.customer.name" label="所属客户" align="center" />
         <el-table-column prop="contract.tenant.companyName" label="所属租户" align="center" />
 
@@ -65,7 +65,6 @@
           <template slot-scope="scope">
             <!-- 查看明细 -->
             <el-button type="primary" size="small" @click="handleShowEditDialog(scope.row)">编辑</el-button>
-
             <el-popconfirm
               confirm-button-text="确认"
               cancel-button-text="取消"
@@ -75,8 +74,7 @@
               transition
               placement="top"
               @onConfirm="handleRemove(scope.row)"
-            >
-              <el-button slot="reference" type="danger" size="small">删除</el-button>
+            ><el-button slot="reference" type="danger" size="small">删除</el-button>
             </el-popconfirm>
           </template>
         </el-table-column>
