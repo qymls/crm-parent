@@ -4,24 +4,28 @@
 <mapper namespace="cn.nine.crm.mapper.RoleMapper">
 
     <resultMap id="result" type="cn.nine.crm.domain.Role">
-        <result property="id"/>
-        <result property="name"/>
-        <result property="sn"/>
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="sn" column="sn"/>
         <collection property="permissionList"
                     ofType="cn.nine.crm.domain.Permission"
                     column="id"
-                    select=""/>
+                    select="cn.nine.crm.mapper.PermissionMapper.roleFindPermission"/>
 
     </resultMap>
-    <select id="findAll" resultType="cn.nine.crm.domain.Role">
+    <select id="findAll" resultMap="result">
         select
-        id, name, sn
+        id,
+        name,
+        sn
         from role
     </select>
 
-    <select id="selectForPage" parameterType="cn.nine.crm.query.RoleQuery" resultType="cn.nine.crm.domain.Role">
+    <select id="selectForPage" parameterType="cn.nine.crm.query.RoleQuery" resultMap="result">
         select
-        id, name, sn
+        id,
+        name,
+        sn
         from role
         <include refid="base_where"/>
         limit #{start},#{pageSize}
@@ -44,7 +48,7 @@
         </where>
     </sql>
 
-    <select id="findOne" parameterType="long" resultType="cn.nine.crm.domain.Role">
+    <select id="findOne" parameterType="long" resultMap="result">
         select
        id, name, sn
         from role  where id = #{id}
@@ -77,6 +81,17 @@
             #{id}
         </foreach>
     </delete>
+
+    <!--role保存权限-->
+    <insert id="savePermissions" parameterType="long">
+     insert into role_permission(role_id, permission_id) values (#{role_id},#{permission_id})
+    </insert>
+
+    <!--删除权限根据roleid-->
+    <delete id="deletePermissionsByRoleId">
+        delete from role_permission where role_id = #{role_id}
+    </delete>
+
 
 
 </mapper>

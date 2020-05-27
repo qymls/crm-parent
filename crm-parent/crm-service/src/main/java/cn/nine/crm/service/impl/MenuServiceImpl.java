@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -138,6 +140,30 @@ public class MenuServiceImpl extends BaseServiceImpl<Menu, Long, MenuQuery> impl
     }
 
     @Override
+    public List<Long> findAllParent(Long id) {
+        List<Long> menuListParent = new ArrayList<>();
+        Menu updateMenu = menuMapper.findOne(id);/*修改的菜单*/
+        getPartntReturnMenu(updateMenu, menuListParent);
+        Collections.reverse(menuListParent);/*翻转元素，让第一级菜单在第一个位置*/
+        return menuListParent;
+    }
+
+    /**
+     * 递归查找所有的父菜单,装到list中
+     *
+     * @param list
+     */
+    public void getPartntReturnMenu(Menu updateMenu, List<Long> list) {
+        Menu parent = updateMenu.getParent();
+        if (parent != null) {
+            list.add(parent.getId());
+            getPartntReturnMenu(parent, list);
+        }
+
+    }
+
+
+    @Override
     public Menu findByName(String name) {
         List<Menu> menuList = menuMapper.findByName(name);
         if (menuList.size() > 0) {
@@ -215,12 +241,26 @@ public class MenuServiceImpl extends BaseServiceImpl<Menu, Long, MenuQuery> impl
     public void getPermissionnMenushow(Menu menuByEmployeeId, List<Menu> firstMenuList) {
         Menu parent = menuByEmployeeId.getParent();
         if (parent != null) {
-            if (!parent.getChildren().contains(menuByEmployeeId)) {
+            if (parent.getChildren().contains(menuByEmployeeId)) {
+                Menu menu = parent.getChildren().get(parent.getChildren().indexOf(menuByEmployeeId));
+                for (Menu child : menuByEmployeeId.getChildren()) {
+                    if (!menu.getChildren().contains(child)){
+                        menu.getChildren().add(child);
+                    }
+                }
+            }else {
                 parent.getChildren().add(menuByEmployeeId);
             }
             getPermissionnMenushow(parent, firstMenuList);/*递归了*/
         } else {
-            if (!firstMenuList.contains(menuByEmployeeId)) {/*这里解决两个子菜单拥有用一个父菜单的情况*/
+            if (firstMenuList.contains(menuByEmployeeId)) {/*这里解决两个子菜单拥有用一个父菜单的情况*/
+                Menu menu = firstMenuList.get(firstMenuList.indexOf(menuByEmployeeId));
+                for (Menu child : menuByEmployeeId.getChildren()) {
+                    if (!menu.getChildren().contains(child)){
+                        menu.getChildren().add(child);
+                    }
+                }
+            }else {
                 firstMenuList.add(menuByEmployeeId);/*一直递归到没有父菜单为止*/
             }
         }

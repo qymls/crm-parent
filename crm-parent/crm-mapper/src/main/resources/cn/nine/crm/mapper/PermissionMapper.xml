@@ -86,13 +86,31 @@
         </foreach>
     </delete>
     <!--其他类扩展方法-->
-
-    <select id="findPermissionsByMenu" resultType="cn.nine.crm.domain.Permission">
-        select distinct p.sn from Employee e  join e.roleList r join r.permissionList p where e.id=#{id}
+    <!--多对多查询，参数是roleid-->
+    <select id="roleFindPermission" parameterType="long" resultMap="result">
+        select
+             id, name, url, descs, sn, menu_id
+        from
+            role_permission rp left join permission tp on rp.permission_id = tp.id
+        where rp.role_id = #{id}
     </select>
 
-    <select id="findPermissionsByID" resultType="long">
-        select p from Permission p where p.menu.id =#{id}
+    <select id="findPermissionsByMenu" resultMap="result">
+            select p.* from Permission p where p.menu_id =#{id}
+
     </select>
+
+    <select id="findPermissionsByID" parameterType="long" resultType="string">
+       SELECT DISTINCT p.sn FROM Employee e  JOIN employee_role er ON er.employee_id = e.id
+       JOIN role r ON er.role_id = r.id JOIN role_permission rp ON rp.role_id=r.id
+       JOIN permission p ON rp.permission_id = p.id WHERE e.id = #{id}
+    </select>
+
+    <select id="findAllPermission" resultType="cn.nine.crm.domain.Permission">
+        select
+        <include refid="base_cloumn"/>
+        from permission
+    </select>
+
 
 </mapper>

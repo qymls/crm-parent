@@ -237,13 +237,11 @@
         }
       }
     },
-    mounted(){
+    created() {
       this.$Notice.config({/*统一配置右侧弹出的位置，延迟关闭时间*/
         top: 100,
         duration: 3
       })
-    },
-    created() {
       var Data = [];
       var $page = this;
       $.ajax({
@@ -403,12 +401,20 @@
                   desc: result.msg,
                 });
               } else {
-                $page.$Notice.success({
-                  title: '通知提醒',
-                  desc: "删除成功",
-                });
-                const index = parent.children.indexOf(data);
-                parent.children.splice(index, 1);
+                if (result.success){
+                  $page.$Notice.success({
+                    title: '通知提醒',
+                    desc: "删除成功",
+                  });
+                  const index = parent.children.indexOf(data);
+                  parent.children.splice(index, 1);
+                }else {
+                  $page.$Notice.error({
+                    title: '通知提醒',
+                    desc: "删除失败"+result.message,
+                  });
+                }
+
               }
             }
           });

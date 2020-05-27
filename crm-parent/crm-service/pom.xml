@@ -15,11 +15,11 @@
     <dependencies>
         <dependency>
             <groupId>cn.nine.crm</groupId>
-            <artifactId>crm-mapper</artifactId>
+            <artifactId>crm-common</artifactId>
         </dependency>
         <dependency>
             <groupId>cn.nine.crm</groupId>
-            <artifactId>crm-common</artifactId>
+            <artifactId>crm-shiro</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

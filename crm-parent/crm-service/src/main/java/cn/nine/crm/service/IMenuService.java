@@ -15,6 +15,8 @@ public interface IMenuService extends IBaseService<Menu,Long,MenuQuery>{
 
     List<String> findAllParent(Menu menu);
 
+    List<Long> findAllParent(Long id);
+
     Menu findByName(String name);
 
     List<Menu> findMenuByEmployeeId(Long id);

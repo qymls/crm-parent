@@ -5,6 +5,7 @@ import cn.nine.crm.domain.Permission;
 import cn.nine.crm.query.PermissionQuery;
 import cn.nine.crm.service.IMenuService;
 import cn.nine.crm.service.IPermissionService;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,5 +40,25 @@ public class PermissionController extends BaseController<Permission,Long, Permis
     @ResponseBody
     public List<Menu> findMenuItem() {
         return menuService.findMenuItem();
+    }
+
+    /**
+     * 查询所有菜单
+     * @return
+     */
+    @RequestMapping("/findAllMenuItem")
+    @ResponseBody
+    public List<Menu> findAllMenuItem() {
+        return menuService.findAll();
+    }
+
+    /**
+     * 查询所有父菜单
+     * @return
+     */
+    @RequestMapping("/getAllMenuParent")
+    @ResponseBody
+    public List<Long> getAllMenuParent(Long id) {
+        return menuService.findAllParent(id);
     }
 }
