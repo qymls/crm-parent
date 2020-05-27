@@ -11,7 +11,7 @@ import java.util.Date;
  * 租户公司的客户交了订金后，需要签订定金订单
  */
 @Data
-public class Order extends BaseDomain {
+public class Orders extends BaseDomain {
 
     //订单编号 自动生成
     private String sn;
