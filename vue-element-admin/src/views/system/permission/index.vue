@@ -74,11 +74,8 @@
             <Form-Item label="descs" prop="descs">
               <i-Input v-model="formValidate.descs" placeholder="请输入相关值"></i-Input>
             </Form-Item>
-            <Form-Item label="menuId" prop="menuId">
-              <i-Select v-model="formValidate.menuId">
-                <i-Option :key="item.id" v-for="item in menuItem"  :value="item.id">{{item.name}}
-                </i-Option>
-              </i-Select>
+            <Form-Item label="menuId">
+              <Cascader filterable :data="menuItem" v-model="menuValue"></Cascader>
             </Form-Item>
             <Form-Item>
               <i-Button type="primary" @click="handleSubmitUpdate('formValidate')">确认</i-Button>
@@ -160,16 +157,15 @@
         total: 0,
         page: 1,/*当前页默认为1*/
         pageSize: 5,/* 默认5条*/
-        menuItem: []/*查询所有最后一级菜单*/
+        menuItem: [],/*查询所有最后一级菜单*/
+        menuValue:[]
       }
     },
-    mounted(){
+    created() {
       this.$Notice.config({/*统一配置右侧弹出的位置，延迟关闭时间*/
         top: 100,
         duration: 3
       })
-    },
-    created() {
       this.getFirstMenuData(this.page, this.pageSize);
     },
     methods: {
@@ -178,13 +174,24 @@
         $.ajax({
           type: "POST",
           contentType: "application/x-www-form-urlencoded",
-          url: "/permission/findMenuItem",
+          url: "/permission/findAllMenuItem",
           dataType: 'json',
           async: false,/*取消异步加载*/
           success: function (result) {
+            $page.formatallmenudata(result);
             $page.menuItem = result;
           }
         });
+      },
+      formatallmenudata(data){
+        for (let i = 0; i < data.length; i++) {
+          if (data[i].children && data[i].children.length > 0) {
+            data[i] = $.extend({},data[i],{label:data[i].name,value:data[i].id.toString()});
+            this.formatallmenudata(data[i].children);
+          } else {
+            data[i] = $.extend({},data[i],{label:data[i].name,value:data[i].id.toString()});
+          }
+        }
       },
       getMenuName(row) {//格式化菜单
         if (row.menu) {
@@ -198,12 +205,36 @@
       },
       updateModelShow(data) {
         this.$refs['formValidate'].resetFields();/*清除model的表单数据,打开model就清空*/
+        this.menuValue = [];
         this.findMenuItem();/*所有最后一级菜单*/
         this.updateModel = true;
         this.formValidate = data;
         if (data.menu) {/*如果有菜单，就回显*/
-          this.formValidate.menuId = data.menu.id
+          //this.formValidate.menuId = data.menu.id
+          var parentValueList = this.getAllMenuParent(data.menu.id);
+          parentValueList.push(data.menu.id.toString())
+          this.$nextTick(() => {/*必须放在这个里面，不然值不会刷新的*/
+            this.menuValue = parentValueList;
+          })
+
         }
+      },
+      getAllMenuParent(id){/*获取该菜单的所有父菜单*/
+        var parentValueList = [];
+        $.ajax({
+          type: "POST",
+          contentType: "application/x-www-form-urlencoded",
+          url: "/permission/getAllMenuParent",
+          data:{id:id},
+          dataType: 'json',
+          async: false,/*取消异步加载*/
+          success: function (result) {
+            for (let i = 0; i < result.length; i++) {
+              parentValueList.push(result[i].toString())
+            }
+          }
+        });
+        return parentValueList;
       },
       handleSubmitUpdate: function (name) {//提交方法
         var refs = this.$refs;
@@ -213,9 +244,8 @@
             var messagePage = this.$Message;
             var param = $.extend({}, this.formValidate)/*复制一份，因为要删除*/
             delete param["menu"]
-            if (param.menuId) {
-              //param['menu.id'] = param.menuId;
-              param["menu"] = {id:param.menuId}
+            if (this.menuValue.length >0) {
+              param["menu"] = {id:this.menuValue[this.menuValue.length-1]}
             }
             delete param["menuId"]
             var url;
@@ -251,6 +281,7 @@
       },
 
       handleReset: function (name) {//重置方法
+        this.menuValue = [];
         var ref = this.$refs;
         ref[name].resetFields();
       },
@@ -300,6 +331,7 @@
 
       newAdd: function () {
         this.$refs['formValidate'].resetFields();/*清除model的表单数据,打开model就清空*/
+        this.menuValue = [];
         this.findMenuItem();/*所有最后一级菜单*/
         this.updateModel = true;
       },

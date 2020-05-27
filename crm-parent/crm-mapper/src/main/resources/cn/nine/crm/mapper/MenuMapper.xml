@@ -69,7 +69,7 @@
 
     <select id="findOne" parameterType="long" resultMap="result">
         select
-       *
+        <include refid="base_cloumn"/>
         from menu  where id = #{id}
     </select>
 
@@ -118,9 +118,11 @@
 
     </select>
 
-    <!--通过角色id查找权限菜单-->
-    <select id="findAllRolePermissionMenuByRoleId" resultType="cn.nine.crm.domain.Menu">
 
+    <!--通过角色id查找权限菜单-->
+    <select id="findAllRolePermissionMenuByRoleId" parameterType="long" resultMap="result">
+       SELECT  DISTINCT m.*  FROM role_permission rp  JOIN permission p ON rp.permission_id = p.id
+       JOIN menu m ON p.menu_id = m.id WHERE rp.role_id = #{id} order by m.rank
     </select>
 
 

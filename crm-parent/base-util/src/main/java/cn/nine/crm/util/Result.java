@@ -6,6 +6,8 @@ import lombok.Data;
 public class Result {
     private Boolean success = true;
 
+    private Long code;
+
     private String message = "操作成功";
     /*返回的数据*/
     private Object data;
@@ -22,6 +24,19 @@ public class Result {
     public static Result ok(Object data) {
         Result result = Result.ok();
         result.setData(data);
+        return result;
+    }
+
+    public static Result ok(Object data,Long code) {
+        Result result = Result.ok();
+        result.setData(data);
+        result.setCode(code);
+        return result;
+    }
+
+    public static Result singcode(Long code) {
+        Result result = Result.ok();
+        result.setCode(code);
         return result;
     }
 

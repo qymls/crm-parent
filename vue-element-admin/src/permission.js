@@ -34,13 +34,15 @@ router.beforeEach(async(to, from, next) => {
         try {
           // get user info
           const  logininfo = await store.dispatch('user/getInfo')/*获取登录人的信息*/
-          filterAsyncRouter(logininfo.menus)
-          for (let i = 0; i <logininfo.menus.length; i++) {/*侧边栏显示菜单*/
-            router.options.routes.push(logininfo.menus[i])
-          }
+          if(logininfo.menus.length>0){
+            filterAsyncRouter(logininfo.menus)
+            for (let i = 0; i <logininfo.menus.length; i++) {/*侧边栏显示菜单*/
+              router.options.routes.push(logininfo.menus[i])
+            }
 
-         router.addRoutes(logininfo.menus)
-         global.antRouter = logininfo.menus // 3.将路由数据传递给全局变量，做侧边栏菜单渲染工作
+            router.addRoutes(logininfo.menus)
+            global.antRouter = logininfo.menus // 3.将路由数据传递给全局变量，做侧边栏菜单渲染工作
+          }
           next({ ...to, replace: true })
         } catch (error) {
           // remove token and go to login page to re-login

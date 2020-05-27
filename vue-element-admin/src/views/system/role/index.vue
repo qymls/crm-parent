@@ -67,8 +67,7 @@
       <i-col span="21">
         <i-Form ref="formInline" :model="formInline" inline style="margin-left: 20px;" @submit.native.prevent>
           <Form-Item prop="name">
-            <i-Input type="text" v-model="formInline.name" placeholder="请输入查找的名称" @on-enter="click_enter">
-              <Icon type="ios-menu" slot="prepend"></Icon>
+            <i-Input type="text" v-model="formInline.name" clearable style="cursor: pointer" placeholder="请输入查找的名称" @on-enter="click_enter">
             </i-Input>
           </Form-Item>
 
@@ -116,7 +115,7 @@
         </div>
         <i-Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80" inline>
           <Form-Item prop="id" v-show=false>
-            <input type="text" v-model="formValidate.id"/>
+            <Input type="text" v-model="formValidate.id"/>
           </Form-Item>
           <Form-Item label="名称" prop="name">
             <i-Input v-model="formValidate.name" placeholder="请输入相关值"></i-Input>
@@ -124,6 +123,11 @@
           <Form-Item label="编码" prop="sn">
             <i-Input v-model="formValidate.sn" placeholder="请输入相关值"></i-Input>
           </Form-Item>
+          <div style="margin-left: 80px;margin-left: 30px;margin-bottom: 20px;">
+          <Input type="text" v-model="permissionSearchName" clearable style="cursor: pointer;width: 235px;" placeholder="请输入查找的权限名称"
+                 @on-enter="search_permission" />
+            <i-Button type="info" style="margin-left: 37px;" icon="ios-search" @click="handleSubmitPermission">查找</i-Button>
+          </div>
           <Row>
             <i-col span="12">
               <div>
@@ -325,13 +329,24 @@
         temp: [],/*临时数组*/
         tempindex: '',/*临时index用于记录当前点击的第几行*/
         roleid: '',
+        permissionSearchName:''/*用于搜索权限*/
 
       }
     },
     created() {
+      this.$Notice.config({/*统一配置右侧弹出的位置，延迟关闭时间*/
+        top: 100,
+        duration: 3
+      })
       this.getFirstMenuData(this.page, this.pageSize);
     },
     methods: {
+      handleSubmitPermission(){
+        this.search_permission();
+      },
+      search_permission(){
+        this.getAllPermission(this.roleSettingPage,this.roleSettingPageSize)
+      },
       getPermissionName(row) {/*基础列表回显权限*/
         var roleMsg = '';
         if (row.permissionList.length > 0) {
@@ -417,13 +432,14 @@
         this.TragetData.splice(index, 1);
         this.getAllPermission(this.roleSettingPage, this.roleSettingPageSize);/*再次查询，同步权限勾选框*/
       },
-      getAllPermission(roleSettingPage, roleSettingPageSize) {/*获取所有权限*/
+      getAllPermission(roleSettingPage, roleSettingPageSize,) {/*获取所有权限*/
         var $page = this;
         $.ajax({
           type: "POST",
           contentType: "application/x-www-form-urlencoded",
           url: "/role/permission/findPageByQuery",
           data: {
+            "keyword":this.permissionSearchName,
             "currentPage": roleSettingPage,
             "pageSize": roleSettingPageSize
           },
@@ -431,15 +447,19 @@
           async: false,/*取消异步加载*/
           traditional: true,//防止深度序列化
           success: function (result) {
-            var dataSource = [];
-            for (let i = 0; i < result.list.length; i++) {
-              result.list[i]._checked = false;
-              dataSource.push(result.list[i])
-            }
-            $page.sourceData = dataSource;
-            $page.roleSettingTotal = result.totalRows;
-            $page.roleSettingPage = result.currentPage/*处理一个小bug*/
-            $page.checkBooks();/*勾选上有权限的列表*/
+            if (result.list && result.list.length>0 ){
+              var dataSource = [];
+              for (let i = 0; i < result.list.length; i++) {
+                result.list[i]._checked = false;
+                dataSource.push(result.list[i])
+              }
+              $page.sourceData = dataSource;
+              $page.roleSettingTotal = result.totalRows;
+              $page.roleSettingPage = result.currentPage/*处理一个小bug*/
+              $page.checkBooks();/*勾选上有权限的列表*/
+            }else {/*这里需要特使出来pagelist全部为空*/
+              $page.sourceData = []/*清空*/
+              }
           }
         });
       },
@@ -459,6 +479,7 @@
       },
       updateModelShow(data, index) {
         this.$refs['formValidate'].resetFields();/*清除model的表单数据,打开model就清空*/
+        this.permissionSearchName = ""
         this.TragetData = [];/*清空目标权限*/
         this.updateModel = true;
         this.formValidate = data;
@@ -479,17 +500,20 @@
             var messagePage = this.$Message;
             var param = $.extend({}, this.formValidate)/*复制一份，应为要删除*/
             var url;
+            delete param["permissionList"];
+            var tempDate = []
             for (let i = 0; i < this.TragetData.length; i++) {
-              param["permissionList[" + i + "].id"] = this.TragetData[i].id
+              var permission = {id:this.TragetData[i].id}
+              tempDate.push(permission)
             }
+            param["permissionList"] = tempDate;
             if (this.formValidate.id) {/*修改*/
               url = "/role/update"
-              param.action = "update"/*传递这个参数是配合 @ModelAttribute注解使用的，只用于修改*/
+              param["action"] = 'update';
             } else {/*添加*/
-              var url = "/role/save";
-              param.action = "save";
+              url = "/role/save";
+              param["action"] = 'save';
             }
-            delete param["permissionList"]
             $.ajax({
               type: "POST",
               contentType: "application/json",
@@ -502,15 +526,19 @@
                 if (result.msg) {/*操作失败，无权限*/
                   messagePage.error(result.msg);
                 } else {
-                  $page.updateModel = false;
-                  $page.$Message.success("操作数据成功");
-                  $page.getFirstMenuData($page.page, $page.pageSize);/*修改完成后,刷新数据*/
-                  $page.$refs.selection.selectAll(false);/*全部设置成未选中的状态*/
-                  if (param.action == 'update') {
-                    $page.RoleData[$page.tempindex] = $.extend({}, $page.RoleData[$page.tempindex], {_expanded: true})
-                  } else {/*保存就展开最后一个即可*/
-                    //$page.RoleData[$page.RoleData.length-1] = $.extend({}, $page.RoleData[$page.RoleData.length-1], {_expanded: true})
-                    console.log("新增数据不展开")
+                  if (result.success){
+                    $page.updateModel = false;
+                    $page.$Message.success("操作数据成功");
+                    $page.getFirstMenuData($page.page, $page.pageSize);/*修改完成后,刷新数据*/
+                    $page.$refs.selection.selectAll(false);/*全部设置成未选中的状态*/
+                    if (param.action == 'update') {
+                      $page.RoleData[$page.tempindex] = $.extend({}, $page.RoleData[$page.tempindex], {_expanded: true})
+                    } else {/*保存就展开最后一个即可*/
+                      //$page.RoleData[$page.RoleData.length-1] = $.extend({}, $page.RoleData[$page.RoleData.length-1], {_expanded: true})
+                      console.log("新增数据不展开")
+                    }
+                  }else{
+                    $page.$Message.error("操作数据失败"+result.message);
                   }
 
                 }
@@ -526,6 +554,7 @@
         this.$refs['formValidate'].resetFields();
         this.$refs.selection.selectAll(false);/*全部设置成未选中的状态*/
         this.TragetData = [];/*清空目标权限*/
+        this.permissionSearchName = ""
       },
 
       handleSubmit() {
@@ -573,6 +602,7 @@
       newAdd: function () {
         this.$refs['formValidate'].resetFields();/*清除model的表单数据,打开model就清空*/
         this.TragetData = [];/*清空目标权限*/
+        this.permissionSearchName = ""
         this.updateModel = true;
         this.roleSettingPage = 1;/*默认的第一页*/
         this.getAllPermission(this.roleSettingPage, this.roleSettingPageSize);/*查询所有权限*/
@@ -589,9 +619,9 @@
         var notice = this.$Notice;
         $.ajax({
           type: "POST",
-          contentType: "application/x-www-form-urlencoded",
-          url: "/role/delete",
-          data: {"ids": this.rows.toString()},
+          contentType: "application/json",
+          url: "/role/batchDelete",
+          data: JSON.stringify({"ids": this.rows}),
           dataType: 'json',
           traditional: true,//防止深度序列化
           async: false,/*取消异步加载*/
@@ -602,12 +632,19 @@
                 desc: result.msg,
               });
             } else {
-              notice.success({
-                title: '通知提醒',
-                desc: "删除成功",
-              });
-              $page.getFirstMenuData($page.page, $page.pageSize);/*修改完成后,刷新数据*/
-              $page.rows = [];
+              if (result.success){
+                notice.success({
+                  title: '通知提醒',
+                  desc: "删除成功",
+                });
+                $page.getFirstMenuData($page.page, $page.pageSize);/*修改完成后,刷新数据*/
+                $page.rows = [];
+              }else {
+                notice.error({
+                  title: '通知提醒',
+                  desc: "删除失败,"+result.message,
+                });
+              }
             }
           }
         });

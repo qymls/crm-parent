@@ -84,5 +84,9 @@
         LIMIT #{start} , #{pageSize}
     </select>
 
+    <select id="findByUsername" resultType="cn.nine.crm.domain.Employee">
+        select * from employee where username = #{username}
+    </select>
+
     <!--分页查询-->
 </mapper>

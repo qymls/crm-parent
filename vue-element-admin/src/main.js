@@ -21,18 +21,34 @@ import './utils/error-log' // error log
 import * as filters from './filters' // global filters
 import $ from 'jquery'
 Vue.prototype.$ = $/* 添加原型*/
+Vue.prototype.ajax = $.ajax/* 添加原型*/
+
+/*Vue.ajax.interceptors.push(function(request, next) {
+// modify headers
+  request.headers.set('Accept', 'application/json');
+  request.headers.set('Authorization', 'Bearer '+ JSON.parse(localStorage.getItem('token')));
+// continue to next interceptor
+  next();
+});*/
+
 import axios from 'axios'/* 引入axios*/
 // axios.defaults.baseURL = 'http://localhost:8080/SSM/'
 // 把axios赋值给vue里面的$http这个变量
 Vue.prototype.$http = axios
-/**
- * If you don't want to use mock-server
- * you want to use MockJs for mock api
- * you can execute: mockXHR()
- *
- * Currently MockJs will be used in the production environment,
- * please remove it before going online ! ! !
- */
+
+//拦截器
+/*axios.interceptors.request.use(config => {
+  if (sessionStorage.getItem('sessionId')) {
+    // 让每个请求携带token--['X-Token']为自定义key 请根据实际情况自行修改
+    config.headers['X-Token'] = sessionStorage.getItem('sessionId')
+  }
+  console.log('config',config)
+  return config
+}, error => {
+  // Do something with request error
+  Promise.reject(error)
+})*/
+
 /*
 if (process.env.NODE_ENV === 'production') {
   const { mockXHR } = require('../mock')

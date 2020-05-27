@@ -115,7 +115,7 @@
                   <Icon type="md-apps"></Icon>
                   <span>页面权限</span>
                 </Checkbox>
-                <Checkbox label="findAll" disabled>
+                <Checkbox label="selectForPage" disabled>
                   <Icon type="md-list"></Icon>
                   <span>列表权限</span>
                 </Checkbox>
@@ -131,13 +131,17 @@
                   <Icon type="ios-trash"></Icon>
                   <span>删除权限</span>
                 </Checkbox>
+                <Checkbox label="batchDelete" disabled>
+                  <Icon type="md-trash"></Icon>
+                  <span>批量删除</span>
+                </Checkbox>
               </template>
               <template v-else>
                 <Checkbox label="index">
                   <Icon type="md-apps"></Icon>
                   <span>页面权限</span>
                 </Checkbox>
-                <Checkbox label="findAll">
+                <Checkbox label="selectForPage">
                   <Icon type="md-list"></Icon>
                   <span>列表权限</span>
                 </Checkbox>
@@ -152,6 +156,10 @@
                 <Checkbox label="delete">
                   <Icon type="ios-trash"></Icon>
                   <span>删除权限</span>
+                </Checkbox>
+                <Checkbox label="batchDelete">
+                  <Icon type="md-trash"></Icon>
+                  <span>批量删除</span>
                 </Checkbox>
               </template>
             </Checkbox-Group>
@@ -403,7 +411,12 @@
         return permissionList
       },
       handleSubmitUpdate: function (name) {//提交方法
-        var param = $.extend({}, this.formValidate)/*复制一份，应为要删除*/
+        //var param = $.extend({}, this.formValidate)/*复制一份，应为要删除*/
+        var param = {};
+        var menu = $.extend({}, this.formValidate);
+        var permission = $.extend([], this.formValidate.permission);
+        param['menu'] = menu;
+        param['permission'] = permission
         this.$refs[name].validate((valid) => {
           if (valid) {
             var $page = this;
