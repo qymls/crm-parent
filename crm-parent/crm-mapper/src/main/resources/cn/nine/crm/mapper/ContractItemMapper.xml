@@ -13,6 +13,7 @@
         <!--关联合同 仅关联合同id-->
         <association property="contract" javaType="cn.nine.crm.domain.Contract">
             <id column="co_id" property="id"/>
+            <result column="sn" property="sn"></result>
         </association>
 
     </resultMap>
@@ -22,6 +23,7 @@
         ci.id as ci_id,
 
         co.id as co_id,
+        co.sn,
 
         ci.payTime,
         ci.payMoney,
@@ -47,12 +49,13 @@
         SELECT count(id) FROM contractitem
 
     </select>
-    <!--分页查询-->
+    <!--分页查询 <include refid="baseWhere"/> -->
     <select id="selectForPage" resultMap="baseMap">
         select
         ci.id as ci_id,
 
         co.id as co_id,
+        co.sn,
 
         ci.payTime,
         ci.payMoney,
@@ -61,7 +64,7 @@
 
         from contractitem ci
         JOIN contract co ON  ci.contract_id = co.id
-        <include refid="baseWhere"/>
+
         LIMIT #{start} , #{pageSize}
     </select>
     <!--添加-->
@@ -111,7 +114,7 @@
         DELETE FROM contractitem WHERE id = #{id}
     </delete>
     <!--批量删除-->
-    <delete id="batchDdelete">
+    <delete id="batchDelete">
         DELETE FROM contractitem WHERE id IN
         <foreach collection="list" item="id" open="(" close=")" separator=",">
             #{id}

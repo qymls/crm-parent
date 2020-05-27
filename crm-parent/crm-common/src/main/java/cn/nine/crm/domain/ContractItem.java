@@ -1,6 +1,8 @@
 package cn.nine.crm.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -35,7 +37,12 @@ public class ContractItem extends BaseDomain {
     private Integer isPayment;
     //合同金额是否结算完成
     private Integer pay;
-
-
-
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
+    public Date getPayTime() {
+        return payTime;
+    }
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    public void setPayTime(Date payTime) {
+        this.payTime = payTime;
+    }
 }

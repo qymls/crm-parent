@@ -14,7 +14,7 @@ public interface BaseMapper<T, ID extends Serializable, Q> {
 
     T findOne(ID id);
 
-    int save(T obj);
+    int save( T obj);
 
     int update(T obj);
 

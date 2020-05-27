@@ -1,7 +1,9 @@
 package cn.nine.crm.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -27,7 +29,20 @@ public class Orders extends BaseDomain {
     private String intro;
     //租户对象 显示租户的公司名称
     private Tenant tenant;
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
+    public Date getSignTime() {
+        return signTime;
+    }
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    public void setSignTime(Date signTime) {
+        this.signTime = signTime;
+    }
 
+    public String getSn() {
+        return sn;
+    }
 
-
+    public void setSn(String sn) {
+        this.sn = sn;
+    }
 }

@@ -32,4 +32,5 @@ public class Employee extends BaseDomain{
     private Long tenant;
 
     private Long type;
+
 }
