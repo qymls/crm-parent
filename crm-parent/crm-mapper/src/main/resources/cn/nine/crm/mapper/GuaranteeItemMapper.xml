@@ -7,55 +7,68 @@
     <sql id="base_where">
         <where>
             <if test="keyword != null">
-                and name like CONCAT("%",#{keyword},"%")
+                and guarantee_sn like CONCAT("%",#{keyword},"%")
             </if>
         </where>
     </sql>
+    <!-- 抽取字段 -->
+    <sql id="base_cloumn">
+        id,input_date,guarantee_sn,details,status
+    </sql>
+
+    <!-- 关联查询 -->
+    <resultMap id="baseResultMap" type="cn.nine.crm.domain.GuaranteeItem">
+        <id column="id" property="id"/>
+        <result column="input_date" property="inputDate"/>
+        <result column="guarantee_sn" property="guaranteeSn"/>
+        <result column="details" property="details"/>
+        <result column="status" property="status"/>
+    </resultMap>
 
     <!-- 查询全部数据 -->
     <select id="findAll" resultType="cn.nine.crm.domain.GuaranteeItem">
-        select
-        *
+        select <include refid="base_cloumn"/>
         from t_guarantee_item
     </select>
 
     <!-- 分页查询 -->
-    <select id="selectForPage" parameterType="cn.nine.crm.query.GuaranteeItemQuery" resultType="cn.nine.crm.domain.GuaranteeItem">
-        select *
-        from t_guarantee_item
+    <select id="selectForPage" parameterType="cn.nine.crm.query.GuaranteeItemQuery" resultMap="baseResultMap">
+        SELECT <include refid="base_cloumn"/>
+        FROM t_guarantee_item gi
         <include refid="base_where"/>
+        ORDER BY gi.guarantee_sn ASC
         limit #{start},#{pageSize}
     </select>
 
     <!-- 查询数据条数 -->
     <select id="selectForCount" resultType="long">
         select
-        count(*)
+          count(id)
         from t_guarantee_item
         <include refid="base_where"/>
     </select>
 
     <!-- 查询单个数据 -->
     <select id="findOne" parameterType="long" resultType="cn.nine.crm.domain.GuaranteeItem">
-        select
-        *
-        from t_guarantee_item  where id = #{id}
+        select <include refid="base_cloumn"/>
+        from t_guarantee_item where guarantee_sn = #{guaranteeSn}
     </select>
 
     <!-- 新增数据 -->
     <insert id="save" parameterType="cn.nine.crm.domain.GuaranteeItem"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         insert into t_guarantee_item
-        ()
+          (guarantee_sn,input_date,details,status)
         values
-        ()
+          (#{guaranteeSn},#{inputDate},#{details},#{status})
     </insert>
 
     <!-- 修改数据 -->
     <update id="update" parameterType="cn.nine.crm.domain.GuaranteeItem">
         update t_guarantee_item
-        set name = #{name},
-        sn = #{sn}
+        set input_date = #{inputDate},
+            details = #{details},
+            status = #{status}
         where id = #{id}
     </update>
 
@@ -72,6 +85,5 @@
             #{id}
         </foreach>
     </delete>
-
 
 </mapper>

@@ -65,7 +65,7 @@
         LIMIT #{start} , #{pageSize}
     </select>
     <!--添加-->
-    <insert id="insert" parameterType="cn.nine.crm.domain.ContractItem">
+    <insert id="save" parameterType="cn.nine.crm.domain.ContractItem">
         INSERT INTO contractitem
         (
         contract_id

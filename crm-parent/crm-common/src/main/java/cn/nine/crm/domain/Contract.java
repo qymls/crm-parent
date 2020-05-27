@@ -27,7 +27,4 @@ public class Contract extends BaseDomain{
     private ContractItem contractItem;
     //所属租户
     private Tenant tenant;
-
-
-
 }

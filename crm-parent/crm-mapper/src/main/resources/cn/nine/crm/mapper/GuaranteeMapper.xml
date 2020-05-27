@@ -7,22 +7,54 @@
     <sql id="base_where">
         <where>
             <if test="keyword != null">
-                and name like CONCAT("%",#{keyword},"%")
+                and sn like CONCAT("%",#{keyword},"%")
             </if>
         </where>
     </sql>
 
+    <!-- 关联查询 -->
+    <resultMap id="baseResultMap" type="cn.nine.crm.domain.Guarantee">
+        <id column="g_id" property="id"/>
+        <result column="sn" property="sn"/>
+        <result column="end_date" property="endDate"/>
+
+        <collection property="guaranteeItemList" ofType="cn.nine.crm.domain.GuaranteeItem">
+            <id column="gi_id" property="id"/>
+            <result column="input_date" property="inputDate"/>
+            <result column="details" property="details"/>
+            <result column="status" property="status"/>
+        </collection>
+    </resultMap>
+
     <!-- 查询全部数据 -->
-    <select id="findAll" resultType="cn.nine.crm.domain.Guarantee">
-        select
-        *
-        from t_guarantee
+    <select id="findAll" resultMap="baseResultMap">
+        SELECT
+            g.id AS g_id,
+            g.sn,
+
+            gi.id AS gi_id,
+            gi.input_date,
+            gi.details,
+            gi.status,
+            gi.guarantee_sn
+        FROM t_guarantee g
+        JOIN t_guarantee_item gi ON g.sn = gi.guarantee_sn
+        <include refid="base_where"/>
     </select>
 
     <!-- 分页查询 -->
-    <select id="selectForPage" parameterType="cn.nine.crm.query.GuaranteeQuery" resultType="cn.nine.crm.domain.Guarantee">
-        select *
-        from t_guarantee
+    <select id="selectForPage" parameterType="cn.nine.crm.query.GuaranteeQuery" resultMap="baseResultMap">
+        SELECT
+        g.id AS g_id,
+        g.sn,
+
+        gi.id AS gi_id,
+        gi.input_date,
+        gi.details,
+        gi.status,
+        gi.guarantee_sn
+        FROM t_guarantee g
+        JOIN t_guarantee_item gi ON g.sn = gi.guarantee_sn
         <include refid="base_where"/>
         limit #{start},#{pageSize}
     </select>
