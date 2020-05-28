@@ -9,6 +9,7 @@ import cn.nine.crm.service.IMenuService;
 import cn.nine.crm.service.IPermissionService;
 import cn.nine.crm.service.IRoleService;
 import cn.nine.crm.util.PageList;
+import cn.nine.crm.web.systemlog.LogAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,6 +50,7 @@ public class RoleController extends BaseController<Role, Long, RoleQuery> {
 
     @RequestMapping("permission/findPageByQuery")
     @ResponseBody
+    @LogAnnotations
     public PageList<Permission> findAll(PermissionQuery permissionQuery) {
         PageList<Permission> pageUtil = permissionService.selectForPage(permissionQuery);
         return pageUtil;
@@ -56,18 +58,21 @@ public class RoleController extends BaseController<Role, Long, RoleQuery> {
 
     @RequestMapping("/Menu/findAll")
     @ResponseBody
+    @LogAnnotations
     public List<Menu> findAllMenu() {
         return menuService.findAll();
     }
 
     @RequestMapping("/Menu/newTreeDate")
     @ResponseBody
+    @LogAnnotations
     public List<Menu> findAllMenunewTreeDate(Long[] ids) {
         return menuService.findAllMenunewTreeDate(ids);
     }
 
     @RequestMapping("/Menu/findAllRolePermissionMenuByRoleId")
     @ResponseBody
+    @LogAnnotations
     public List<Menu> findAllRolePermissionMenuByRoleId(Long id) {
         return menuService.findAllRolePermissionMenuByRoleId(id);
     }
@@ -80,6 +85,7 @@ public class RoleController extends BaseController<Role, Long, RoleQuery> {
      */
     @RequestMapping("/Menu/getLastMenuByRoleSave")
     @ResponseBody
+    @LogAnnotations
     public HashMap<Object, Object> getLastMenuByRoleSave(Long[] ids, Long roleid) {
         List<Menu> byRoleSave = menuService.getLastMenuByRoleSave(ids);
         Role role = roleService.findOne(roleid);
