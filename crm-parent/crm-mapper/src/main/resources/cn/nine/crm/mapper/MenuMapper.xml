@@ -114,8 +114,9 @@
              from menu where firstmenuid = 0 order by rank
     </select>
     <!--通过员工id获取菜单-->
-    <select id="findMenuByEmployeeId" resultType="cn.nine.crm.domain.Menu">
-
+    <select id="findMenuByEmployeeId" resultMap="result">
+  SELECT  DISTINCT m.*  FROM employee e  JOIN employee_role er ON er.employee_id = e.id JOIN  role_permission rp ON er.role_id =rp.role_id  JOIN permission p ON rp.permission_id = p.id
+       JOIN menu m ON p.menu_id = m.id  WHERE e.id = #{id} ORDER BY m.rank
     </select>
 
 

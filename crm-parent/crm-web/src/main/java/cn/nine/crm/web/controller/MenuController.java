@@ -1,5 +1,6 @@
 package cn.nine.crm.web.controller;
 
+import cn.nine.crm.domain.Employee;
 import cn.nine.crm.domain.Menu;
 import cn.nine.crm.domain.Permission;
 import cn.nine.crm.dto.MenuPermissionDto;
@@ -209,16 +210,17 @@ public class MenuController extends BaseController<Menu, Long, MenuQuery> {
      *
      * @return
      */
-/*
     @RequestMapping("/findMenuByEmployeeId")
     @ResponseBody
-    public List<Menu> findMenuByEmployeeId() {
-        Employee employee = (Employee) SecurityUtils.getSubject().getPrincipal();*/
-    /*获取登录用户*//*
-
-        return menuService.findMenuByEmployeeId(employee.getId());
+    public  Map<Object, Object> findMenuByEmployeeId() {
+        Employee employee = (Employee) SecurityUtils.getSubject().getPrincipal();
+        /*获取登录用户*/
+        List<Menu> menuByEmployeeId = menuService.findMenuByEmployeeId(employee.getId());
+        HashMap<Object, Object> map = new HashMap<>();
+        map.put("code", 20000);
+        map.put("resrult", menuByEmployeeId);
+        return map;
     }
-*/
 
     /**
      * 查询所有最后一级菜单
