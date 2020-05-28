@@ -347,10 +347,10 @@
               dataType: 'json',
               async: false,/*取消异步加载*/
               success: function (results) {
-                var result = results.data
-                if (result.msg) {/*操作失败，无权限*/
-                  $page.$Message.error(result.msg);
+                if (results.msg) {/*操作失败，无权限*/
+                  $page.$Message.error(results.msg);
                 } else {
+                  var result = results.data
                   newMenu = result;
                   var data = $page.tempAppendData;
                   var newMenuData = $.extend({}, result, {title: result.name});/*需要为展开状态*/
