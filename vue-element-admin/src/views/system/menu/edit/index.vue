@@ -285,7 +285,7 @@
         this.allIconData = searchResult;
       },
       returnMenu() {/*返回菜单界面*/
-        this.$router.push({path: 'list'})
+        this.$router.push({path: 'menu'})
       },
       getEnglishName() {/*通过菜单名称，自动翻译成英文*/
         var $apge = this;
