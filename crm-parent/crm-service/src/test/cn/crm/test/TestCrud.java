@@ -5,6 +5,7 @@ import cn.nine.crm.domain.Employee;
 import cn.nine.crm.mapper.EmployeeMapper;
 import cn.nine.crm.query.EmployeeQuery;
 import cn.nine.crm.service.IEmployeeService;
+import cn.nine.crm.service.ITenantService;
 import cn.nine.crm.util.PageList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +20,8 @@ public class TestCrud {
     @Autowired
     private EmployeeMapper employeeMapper;
 
-
+    @Autowired
+    private ITenantService tenant;
     @Autowired
     private IEmployeeService service;
     @Test
@@ -29,5 +31,6 @@ public class TestCrud {
         PageList<Employee> employeePageList = service.selectForPage(employeeQuery);
         System.out.println(employeePageList);
     }
+
 
 }

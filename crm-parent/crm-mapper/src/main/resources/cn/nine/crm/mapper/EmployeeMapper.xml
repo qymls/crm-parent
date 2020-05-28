@@ -16,70 +16,153 @@
         <result column="salt" property="salt"/>
         <!--部门-->
         <association property="department" javaType="cn.nine.crm.domain.Department">
-                <id column="td_id" property="id"/>
-                <result column="td_name" property="name"/>
+            <id column="td_id" property="id"/>
+            <result column="td_name" property="name"/>
+        </association>
+        <association property="tenant" javaType="cn.nine.crm.domain.Tenant">
+            <id column="tt_id" property="id"/>
+            <result column="companyName" property="companyName"/>
+        </association>
+        <association property="role" javaType="cn.nine.crm.domain.Role">
+                <id column="r_id" property="id"/>
+                <result column="name" property="name"/>
         </association>
     </resultMap>
+    <!--添加员工-->
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO employee
+        (
+            username,
+            password,
+            realName, tel,
+            email,
+            inputTime,
+            state,
+            department_id,
+            salt,
+            tenant_id
+        )
+        VALUES
+        (
+            #{username},
+            #{password},
+            #{realName},
+            #{tel},
+            #{email},
+            #{inputTime},
+            #{state},
+            #{department.id},
+            #{salt},
+            #{tenant.id}
+        )
+
+    </insert>
+    <update id="update" parameterType="cn.nine.crm.domain.Employee">
+      UPDATE employee
+          <set>
+              <if test="username != null and username !=''">
+              username =#{username},
+              </if>
+              <if test="password != null and password !=''">
+              password =#{password},
+              </if>
+              <if test="realName != null and realName !=''">
+              realName = #{realName},
+              </if>
+              <if test="tel != null and tel !=''">
+              tel =#{tel},
+              </if>
+              <if test="email != null and email !=''">
+              email =#{email},
+              </if>
+              <if test="inputTime != null and inputTime !=''">
+              inputTime =#{inputTime},
+              </if>
+              <if test="state != null and state !=''">
+              state = #{state},
+              </if>
+              <if test="department != null and department.id !=''">
+              department_id =#{department.id},
+              </if>
+              <if test="tenant != null and tenant.id !=''">
+              tenant_id = #{tenant.id},
+              </if>
+          </set>
+          where id =#{id}
+    </update>
+    <!--删除数据-->
+    <delete id="delete" parameterType="long" >
+        DELETE FROM employee WHERE id=#{id}
+    </delete>
+    <!--批量删除员工-->
+    <delete id="batchDelete">
+        DELETE FROM  employee WHERE id in
+        <foreach collection="list" open="(" item="id" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
     <!--查询所有数据-->
     <select id="findAll" resultMap="baseMap">
         select
-            te.id AS te_id,
-            te.username,
-            te.password,
-            te.realName,
-            te.tel,
-            te.email,
-            te.inputTime,
-            te.state,
-            te.salt,
-            te.tenant_id,
-
-            td.id AS td_id,
-            td.name AS td_name,
-
-            tt.companyName
+        te.id AS te_id,
+        te.username,
+        te.password,
+        te.realName,
+        te.tel,
+        te.email,
+        te.inputTime,
+        te.state,
+        te.salt,
+        te.tenant_id,
+        td.id AS td_id,
+        td.name AS td_name,
+        tt.id AS  tt_id,
+        tt.companyName
         from
-            t_employee te
-            JOIN t_department  td ON te.department_id = td.id
-            JOIN t_tenant  tt ON tt.id=te.tenant_id
+        employee te
+        JOIN department  td ON te.department_id = td.id
+        JOIN tenant  tt ON tt.id=te.tenant_id
     </select>
-
-
     <!--抽取sql-->
     <sql id="baseWhere">
         <where>
             <if test=" keyword !=null ">
-          and username like  CONCAT("%",#{keyword},"%")
+                and username like  CONCAT("%",#{keyword},"%")
             </if>
         </where>
     </sql>
     <!--查询总条数-->
     <select id="selectForCount" resultType="java.lang.Long">
-        SELECT count(id) FROM t_employee
+        SELECT count(id) FROM employee
         <include refid="baseWhere"/>
     </select>
     <!--分页查询-->
     <select id="selectForPage" resultMap="baseMap">
         select
-            te.id AS te_id,
-            te.username,
-            te.password,
-            te.realName,
-            te.tel,
-            te.email,
-            te.inputTime,
-            te.state,
-            te.salt,
-            te.tenant_id,
+        te.id AS te_id,
+        te.username,
+        te.password,
+        te.realName,
+        te.tel,
+        te.email,
+        te.inputTime,
+        te.state,
+        te.salt,
+        te.tenant_id,
 
-            td.id AS td_id,
-            td.name AS td_name,
+        td.id AS td_id,
+        td.name AS td_name,
 
-            tt.companyName
+        tt.id  AS tt_id,
+        tt.companyName,
+
+        r.id AS  r_id,
+        r.name
         from
-            t_employee te
-            JOIN t_department  td ON te.department_id = td.id
-            JOIN t_tenant  tt ON tt.id=te.tenant_id
+        employee te
+        LEFT JOIN department  td ON te.department_id = td.id
+        LEFT JOIN tenant  tt ON tt.id=te.tenant_id
+        LEFT JOIN role r  ON  r.id=te.role_id
         <include refid="baseWhere"/>
         LIMIT #{start} , #{pageSize}
     </select>

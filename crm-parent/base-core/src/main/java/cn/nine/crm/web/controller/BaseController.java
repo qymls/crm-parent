@@ -74,7 +74,6 @@ public class BaseController<T, ID extends Serializable, Q> {
         }
 
     }
-
     //修改
     @PostMapping("/update")
     @ApiOperation(value = "修改一个实体")
