@@ -7,7 +7,9 @@
         select
         id,
         name ,
-        sn from department
+        sn
+        from
+            department
     </select>
 
     <select id="selectForPage" parameterType="cn.nine.crm.query.DepartmentQuery" resultType="cn.nine.crm.domain.Department">

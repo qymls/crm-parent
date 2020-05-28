@@ -35,5 +35,4 @@ public class TenantController extends BaseController<Tenant,Long, TenantQuery> {
         }
 
     }
-
 }

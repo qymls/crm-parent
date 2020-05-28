@@ -10,4 +10,5 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmployeeServiceImpl extends BaseServiceImpl<Employee,Long,EmployeeQuery>
         implements IEmployeeService {
+
 }

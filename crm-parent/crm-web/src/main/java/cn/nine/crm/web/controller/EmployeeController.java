@@ -3,7 +3,6 @@ package cn.nine.crm.web.controller;
 import cn.nine.crm.domain.Employee;
 import cn.nine.crm.query.EmployeeQuery;
 import cn.nine.crm.util.Result;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
