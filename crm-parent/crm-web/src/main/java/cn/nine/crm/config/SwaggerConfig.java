@@ -22,8 +22,6 @@ public class SwaggerConfig {
                 .paths(PathSelectors.any())
                 .build();
     }
-
-
     private ApiInfo apiInfo(){
         @SuppressWarnings("deprecation")
         ApiInfo info=new ApiInfo(

@@ -23,7 +23,14 @@ import $ from 'jquery'
 Vue.prototype.$ = $/* 添加原型*/
 Vue.prototype.ajax = $.ajax/* 添加原型*/
 
-/*Vue.ajax.interceptors.push(function(request, next) {
+// 引入百度地图
+import BaiduMap from 'vue-baidu-map'
+
+Vue.use(BaiduMap, {
+  ak: 'y5BMGLNzAPRw8Y2XLg5eaIwbL11j5m5r'
+})
+
+/* Vue.ajax.interceptors.push(function(request, next) {
 // modify headers
   request.headers.set('Accept', 'application/json');
   request.headers.set('Authorization', 'Bearer '+ JSON.parse(localStorage.getItem('token')));
@@ -36,8 +43,8 @@ import axios from 'axios'/* 引入axios*/
 // 把axios赋值给vue里面的$http这个变量
 Vue.prototype.$http = axios
 
-//拦截器
-/*axios.interceptors.request.use(config => {
+// 拦截器
+/* axios.interceptors.request.use(config => {
   if (sessionStorage.getItem('sessionId')) {
     // 让每个请求携带token--['X-Token']为自定义key 请根据实际情况自行修改
     config.headers['X-Token'] = sessionStorage.getItem('sessionId')
