@@ -180,6 +180,12 @@
             align: 'center'
           },
           {
+            title: '合同编号',
+            width: 100,
+            align: 'center',
+            key: 'sn'
+          },
+          {
             title: '客户姓名',
             width: 100,
             align: 'center',

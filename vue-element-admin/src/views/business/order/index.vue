@@ -25,6 +25,14 @@
                      style="cursor: pointer" placeholder="请输入查找的客户姓名"
                      @on-enter="click_enter">
               </Input>
+              <Input v-model="searchForm.seller.username" type="text" clearable
+                     style="cursor: pointer" placeholder="请输入查找的营销人员姓名"
+                     @on-enter="click_enter">
+              </Input>
+              <Input v-model="searchForm.signTime" type="text" clearable
+                     style="cursor: pointer" placeholder="请选择需要查询的签订时间"
+                     @on-enter="click_enter">
+              </Input>
             </FormItem>
 
             <FormItem>
@@ -88,16 +96,15 @@
               <Input v-model="addForm.id" type="text"></Input>
             </FormItem>
             <FormItem label="客户姓名" prop="name">
-              <!--增添客户姓名带搜索下拉框-->
-              <el-select v-model="addForm.customer.name" filterable placeholder="请选择">
+              <!--增添客户姓名带搜索下拉框 配置搜索方法 dataFilter-->
+              <el-select v-model="addForm.customer" filterable placeholder="请选择"  :filter-method="dataFilter">
                 <el-option
                   v-for="item in options"
-                  :key="item.addForm.customer.name"
+                  :key="item.addForm.customer"
                   :label="item.label"
-                  :value="item.addForm.customer.name">
+                  :value="item.addForm.customer">
                 </el-option>
               </el-select>
-              <Input v-model="addForm.customer.name" placeholder="请选择客户姓名"></Input>
             </FormItem>
             <FormItem label="签定时间" prop="signTime">
               <div class="block" >
@@ -143,7 +150,7 @@
         row: [],
         /*客户姓名选择*/
         options: [],
-        value: '',
+        customer: '',
         //时间选择
         pickerOptions: {
           disabledDate(time) {
@@ -174,7 +181,11 @@
         searchForm: {
           customer:{
             name: ''
-          }
+          },
+          seller:{
+            username:''
+          },
+          signTime:''
         },
         dialogFormVisible: false,
 
@@ -201,6 +212,12 @@
             type: 'index',
             width: 100,
             align: 'center'
+          },
+          {
+            title: '订单编号',
+            width: 100,
+            align: 'center',
+            key: 'sn'
           },
           {
             title: '客户姓名',
@@ -273,6 +290,19 @@
       this.loadListData()
     },
     methods: {
+      /*客户姓名带搜索下拉框*/
+      dataFilter(val) {
+        this.value = val;
+        if (val) { //val存在
+          this.options = this.options.filter((item) => {
+            if (!!~item.label.indexOf(val) || !!~item.label.toUpperCase().indexOf(val.toUpperCase())) {
+              return true
+            }
+          })
+        } else { //val为空时，还原数组
+          this.options = this.options;
+        }
+      },
       click_enter() { /* 键盘事件,调用查找方法*/
         this.loadListData()
       },
@@ -395,8 +425,10 @@
         }
         http.get("/order/findAll" ,paramName).then(res=>{
           if (res.data.success) {
+            //获取用户列表清单
             this.options = res.data.data.list
-            this.addForm.customer.name = res.data.data.customer.name
+            this.addForm.customer = res.data.data.customer
+
             this.loading = false
 
           }else {
