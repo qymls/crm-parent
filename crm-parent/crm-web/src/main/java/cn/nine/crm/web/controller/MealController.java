@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller
 @RequestMapping("meal")
-@LogAnnotations
 @SuppressWarnings(value = "all")/*抑制警告*/
 public class MealController extends BaseController<Meal,Long, MealQuery>{
     private IMealService mealService;

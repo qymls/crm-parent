@@ -25,7 +25,6 @@ import java.util.List;
 @Controller
 @RequestMapping("permission")
 @SuppressWarnings(value = "all")/*抑制警告*/
-@LogAnnotations
 public class PermissionController extends BaseController<Permission,Long, PermissionQuery>{
     private IPermissionService permissionService;
     private IMenuService menuService;

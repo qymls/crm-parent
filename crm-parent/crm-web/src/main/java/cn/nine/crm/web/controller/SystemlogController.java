@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller
 @RequestMapping("systemlog")
-@LogAnnotations
 @SuppressWarnings(value = "all")/*抑制警告*/
 public class SystemlogController extends BaseController<Systemlog,Long, SystemlogQuery>{
     private ISystemlogService systemlogService;
