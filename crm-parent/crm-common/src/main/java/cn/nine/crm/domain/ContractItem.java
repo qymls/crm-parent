@@ -36,7 +36,7 @@ public class ContractItem extends BaseDomain {
     //所占比例 100% 本次支付占总需要支付金额的比例 不加定金金额
     private String scale;
     //本次是否支付  0--待支付  1--已支付
-    private Integer isPayment;
+    private Integer isPayment = PAY_NO;
     //合同金额是否结算完成
     private Integer pay;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")

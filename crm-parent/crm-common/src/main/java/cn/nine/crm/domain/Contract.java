@@ -33,12 +33,6 @@ public class Contract extends BaseDomain{
     }
 
     public void setSn(String sn) {
-//        //设置订单开头字符
-//        String a = "C";
-//        //中间数字以订单建立当天的日期及毫秒数
-//        SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
-//        String str = format.format(new Date());
-//        sn = a + str;
         this.sn = sn;
     }
 }
