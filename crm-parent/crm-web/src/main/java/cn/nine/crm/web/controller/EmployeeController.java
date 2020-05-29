@@ -13,10 +13,7 @@ import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +31,7 @@ public class EmployeeController extends BaseController<Employee,Long,EmployeeQue
         this.securityManager = securityManager;
     }
 
-    @RequestMapping(value = "/login",method = RequestMethod.POST)
+    @PostMapping("/login")
     @ResponseBody
     public Result login(@RequestBody Employee employee){
         SecurityUtils.setSecurityManager(securityManager);/*设置上下文*/
@@ -74,7 +71,7 @@ public class EmployeeController extends BaseController<Employee,Long,EmployeeQue
      * 注销
      * @return
      */
-    @RequestMapping(value = "/logout",method = RequestMethod.POST)
+    @PostMapping("/logout")
     @ResponseBody
     public Result logout(){
         Subject subject = SecurityUtils.getSubject();

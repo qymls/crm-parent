@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 /**
  * 订金订单 ServiceImpl层
@@ -23,15 +22,12 @@ public class OrdersServiceImpl extends BaseServiceImpl<Orders,Long, OrdersQuery>
     private OrdersMapper ordersMapper;
 
     public void save(Orders orders) {
+        //设置订单开头字符
         String a = "D";
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+        //中间数字以订单建立当天的日期即毫秒数
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
         String str = format.format(new Date());
-        int nf = 100001;
-        nf = nf++;
-        String autoNum = a+str+nf;
-        //判断数据库中是否有该编号
-        List<Orders> list = ordersMapper.findAll();
-        orders.setSn(autoNum);
+        orders.setSn(a+str);
         ordersMapper.save(orders);
     }
 }
