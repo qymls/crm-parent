@@ -280,9 +280,9 @@ export default {
     },
     statusFormatter(row) {
       const status = row.status
-      if (status === 0) {
+      if (status == 0) {
         return '注册'
-      } else if (status === 1) {
+      } else if (status == 1) {
         return '付费'
       } else {
         return '欠费'
