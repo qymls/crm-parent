@@ -322,6 +322,7 @@
       loadListData() {
         var http = this.$http
         var Message = this.$Message
+        var Notice = this.$Notice
         this.loading = true
         // vue加载完成，发送ajax请求动态获取数据
         const param = {
@@ -332,7 +333,10 @@
         }
         http.post('/systemlog/selectForPage', param).then(res => {
           if (res.data.msg) {
-            Message.error(res.data.msg)
+            Notice.error({
+              title: '操作失败通知',
+              desc: res.data.msg
+            })
           } else {
             if (res.data.success) {
               this.tableData = res.data.data.list
