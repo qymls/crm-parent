@@ -55,7 +55,7 @@
 
     <!--抽取sql 查询-->
     <sql id="baseWhere">
-        /*查询 ：客户姓名 营销人员姓名 后期补充：查询签订时间*/
+        /*查询 ：客户姓名 营销人员姓名*/
         <where>
             <if test=" keyword !=null ">
               and (cu.name like  CONCAT("%",#{keyword},"%") OR e.name like CONCAT("%",#{keyword},"%"))
@@ -65,9 +65,9 @@
     <!--查询总条数 <include refid="baseWhere"/>-->
     <select id="selectForCount" resultType="java.lang.Long">
         SELECT count(*) FROM orders
-
+        <include refid="baseWhere"/>
     </select>
-    <!--分页查询 <include refid="baseWhere"/>-->
+    <!--分页查询 -->
     <select id="selectForPage" resultMap="baseMap">
         select
             o.id as o_id,
@@ -90,7 +90,7 @@
             JOIN customer cu ON  o.customer_id = cu.id
             JOIN employee e ON o.seller_id = e.id
             JOIN tenant t ON o.tenant_id = t.id
-
+        <include refid="baseWhere"/>
           LIMIT #{start} , #{pageSize}
     </select>
     <!--添加-->

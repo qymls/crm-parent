@@ -47,7 +47,7 @@
     <!--查询总条数  <include refid="baseWhere"/>-->
     <select id="selectForCount" resultType="java.lang.Long">
         SELECT count(id) FROM contractitem
-
+        <include refid="baseWhere"/>
     </select>
     <!--分页查询 <include refid="baseWhere"/> -->
     <select id="selectForPage" resultMap="baseMap">
@@ -64,7 +64,7 @@
 
         from contractitem ci
         JOIN contract co ON  ci.contract_id = co.id
-
+        <include refid="baseWhere"/>
         LIMIT #{start} , #{pageSize}
     </select>
     <!--添加-->
@@ -81,6 +81,26 @@
         VALUES
         (
         #{contract.id},
+        #{payTime},
+        #{payMoney},
+        #{scale},
+        #{isPayment}
+        )
+
+    </insert>
+    <insert id="saveByContract" parameterType="cn.nine.crm.domain.ContractItem">
+        INSERT INTO contractitem
+        (
+        contract_id,
+        payTime,
+        payMoney,
+        scale,
+        isPayment
+
+        )
+        VALUES
+        (
+        #{contract_id},
         #{payTime},
         #{payMoney},
         #{scale},
