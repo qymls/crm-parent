@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -31,6 +33,16 @@ public class DepartmentController extends BaseController<Department,Long, Depart
         map.put("code",20000);
         System.out.println(id);
         return map;
-
+    }
+    @ResponseBody
+    @RequestMapping(value = "/findTreeData" )
+    public Result findTreeData(){
+        try {
+            List<Department> treeData = departmentService.findTreeData();
+            return Result.ok(treeData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("服务器异常");
+        }
     }
 }
