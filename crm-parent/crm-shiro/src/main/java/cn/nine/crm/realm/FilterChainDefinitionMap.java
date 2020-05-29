@@ -18,10 +18,15 @@ public class FilterChainDefinitionMap {
         HashMap<String, String> map = new LinkedHashMap<>();
         map.put("/Admin/gitHubLogin", "anon");
         map.put("/Admin/qqLogin", "anon");
-        map.put("/Admin/login", "anon");
         map.put("/employee/login", "anon");
-        map.put("/Admin/logout", "anon");
-        map.put("/Admin/register", "anon");
+        map.put("/swagger-ui.html","anon");
+        map.put("/webjars/**","anon");
+        map.put("/v2/**","anon");
+        map.put("/swagger-resources/**","anon");
+        map.put("*.js","anon");
+        map.put("/configuration/ui","anon");
+        map.put("*.html","anon");
+
        /* map.put("/Admin/Employee/save", "perms[employee:save]");
         map.put("/Admin/Employee/delete", " perms[employee:delete]");
         map.put("/Admin/Employee/findAll", "perms[employee:findALL]");*/
