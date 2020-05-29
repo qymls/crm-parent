@@ -16,17 +16,17 @@
     <sql id="base_cloumn">
         g.id AS g_id, g.sn AS g_sn, g.end_date, g.contract_sn,
         gi.id AS gi_id, gi.input_date, gi.details, gi.status, gi.guarantee_sn,
-        co.id AS co_id, co.sn AS co_sn, co.signTime, co.customer_id, co.tenant_id
-        /*cu.id AS cu_id, cu.name,
-        t.id AS t_id, t.companyName*/
+        co.id AS co_id, co.sn AS co_sn, co.signTime, co.customer_id, co.tenant_id,
+        cu.id AS cu_id, cu.name,
+        t.id AS t_id, t.companyName
     </sql>
 
     <!-- 抽取 JOIN -->
     <sql id="base_join">
         JOIN guaranteeitem gi ON g.sn = gi.guarantee_sn
         JOIN contract co ON g.contract_sn = co.sn
-        /*JOIN customer cu ON co.customer_id = cu.id
-        JOIN tenant t ON co.tenant_id = t.id*/
+        JOIN customer cu ON co.customer_id = cu.id
+        JOIN tenant t ON co.tenant_id = t.id
     </sql>
 
     <!-- 关联查询 -->
@@ -40,20 +40,19 @@
             <id column="co_id" property="id"/>
             <result column="co_sn" property="sn"/>
             <result column="signTime" property="signTime"/>
-
-            <!--&lt;!&ndash; 关联 客户 &ndash;&gt;
-            <association property="contract.customer" javaType="cn.nine.crm.domain.Customer">
-                <id column="cu_id" property="id"/>
-                <result column="name" property="name"/>
-            </association>
-
-            &lt;!&ndash; 关联 租户 &ndash;&gt;
-            <association property="contract.tenant" javaType="cn.nine.crm.domain.Tenant">
-                <id column="t_id" property="id"/>
-                <result column="companyName" property="companyName"/>
-            </association>-->
         </association>
 
+        <!-- 关联 客户 -->
+        <association property="contract.customer" javaType="cn.nine.crm.domain.Customer">
+            <id column="cu_id" property="id"/>
+            <result column="name" property="name"/>
+        </association>
+
+        <!-- 关联 租户-->
+        <association property="contract.tenant" javaType="cn.nine.crm.domain.Tenant">
+            <id column="t_id" property="id"/>
+            <result column="companyName" property="companyName"/>
+        </association>
 
         <!-- 关联 保修单明细 -->
         <collection property="guaranteeItemList" ofType="cn.nine.crm.domain.GuaranteeItem">
