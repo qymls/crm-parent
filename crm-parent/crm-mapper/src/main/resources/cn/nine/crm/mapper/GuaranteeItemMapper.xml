@@ -30,7 +30,7 @@
     <select id="findAll" resultType="cn.nine.crm.domain.GuaranteeItem">
         SELECT
             <include refid="base_cloumn"/>
-        FROM t_guarantee_item
+        FROM guaranteeitem
         <include refid="base_where"/>
     </select>
 
@@ -38,9 +38,9 @@
     <select id="selectForPage" parameterType="cn.nine.crm.query.GuaranteeItemQuery" resultMap="baseResultMap">
         SELECT
             <include refid="base_cloumn"/>
-        FROM t_guarantee_item gi
+        FROM guaranteeitem
         <include refid="base_where"/>
-        ORDER BY gi.guarantee_sn ASC
+        ORDER BY guarantee_sn ASC
         limit #{start},#{pageSize}
     </select>
 
@@ -48,7 +48,7 @@
     <select id="selectForCount" resultType="long">
         SELECT
             COUNT(id)
-        FROM t_guarantee_item
+        FROM guaranteeitem
         <include refid="base_where"/>
     </select>
 
@@ -56,14 +56,14 @@
     <select id="findOne" parameterType="long" resultType="cn.nine.crm.domain.GuaranteeItem">
         SELECT
             <include refid="base_cloumn"/>
-        FROM t_guarantee_item
+        FROM guaranteeitem
         WHERE guarantee_sn = #{guaranteeSn}
     </select>
 
     <!-- 新增数据 -->
     <insert id="save" parameterType="cn.nine.crm.domain.GuaranteeItem"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
-        INSERT INTO t_guarantee_item (
+        INSERT INTO guaranteeitem (
             guarantee_sn,
             input_date,
             details,
@@ -80,7 +80,7 @@
     <!-- 修改数据 -->
     <update id="update" parameterType="cn.nine.crm.domain.GuaranteeItem">
         UPDATE
-            t_guarantee_item
+            guaranteeitem
         SET
             input_date = #{inputDate},
             details = #{details},
@@ -91,7 +91,7 @@
     <!-- 删除单个数据 -->
     <delete id="delete" parameterType="long">
         DELETE
-        FROM t_guarantee_item
+        FROM guaranteeitem
         WHERE id = #{id}
     </delete>
 
@@ -99,7 +99,7 @@
     <delete id="batchDelete">
         <!--open最前面的字符,close在最后的字符separator分隔符,每次循环使用什么分隔-->
         DELETE
-        FROM t_guarantee_item
+        FROM guaranteeitem
         WHERE id IN
             <foreach collection="list" open="(" item="id" close=")" separator=",">
                 #{id}

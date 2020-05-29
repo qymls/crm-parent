@@ -7,25 +7,26 @@
     <sql id="base_where">
         <where>
             <if test="keyword != null">
-                and sn like CONCAT("%",#{keyword},"%")
+                AND sn LIKE CONCAT("%",#{keyword},"%")
             </if>
         </where>
     </sql>
-    
+
     <!-- 抽取 关联查询字段 -->
     <sql id="base_cloumn">
-        /* 保修单管理 */
-        g.id AS g_id, g.sn AS g_sn,
-        /* 关联 保修单明细 */
-        gi.id AS gi_id, gi.input_date, gi.details, gi.status, gi.guarantee_sn
-        /* 关联 合同 */
-        /*ca.id AS ca_id, ca.sn AS ca_sn, ca.singn_time*/
+        g.id AS g_id, g.sn AS g_sn, g.end_date, g.contract_sn,
+        gi.id AS gi_id, gi.input_date, gi.details, gi.status, gi.guarantee_sn,
+        co.id AS co_id, co.sn AS co_sn, co.signTime, co.customer_id, co.tenant_id
+        /*cu.id AS cu_id, cu.name,
+        t.id AS t_id, t.companyName*/
     </sql>
 
-    <!-- 抽取 join -->
+    <!-- 抽取 JOIN -->
     <sql id="base_join">
-        JOIN
-        JOIN contract ca
+        JOIN guaranteeitem gi ON g.sn = gi.guarantee_sn
+        JOIN contract co ON g.contract_sn = co.sn
+        /*JOIN customer cu ON co.customer_id = cu.id
+        JOIN tenant t ON co.tenant_id = t.id*/
     </sql>
 
     <!-- 关联查询 -->
@@ -33,6 +34,26 @@
         <id column="g_id" property="id"/>
         <result column="sn" property="sn"/>
         <result column="end_date" property="endDate"/>
+
+        <!-- 关联 合同 -->
+        <association property="contract" javaType="cn.nine.crm.domain.Contract">
+            <id column="co_id" property="id"/>
+            <result column="co_sn" property="sn"/>
+            <result column="signTime" property="signTime"/>
+
+            <!--&lt;!&ndash; 关联 客户 &ndash;&gt;
+            <association property="contract.customer" javaType="cn.nine.crm.domain.Customer">
+                <id column="cu_id" property="id"/>
+                <result column="name" property="name"/>
+            </association>
+
+            &lt;!&ndash; 关联 租户 &ndash;&gt;
+            <association property="contract.tenant" javaType="cn.nine.crm.domain.Tenant">
+                <id column="t_id" property="id"/>
+                <result column="companyName" property="companyName"/>
+            </association>-->
+        </association>
+
 
         <!-- 关联 保修单明细 -->
         <collection property="guaranteeItemList" ofType="cn.nine.crm.domain.GuaranteeItem">
@@ -42,20 +63,14 @@
             <result column="status" property="status"/>
         </collection>
 
-        <!-- 关联 合同 -->
-        <!--<collection property="contract" ofType="cn.nine.crm.domain.Contract">
-            <id column="ca_id" property="id"/>
-            <result column="ca_sn" property="sn"/>
-            <result column="singn_time" property="signTime"/>
-        </collection>-->
     </resultMap>
 
     <!-- 查询全部数据 -->
     <select id="findAll" resultMap="baseResultMap">
         SELECT
             <include refid="base_cloumn"/>
-        FROM t_guarantee g
-        JOIN t_guarantee_item gi ON g.sn = gi.guarantee_sn
+        FROM guarantee g
+        <include refid="base_join"/>
         <include refid="base_where"/>
     </select>
 
@@ -63,8 +78,8 @@
     <select id="selectForPage" parameterType="cn.nine.crm.query.GuaranteeQuery" resultMap="baseResultMap">
         SELECT
             <include refid="base_cloumn"/>
-        FROM t_guarantee g
-        JOIN t_guarantee_item gi ON g.sn = gi.guarantee_sn
+        FROM guarantee g
+        <include refid="base_join"/>
         <include refid="base_where"/>
         limit #{start},#{pageSize}
     </select>
@@ -73,7 +88,7 @@
     <select id="selectForCount" resultType="long">
         SELECT
             COUNT(*)
-        FROM t_guarantee
+        FROM guarantee
         <include refid="base_where"/>
     </select>
 
@@ -81,15 +96,15 @@
     <select id="findOne" parameterType="long" resultType="cn.nine.crm.domain.Guarantee">
         SELECT
             <include refid="base_cloumn"/>
-        FROM t_guarantee
-        JOIN t_guarantee_item gi ON g.sn = gi.guarantee_sn
+        FROM guarantee
+        <include refid="base_join"/>
         WHERE id = #{id}
     </select>
 
     <!-- 新增数据 -->
     <insert id="save" parameterType="cn.nine.crm.domain.Guarantee"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
-        INSERT INTO t_guarantee(
+        INSERT INTO guarantee(
             sn,
             end_date,
             contract_sn
@@ -103,7 +118,7 @@
 
     <!-- 修改数据 -->
     <update id="update" parameterType="cn.nine.crm.domain.Guarantee">
-        UPDATE t_guarantee
+        UPDATE guarantee
         SET
             sn = #{sn},
             end_date = #{endDate},
@@ -114,7 +129,7 @@
     <!-- 删除单个数据 -->
     <delete id="delete" parameterType="long">
         DELETE
-        FROM t_guarantee
+        FROM guarantee
         WHERE id = #{id}
     </delete>
 
@@ -122,7 +137,7 @@
     <delete id="batchDelete">
         <!--open最前面的字符,close在最后的字符separator分隔符,每次循环使用什么分隔-->
         DELETE
-        FROM t_guarantee
+        FROM guarantee
         WHERE id IN
             <foreach collection="list" open="(" item="id" close=")" separator=",">
                 #{id}
