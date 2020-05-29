@@ -37,4 +37,7 @@ export default {
   #app .hideSidebar .el-submenu>.el-submenu__title {
     text-align: center;
   }
+  #app .hideSidebar .submenu-title-noDropdown .el-tooltip .ivu-icon{
+    margin-left: 15px;
+  }
 </style>

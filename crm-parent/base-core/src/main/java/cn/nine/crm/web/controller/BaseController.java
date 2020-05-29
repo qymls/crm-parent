@@ -2,6 +2,7 @@ package cn.nine.crm.web.controller;
 
 import cn.nine.crm.dto.IdsDto;
 import cn.nine.crm.service.IBaseService;
+import cn.nine.crm.util.LogAnnotations;
 import cn.nine.crm.util.PageList;
 import cn.nine.crm.util.Result;
 import io.swagger.annotations.Api;
@@ -15,6 +16,7 @@ import java.util.List;
 @ResponseBody
 @SuppressWarnings(value = "all")/*抑制警告*/
 @Api(value = "BaseController")
+@LogAnnotations
 public class BaseController<T, ID extends Serializable, Q> {
     @Autowired
     private IBaseService<T, ID, Q> baseService;

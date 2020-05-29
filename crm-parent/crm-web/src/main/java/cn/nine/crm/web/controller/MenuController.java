@@ -8,8 +8,10 @@ import cn.nine.crm.query.MenuQuery;
 import cn.nine.crm.service.IMenuService;
 import cn.nine.crm.service.IPermissionService;
 import cn.nine.crm.util.ConstantApi;
+import cn.nine.crm.util.LogAnnotations;
 import cn.nine.crm.util.Result;
 import cn.nine.crm.web.com.baidu.translate.demo.TransApi;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Param;
 import org.apache.shiro.SecurityUtils;
@@ -29,6 +31,7 @@ import java.util.*;
 @Controller
 @RequestMapping("menu")
 @SuppressWarnings(value = "all")/*抑制警告*/
+@LogAnnotations
 public class MenuController extends BaseController<Menu, Long, MenuQuery> {
     private IMenuService menuService;
     private IPermissionService permissionService;
@@ -49,8 +52,9 @@ public class MenuController extends BaseController<Menu, Long, MenuQuery> {
      * @param menu
      * @return
      */
-    @RequestMapping("/update_return")
+    @PostMapping("/update_return")
     @ResponseBody
+    @ApiOperation("修改方法，并且返回当前修改菜单的所有父菜单")
     public List<String> updateReturn(@RequestBody MenuPermissionDto menuPermissionDto) {
         Menu menu = menuPermissionDto.getMenu();
         String[] permission = menuPermissionDto.getPermission();
@@ -150,8 +154,9 @@ public class MenuController extends BaseController<Menu, Long, MenuQuery> {
      * @param ids
      * @return
      */
-    @RequestMapping("/menuBatchDelete")
+    @PostMapping("/menuBatchDelete")
     @ResponseBody
+    @ApiOperation("通过ids批量删除菜单")
     public Result menuBatchDelete(Long[] ids) {
         for (Long id : ids) {
             try {
@@ -170,8 +175,9 @@ public class MenuController extends BaseController<Menu, Long, MenuQuery> {
      * @param name
      * @return
      */
-    @RequestMapping("/findByName")
+    @PostMapping("/findByName")
     @ResponseBody
+    @ApiOperation("查询菜单名称是否重复")
     public Menu findOne(String name) {
         return menuService.findByName(name);
     }
@@ -182,8 +188,9 @@ public class MenuController extends BaseController<Menu, Long, MenuQuery> {
      * @param name
      * @return
      */
-    @RequestMapping("/getEnglishNameByBaiduApi")
+    @PostMapping("/getEnglishNameByBaiduApi")
     @ResponseBody
+    @ApiOperation("百度翻译Api")
     public String getEnglishNameByBaiduApi(String name) {
         TransApi api = new TransApi(ConstantApi.BaiduFanyi_APP_ID, ConstantApi.BaiduFanyi_SECURITY_KEY);
         String transResult = api.getTransResult(name, "auto", "en");
@@ -195,8 +202,9 @@ public class MenuController extends BaseController<Menu, Long, MenuQuery> {
      *
      * @return
      */
-    @RequestMapping("/findAllMenuTemp")
+    @PostMapping("/findAllMenuTemp")
     @ResponseBody
+    @ApiOperation("查询所有菜单，用于主页左侧显示")
     public Map<Object, Object> findAllMenuTemp() {
         HashMap<Object, Object> map = new HashMap<>();
         List<Menu> menuList = menuService.findAll();
@@ -210,8 +218,9 @@ public class MenuController extends BaseController<Menu, Long, MenuQuery> {
      *
      * @return
      */
-    @RequestMapping("/findMenuByEmployeeId")
+    @PostMapping("/findMenuByEmployeeId")
     @ResponseBody
+    @ApiOperation("根据用户查询菜单")
     public  Map<Object, Object> findMenuByEmployeeId() {
         Employee employee = (Employee) SecurityUtils.getSubject().getPrincipal();
         /*获取登录用户*/
@@ -227,8 +236,9 @@ public class MenuController extends BaseController<Menu, Long, MenuQuery> {
      *
      * @return
      */
-    @RequestMapping("/findMenuItem")
+    @PostMapping("/findMenuItem")
     @ResponseBody
+    @ApiOperation("查询所有最后一级菜单")
     public List<Menu> findMenuItem() {
         return menuService.findMenuItem();
     }
@@ -238,8 +248,9 @@ public class MenuController extends BaseController<Menu, Long, MenuQuery> {
      *
      * @return
      */
-    @RequestMapping("/getMenuPermission")
+    @PostMapping("/getMenuPermission")
     @ResponseBody
+    @ApiOperation("查询菜单的所有权限")
     public List<String> getMenuPermission(Long id) {
         ArrayList<String> permissonList = new ArrayList<>();
         Set<Permission> permissionsByMenu = permissionService.findPermissionsByMenu(id);

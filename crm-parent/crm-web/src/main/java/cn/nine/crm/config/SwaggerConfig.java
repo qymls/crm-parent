@@ -18,7 +18,7 @@ public class SwaggerConfig {
                 .apiInfo(this.apiInfo())
                 .select()
                 //这个是Swagger扫描的controller的基本包底层会把扫描到的类所在的包和这个基本包的路径进行前缀匹配
-                .apis(RequestHandlerSelectors.basePackage("cn.qymls"))
+                .apis(RequestHandlerSelectors.basePackage("cn.nine.crm"))
                 .paths(PathSelectors.any())
                 .build();
     }

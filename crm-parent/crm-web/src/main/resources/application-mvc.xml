@@ -3,14 +3,17 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
-       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd"
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd"
 >
 
 
     <context:component-scan base-package="cn.nine.crm.web.controller"/>
+    <context:component-scan base-package="cn.nine.crm.web.systemlog"/><!--扫描日志aop-->
     <context:component-scan base-package="cn.nine.crm.config"/>
+    <aop:aspectj-autoproxy proxy-target-class="true"/><!--开启aop切点-->
     <!--<context:component-scan base-package="cn.afterturn.easypoi.view"/>
     <context:component-scan base-package="cn.qymls.easypoi"/>--><!--用于查询数据库，扫描包-->
     <!--扫描包下面的类是否有@Controller注解，有的话，就交给springMvc来创建对象
