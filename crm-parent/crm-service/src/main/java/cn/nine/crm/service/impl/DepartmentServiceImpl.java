@@ -9,6 +9,8 @@ import cn.nine.crm.service.Impl.BaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class DepartmentServiceImpl extends BaseServiceImpl<Department,Long, DepartmentQuery> implements IDepartmentService {
 
@@ -17,5 +19,12 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department,Long, Depa
     @Autowired
     public void setDepartmentMapper(DepartmentMapper departmentMapper) {
         this.departmentMapper = departmentMapper;
+    }
+
+    @Override
+    public List<Department> findTreeData() {
+        List<Department> treeData = departmentMapper.findTreeData();
+
+        return treeData;
     }
 }
