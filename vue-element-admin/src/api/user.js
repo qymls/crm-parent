@@ -3,7 +3,7 @@ import qs from 'qs'
 
 export function login(data) {
   return request({
-    url: '/employee/login',
+    url: '/admin/login',
     method: 'post',
     data
   })
@@ -30,7 +30,7 @@ export function getMenus(id) {
 
 export function logout() {
   return request({
-    url: '/employee/logout',
+    url: '/admin/logout',
     method: 'post'
   })
 }

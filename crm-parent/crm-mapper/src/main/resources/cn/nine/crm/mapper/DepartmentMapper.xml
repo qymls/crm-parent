@@ -5,64 +5,102 @@
 
     <select id="findAll" resultType="cn.nine.crm.domain.Department">
         select
-        id,
-        name ,
-        sn
+            id,
+            name ,
+            sn
         from
             department
     </select>
+    <resultMap id="baseMap" type="cn.nine.crm.domain.Department">
+        <id column="d_id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="sn" property="sn"/>
+        <association property="manager"
+                     javaType="cn.nine.crm.domain.Employee">
+            <id column="e_id" property="id"/>
+            <id column="realName" property="realName"/>
+        </association>
+    </resultMap>
+    <select id="selectForPage" resultMap="baseMap">
+        select
+        d.id AS d_id,
+        d.name,
+        d.sn,
+        d.manager,
 
-    <select id="selectForPage" parameterType="cn.nine.crm.query.DepartmentQuery" resultType="cn.nine.crm.domain.Department">
-        select id,name ,sn
-        from department
+        e.id AS e_id,
+        e.realName
+        from
+        department d
+        LEFT JOIN  employee e ON d.manager= e.id
         <include refid="base_where"/>
-        limit #{start},#{pageSize}
-
+        LIMIT #{start} , #{pageSize}
     </select>
 
     <select id="selectForCount" resultType="long">
-        select
-        count(*)
-        from department
+        select count(id) from department
         <include refid="base_where"/>
     </select>
-
     <!--抽取where-->
     <sql id="base_where">
         <where>
             <if test="keyword != null">
-                and name like CONCAT("%",#{keyword},"%")
+                and name like  CONCAT("%",#{keyword},"%")
             </if>
         </where>
     </sql>
-
     <select id="findOne" parameterType="long" resultType="cn.nine.crm.domain.Department">
         select
         id,
         name ,
         sn from department  where id = #{id}
     </select>
-
-
+    <resultMap id="baseResultMap" type="cn.nine.crm.domain.Department">
+            <id column="id" property="id"/>
+            <result column="name" property="name"/>
+            <result column="sn" property="sn"/>
+            <!--发送子sql-->
+        <collection property="children"
+                    ofType="cn.nine.crm.domain.Department"
+                    column="id"
+                    select="cn.nine.crm.mapper.DepartmentMapper.findByParentId">
+        </collection>
+    </resultMap>
+    <!--查询一级部门-->
+    <select id="findTreeData" resultMap="baseResultMap">
+          SELECT id,name FROM department WHERE parent_id IS NULL
+    </select>
+    <!--查询父部门下面的子部门-->
+    <select id="findByParentId" resultMap="baseResultMap">
+        SELECT id,name FROM department WHERE parent_id=#{id}
+    </select>
+    <!--新增-->
     <insert id="save" parameterType="cn.nine.crm.domain.Department"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         insert into department
-        (name, sn)
+        (name, sn,manager)
         values
-        (#{name},#{sn})
+        (#{name},#{sn},#{manager.id})
     </insert>
-
     <update id="update" parameterType="cn.nine.crm.domain.Department">
         update department
-        set name = #{name},
-        sn = #{sn}
-        where id = #{id}
+                <set>
+                    <if test="name !=null and name !=''">
+                    name =#{name},
+                    </if>
+                    <if test="sn !=null and sn !=''">
+                    sn =#{sn},
+                    </if>
+                    <if test="manager !=null and manager.id !=''">
+                    manager=#{manager.id}
+                    </if>
+                </set>
+                where id = #{id}
     </update>
 
     <delete id="delete" parameterType="long">
         delete from department where id = #{id}
     </delete>
-
     <delete id="batchDelete">
         <!--open最前面的字符,close在最后的字符separator分隔符,每次循环使用什么分隔-->
         delete from department where id in
@@ -70,6 +108,4 @@
             #{id}
         </foreach>
     </delete>
-
-
 </mapper>

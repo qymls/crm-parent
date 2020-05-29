@@ -3,11 +3,9 @@
     <template v-if="hasOneShowingChild(item.children,item) && (!onlyOneChild.children||onlyOneChild.noShowingChildren)&&!item.alwaysShow">
       <app-link v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path)">
         <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{'submenu-title-noDropdown':!isNest}">
-          <template slot="title">
             <!--<i :class="onlyOneChild.meta.icon||(item.meta&&item.meta.icon)" style="color: #f4f4f5 !important;"></i>-->
             <Icon :type="onlyOneChild.meta.icon||(item.meta&&item.meta.icon)" size="16" style="color: #f4f4f5 !important;" />
-            <span style="margin-left: 6px">{{generateTitle(onlyOneChild.meta.title)}}</span>
-          </template>
+            <span style="margin-left: 6px" slot="title">{{generateTitle(onlyOneChild.meta.title)}}</span>
         </el-menu-item>
       </app-link>
     </template>

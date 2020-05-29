@@ -5,9 +5,12 @@ import cn.nine.crm.domain.Permission;
 import cn.nine.crm.query.PermissionQuery;
 import cn.nine.crm.service.IMenuService;
 import cn.nine.crm.service.IPermissionService;
+import cn.nine.crm.util.LogAnnotations;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -36,8 +39,13 @@ public class PermissionController extends BaseController<Permission,Long, Permis
         this.menuService = menuService;
     }
 
-    @RequestMapping("/findMenuItem")
+    /**
+     * 查询最后一级菜单
+     * @return
+     */
+    @PostMapping("/findMenuItem")
     @ResponseBody
+    @ApiOperation("查询最后一级菜单")
     public List<Menu> findMenuItem() {
         return menuService.findMenuItem();
     }
@@ -46,8 +54,9 @@ public class PermissionController extends BaseController<Permission,Long, Permis
      * 查询所有菜单
      * @return
      */
-    @RequestMapping("/findAllMenuItem")
+    @PostMapping("/findAllMenuItem")
     @ResponseBody
+    @ApiOperation("查询所有菜单")
     public List<Menu> findAllMenuItem() {
         return menuService.findAll();
     }
@@ -56,8 +65,9 @@ public class PermissionController extends BaseController<Permission,Long, Permis
      * 查询所有父菜单
      * @return
      */
-    @RequestMapping("/getAllMenuParent")
+    @PostMapping("/getAllMenuParent")
     @ResponseBody
+    @ApiOperation("查询所有父菜单")
     public List<Long> getAllMenuParent(Long id) {
         return menuService.findAllParent(id);
     }
