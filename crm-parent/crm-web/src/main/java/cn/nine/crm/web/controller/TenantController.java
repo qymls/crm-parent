@@ -12,16 +12,21 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
+/**
+ * (Tenant)表Controller
+ *
+ * @author ReX
+ * @since 2020-05-28 14:55:23
+ */
 @Controller
 @RequestMapping("tenant")
 @LogAnnotations
-public class TenantController extends BaseController<Tenant,Long, TenantQuery> {
-
+@SuppressWarnings(value = "all")/*抑制警告*/
+public class TenantController extends BaseController<Tenant,Long, TenantQuery>{
     private ITenantService tenantService;
 
     @Autowired
-    public void setMenuService(ITenantService tenantService) {
+    public void setTenantService(ITenantService tenantService) {
         this.tenantService = tenantService;
     }
 
@@ -37,4 +42,5 @@ public class TenantController extends BaseController<Tenant,Long, TenantQuery> {
         }
 
     }
+
 }
