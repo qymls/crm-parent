@@ -101,6 +101,19 @@
               />
             </el-select>
           </el-form-item>
+          <el-form-item label="部门" prop="children" style="width: 400px">
+          <el-select
+            v-model="addForm.children.id"
+            multiple
+            placeholder="请选择二级部门">
+            <el-option
+              v-for="item in children"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
+          </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="submitForm('addForm')">确认提交</el-button>
             <el-button @click="resetForm('addForm')">重置</el-button>
@@ -115,12 +128,14 @@ export default {
   data() {
     return {
       //部门
-      parentId:[{
-          id:'',
-          children:{
-            id:''
-          }
+      children: [{
+        id: '',
+      }, {
+        id: '',
+      }, {
+        id: '',
       }],
+      id:[],
       manager: [{
         id: ''
       }],
@@ -141,6 +156,10 @@ export default {
         manager: {
           id: '',
           realName: ''
+        },
+        children:{
+          id:'',
+          name:''
         }
       },
       rules: {
@@ -188,6 +207,7 @@ export default {
             if (res.data.success) {
               // 赋值管理员
               this.manager = res.data.data
+              this.children =res.data;
               this.dialogFormVisible = false
               this.loadListData()
               message({ message: res.data.message, center: true, type: 'success', showClose: true })
@@ -260,7 +280,8 @@ export default {
         this.manager = res.data.data
       }),
       this.$http.get('/department/findTreeData').then(res => {
-        console.debug(res.data.data)
+        console.debug(res)
+        this.children=res.data;
       })
       // 发送ajax请求
       this.loading = true

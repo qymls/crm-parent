@@ -132,7 +132,6 @@
               <el-radio :label="0">在职</el-radio>
               <el-radio :label="-1">离职</el-radio>
             </el-radio-group>
-
           </el-form-item>
           <el-form-item label="所属部门" prop="department">
             <el-select v-model="addForm.department.id" placeholder="请选择部门">
@@ -234,6 +233,7 @@ export default {
       this.$nextTick(() => {
         this.$refs['addForm'].resetFields()/* 清空*/
         this.addForm = Object.assign({}, row)/* 赋值*/
+        //回显状态
         this.addForm.state = row.state;
       })
     },
