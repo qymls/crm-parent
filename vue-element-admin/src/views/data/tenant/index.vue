@@ -338,9 +338,9 @@ export default {
     },
     stateFormatter(row, column) {
       const state = row.state
-      if (state === 0) {
+      if (state == 0) {
         return '注册'
-      } else if (state === 1) {
+      } else if (state == 1) {
         return '付费'
       } else {
         return '欠费'
