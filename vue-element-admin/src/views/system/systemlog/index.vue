@@ -1,3 +1,9 @@
+<style>
+  .ivu-table .demo-table-error-row td {
+    background-color: #4cb6c3;
+    color: #211b1b;
+  }
+</style>
 <template>
   <div style="height: calc(100vh - 84px);">
     <Card style="height: 100%">
@@ -6,29 +12,36 @@
         信息管理
       </p>
       <Row>
-        <Col span="5">
+        <Col span="24">
           <Form ref="searchForm" :model="searchForm" inline style="margin-left: 20px;" @submit.native.prevent>
             <FormItem prop="name">
-              <Input v-model="searchForm.name" type="text" clearable style="cursor: pointer" placeholder="请输入查找的名称"
-                     @on-enter="click_enter">
-              </Input>
+              <Select v-model="searchForm.name" style="cursor: pointer;width: 200px" clearable placeholder="请选择查找的管理员">
+                <Option v-for="item in EmploeeList" v-model="item.username" :key="item.id">{{ item.username}}</Option>
+              </Select>
             </FormItem>
+            <Form-Item prop="time">
+              <Date-Picker type="datetimerange" v-model="searchForm.time" format="yyyy-MM-dd HH:mm"
+                           placeholder="请选择查询的时间段" transfer :editable="false" style="width: 300px"
+                           @on-change="getTime"></Date-Picker>
+            </Form-Item>
 
             <FormItem>
               <Button type="info" icon="ios-search" @click="loadListData">查找</Button>
             </FormItem>
+            <form-item>
+              <Poptip
+                confirm
+                placement="right"
+                transfer
+                title="您确认删除这些信息吗?"
+                @on-ok="handleBatchRemove"
+              >
+                <Button v-if="row.length>0" type="error" icon="ios-trash">批量删除</Button>
+              </Poptip>
+            </form-item>
           </Form>
         </Col>
-        <Col span="19">
-          <Poptip
-            confirm
-            placement="right"
-            transfer
-            title="您确认删除这些信息吗?"
-            @on-ok="handleBatchRemove"
-          >
-            <Button v-if="row.length>0" type="error" icon="ios-trash">批量删除</Button>
-          </Poptip>
+        <Col span="0">
         </Col>
 
 
@@ -37,7 +50,12 @@
       <Row justify="center" align="middle">
         <div style="margin-top:20px">
           <Table border :loading="loading" :columns="columns" :data="tableData" max-height="690"
+                 :row-class-name="rowClassName"
                  @on-selection-change="handleSelectionChange">
+            <template slot-scope="{ row, index }" slot="result">
+              <Tag color="cyan" style="cursor: pointer" v-if="row.result=='success'">success</Tag>
+              <Tag color="error" style="cursor: pointer" v-else>error</Tag>
+            </template>
             <template slot-scope="{ row, index }" slot="action">
               <Button type="primary" size="small" style="margin-right: 5px" @click="handleShowEditDialog(row,index)">查看
               </Button>
@@ -82,13 +100,14 @@
     data() {
       return {
         page: 1, // 第几页
-        pageSize: 5, // 每页条数
+        pageSize: 20, // 每页条数
         total: 0,
         tableData: [],
         loading: false,
         row: [],
         searchForm: {
-          name: ''
+          name: '',
+          time: '',
         },
 
         columns: [
@@ -130,7 +149,7 @@
             key: 'requesturi',
             align: 'center',
             ellipsis: true,
-            width:150
+            width: 200
 
           },
           {
@@ -138,14 +157,14 @@
             key: 'method',
             align: 'center',
             ellipsis: true,
-            width:150
+            width: 150
           },
           {
             title: '请求参数',
             key: 'params',
             align: 'center',
             ellipsis: true,
-            width:150
+            width: 150
           },
           {
             title: '请求时间',
@@ -154,10 +173,10 @@
           },
           {
             title: '请求结果',
-            key: 'result',
+            slot: 'result',
             align: 'center',
             ellipsis: true,
-            width:150
+            width: 150
           },
 
           {
@@ -167,6 +186,7 @@
             width: 150
           }
         ],
+        EmploeeList: [],
 
       }
     },
@@ -177,11 +197,44 @@
         duration: 3
       })
       this.loadListData()
+      this.getAllEmployee();
     },
     methods: {
-      handleShowEditDialog(row,index){
-      this.tableData[index]= $.extend({}, this.tableData[index],{_expanded:true})
-      console.log(this.tableData)
+      getTime(Date) {
+        this.searchForm.time = Date;
+      },
+      getAllEmployee() {
+        var Notice = this.$Notice;
+        this.$http.post('/systemlog/getAllEmployee').then(res => {
+          if (res.data.success) {
+            this.EmploeeList = res.data.data
+          } else {
+            Notice.error({
+              title: '操作失败通知',
+              desc: res.data.message
+            })
+          }
+        }).catch(error => {
+          Notice.error({
+            title: '操作失败通知',
+            desc: error.message
+          })
+        })
+      },
+      rowClassName(row, index) {
+        if (row.result != 'success') {
+          return "demo-table-error-row"
+        }
+        return '';
+      },
+      handleShowEditDialog(row, index) {
+        this.tableData.splice();
+        this.tableData[index]._expanded = true
+        for (let i = 0; i < this.tableData.length; i++) {
+          if (this.tableData[i].id != row.id) {/*将其他的都设置成false*/
+            this.tableData[i]._expanded = false;
+          }
+        }
       },
       click_enter() { /* 键盘事件,调用查找方法*/
         this.loadListData()
@@ -200,18 +253,25 @@
         var Notice = this.$Notice
         const param = {ids: ids}
         http.post('/systemlog/batchDelete', param).then(res => {
-          if (res.data.success) {
-            Notice.success({
-              title: '操作成功通知',
-              desc: '恭喜你，你已经成功删除该项'
-            })
-            this.loadListData()
-            this.row = [];
-          } else {
+          if (res.data.msg) {
             Notice.error({
               title: '操作失败通知',
-              desc: res.data.message
+              desc: res.data.msg
             })
+          } else {
+            if (res.data.success) {
+              Notice.success({
+                title: '操作成功通知',
+                desc: '恭喜你，你已经成功删除该项'
+              })
+              this.loadListData()
+              this.row = [];
+            } else {
+              Notice.error({
+                title: '操作失败通知',
+                desc: res.data.message
+              })
+            }
           }
         }).catch(error => {
           Notice.error({
@@ -225,17 +285,24 @@
         var http = this.$http
         var Notice = this.$Notice
         http.delete('/systemlog/delete/' + row.id).then(res => {
-          if (res.data.success) {
-            this.loadListData()
-            Notice.success({
-              title: '操作成功通知',
-              desc: '恭喜你，你已经成功删除该项'
-            })
-          } else {
+          if (res.data.msg) {
             Notice.error({
               title: '操作失败通知',
-              desc: res.data.message
+              desc: res.data.msg
             })
+          } else {
+            if (res.data.success) {
+              this.loadListData()
+              Notice.success({
+                title: '操作成功通知',
+                desc: '恭喜你，你已经成功删除该项'
+              })
+            } else {
+              Notice.error({
+                title: '操作失败通知',
+                desc: res.data.message
+              })
+            }
           }
         }).catch(error => {
           Notice.error({
@@ -260,16 +327,21 @@
         const param = {
           'currentPage': this.page,
           'pageSize': this.pageSize,
-          'keyword': this.searchForm.name
+          'keyword': this.searchForm.name,
+          "time": this.searchForm.time.toString(),
         }
         http.post('/systemlog/selectForPage', param).then(res => {
-          if (res.data.success) {
-            this.tableData = res.data.data.list
-            this.total = res.data.data.totalRows
-            this.page = res.data.data.currentPage
-            this.loading = false
+          if (res.data.msg) {
+            Message.error(res.data.msg)
           } else {
-            Message.error('查询失败[' + res.data.message + ']')
+            if (res.data.success) {
+              this.tableData = res.data.data.list
+              this.total = res.data.data.totalRows
+              this.page = res.data.data.currentPage
+              this.loading = false
+            } else {
+              Message.error('查询失败[' + res.data.message + ']')
+            }
           }
         }).catch(error => {
           Message.error('查询失败[' + error.message + ']')

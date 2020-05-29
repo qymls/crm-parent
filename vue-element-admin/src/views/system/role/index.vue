@@ -276,7 +276,7 @@
         RoleData: [],
         total: 0,
         page: 1,/*当前页默认为1*/
-        pageSize: 5,/* 默认5条*/
+        pageSize: 10,/* 默认5条*/
         roleSetting: false,
         columnSource: [
           {

@@ -156,7 +156,7 @@
         PermissionData: [],
         total: 0,
         page: 1,/*当前页默认为1*/
-        pageSize: 5,/* 默认5条*/
+        pageSize: 10,/* 默认5条*/
         menuItem: [],/*查询所有最后一级菜单*/
         menuValue:[]
       }
