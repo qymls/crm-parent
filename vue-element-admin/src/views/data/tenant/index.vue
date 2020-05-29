@@ -129,16 +129,18 @@
             />
           </el-form-item>
           <el-form-item label="状态" prop="state">
-            <el-radio v-model="addForm.state" label="0">注册</el-radio>
-            <el-radio v-model="addForm.state" label="1">付费</el-radio>
-            <el-radio v-model="addForm.state" label="2">欠费</el-radio>
+            <el-radio-group v-model="addForm.state">
+              <el-radio label="0">注册</el-radio>
+              <el-radio label="1">付费</el-radio>
+              <el-radio label="2">欠费</el-radio>
+            </el-radio-group>
           </el-form-item>
           <el-form-item label="公司地址" prop="address">
-            <el-input v-model="addForm.address" autocomplete="off" />
+<!--            <el-input v-model="addForm.address" autocomplete="off" />-->
             <baidu-map :center="{lng: 116.403765, lat: 39.914850}" :zoom="11">
               <bm-auto-complete v-model="addForm.address" :sug-style="{zIndex: 2100}">
                 <div style="margin-bottom:10px">
-                  <input id="searchInput" type="text" placeholder="请输入关键字" class="searchinput">
+                  <el-input id="searchInput" v-model="addForm.address" type="text" placeholder="请输入关键字" class="searchinput"/>
                   <el-button type="success" @click="confirmAdd">确定</el-button>
                 </div>
               </bm-auto-complete>
@@ -226,6 +228,7 @@ export default {
       this.$nextTick(() => {
         this.$refs['addForm'].resetFields()/* 清空*/
         this.addForm = Object.assign({}, row)
+        this.addForm.state = row.state;
       })
     },
 
