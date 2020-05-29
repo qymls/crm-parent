@@ -207,7 +207,7 @@
             }
           }]
         },
-        signTime:'',//签订时间测试
+        signTime:'',
         searchForm: {
           customer:{id:'',name: ''},
           seller:{id:'',username:''}
@@ -314,43 +314,39 @@
       }
     },
     mounted() {
-      this.$Notice.config({/*统一配置右侧弹出的位置，延迟关闭时间*/
-        top: 100,
-        duration: 3
-      })
+      // this.$Notice.config({/*统一配置右侧弹出的位置，延迟关闭时间*/
+      //   top: 100,
+      //   duration: 3
+      // })
       this.loadListData()
     },
     methods: {
+
       click_enter() { /* 键盘事件,调用查找方法*/
         this.loadListData()
       },
       // 显示添加弹窗
       handleShowAddDialog() {
-        this.$http.get("/customer/findAll").then(res=>{
-          console.debug(res.data.data)
-          this.customers = res.data.data;
+        // 清空表单
+        this.$nextTick(() => {
+          this.$refs['addForm'].resetFields()
         })
-        this.$http.get("/employee/findAll").then(res=>{
-          console.debug(res.data.data)
-          this.sellers = res.data.data;
-        })
+        //清空数据
+        this.addForm.customer.id = "";
+        this.addForm.seller.id = "";
         this.dialogFormVisible = true
-        this.$refs['addForm'].resetFields()/* 清空*/
+        // this.$refs['addForm'].resetFields()/* 清空*/
       },
       // 编辑显示弹窗
       handleShowEditDialog(row) {
-        this.$http.get("/customer/findAll").then(res=>{
-          console.debug(res.data.data)
-          this.customers = res.data.data;
-        })
-        this.$http.get("/employee/findAll").then(res=>{
-          console.debug(res.data.data)
-          this.sellers = res.data.data;
-        })
         // 数据回显
         this.dialogFormVisible = true
-        this.$refs['addForm'].resetFields()/* 清空*/
-        this.addForm = Object.assign({}, row)/* 复制*/
+        this.$nextTick(() => {
+          this.$refs['addForm'].resetFields()/* 清空*/
+          this.addForm = Object.assign({}, row)/* 赋值*/
+        })
+        // this.$refs['addForm'].resetFields()/* 清空*/
+        // this.addForm = Object.assign({}, row)/* 复制*/
       },
 
       submitForm(formName) { /* 确认保存*/
@@ -366,6 +362,9 @@
           if (valid) {
             http.post(url, param).then(res => {
               if (res.data.success) {
+                //赋值
+                this.customers = res.data.data;
+                this.sellers = res.data.data;
                 this.dialogFormVisible = false
                 this.loadListData()
                 Message.success(res.data.message)
@@ -381,8 +380,10 @@
         })
       },
       resetForm(formName) { /* 重置*/
-        var refs = this.$refs
-        refs[formName].resetFields()/* 清空*/
+        this.$nextTick(() => {
+          var refs = this.$refs
+          refs[formName].resetFields()/* 清空*/
+        })
       },
       handleSelectionChange(selection) {
         this.row = selection
@@ -450,7 +451,15 @@
         this.loadListData()
       },
       loadListData() {
-
+        //发送ajax请求动态获取数据
+        this.$http.get("/customer/findAll").then(res=>{
+          // console.debug(res.data.data)
+          this.customers = res.data.data;
+        })
+        this.$http.get("/employee/findAll").then(res=>{
+          // console.debug(res.data.data)
+          this.sellers = res.data.data;
+        })
         var http = this.$http
         var Message = this.$Message
         this.loading = true

@@ -315,31 +315,26 @@
       },
       // 显示添加弹窗
       handleShowAddDialog() {
-        this.$http.get("/customer/findAll").then(res=>{
-          console.debug(res.data.data)
-          this.customers = res.data.data;
+        // 清空表单
+        this.$nextTick(() => {
+          this.$refs['addForm'].resetFields()
         })
-        this.$http.get("/employee/findAll").then(res=>{
-          console.debug(res.data.data)
-          this.sellers = res.data.data;
-        })
+        this.addForm.customer.id = "";
+        this.addForm.seller.id = "";
         this.dialogFormVisible = true
-        this.$refs['addForm'].resetFields()/* 清空*/
+        // this.$refs['addForm'].resetFields()/* 清空*/
       },
       // 编辑显示弹窗
       handleShowEditDialog(row) {
-        this.$http.get("/customer/findAll").then(res=>{
-          console.debug(res.data.data)
-          this.customers = res.data.data;
-        })
-        this.$http.get("/employee/findAll").then(res=>{
-          console.debug(res.data.data)
-          this.sellers = res.data.data;
-        })
         // 数据回显
         this.dialogFormVisible = true
-        this.$refs['addForm'].resetFields()/* 清空*/
-        this.addForm = Object.assign({}, row)/* 复制*/
+        this.$nextTick(() => {
+          this.$refs['addForm'].resetFields()/* 清空*/
+          this.addForm = Object.assign({}, row)/* 赋值*/
+        })
+        // this.dialogFormVisible = true
+        // this.$refs['addForm'].resetFields()/* 清空*/
+        // this.addForm = Object.assign({}, row)/* 复制*/
       },
 
       submitForm(formName) { /* 确认保存*/
@@ -355,6 +350,8 @@
           if (valid) {
             http.post(url, param).then(res => {
               if (res.data.success) {
+                this.customers = res.data.data;
+                this.sellers = res.data.data;
                 this.dialogFormVisible = false
                 this.loadListData()
                 Message.success(res.data.message)
@@ -370,8 +367,10 @@
         })
       },
       resetForm(formName) { /* 重置*/
-        var refs = this.$refs
-        refs[formName].resetFields()/* 清空*/
+        this.$nextTick(() => {
+          var refs = this.$refs
+          refs[formName].resetFields()/* 清空*/
+        })
       },
       handleSelectionChange(selection) {
         this.row = selection
@@ -439,6 +438,14 @@
         this.loadListData()
       },
       loadListData() {
+        this.$http.get("/customer/findAll").then(res=>{
+          // console.debug(res.data.data)
+          this.customers = res.data.data;
+        })
+        this.$http.get("/employee/findAll").then(res=>{
+          // console.debug(res.data.data)
+          this.sellers = res.data.data;
+        })
         var http = this.$http
         var Message = this.$Message
         this.loading = true
@@ -451,6 +458,7 @@
         }
         http.post('/order/selectForPage', param).then(res => {
           if (res.data.success) {
+
             this.tableData = res.data.data.list
             this.total = res.data.data.totalRows
             this.page = res.data.data.currentPage

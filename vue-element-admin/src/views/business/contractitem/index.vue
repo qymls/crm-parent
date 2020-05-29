@@ -98,14 +98,10 @@
               <Input v-model="addForm.scale" placeholder="请输入所占比例(%)"></Input>
             </FormItem>
             <FormItem label="是否支付" prop="isPayment" :formatter = "formatterPay">
-              <el-select v-model="addForm.isPayment" placeholder="请选择">
-                <el-option
-                  v-for="item in options"
-                  :key="item.isPayment"
-                  :label="item.label"
-                  :value="item.isPayment">
-                </el-option>
-              </el-select>
+              <el-radio-group v-model="addForm.isPayment">
+                <el-radio :label="0">未支付</el-radio>
+                <el-radio :label="1">已支付</el-radio>
+              </el-radio-group>
             </FormItem>
             <FormItem>
               <Button type="primary" @click="submitForm('addForm')">确认</Button>
@@ -155,14 +151,7 @@
           }]
         },
         payTime:'',//付款时间测试
-        /*是否支付下拉框*/
-        options: [{
-          value: '0',
-          label: '未支付'
-        }, {
-          value: '1',
-          label: '已支付'
-        }],
+
         isPayment: '',
         //查询
         searchForm: {
@@ -227,7 +216,7 @@
         /*添加规则*/
         rules: {
           sn: [
-            { required: true, message: '请输入合同编号', trigger: 'blur' }
+            { required: false, message: '请输入合同编号', trigger: 'blur' }
           ],
           // payTime: [
           //   { required: true, message: '请选择支付时间', trigger: 'blur' }
@@ -249,30 +238,36 @@
       this.loadListData()
     },
     methods: {
-      /*是否支付*/
-      formatterPay(row,colum){
-        if (row.isPayment == 0){
-          return "未支付";
-        }
-        if(row.isPayment == 1){
-          return "已支付";
-        }
-
+      // 格式化支付状态
+      formatterPay: function(row, column) {
+        return row.isPayment == 0 ? '未支付' : '已支付'
       },
       click_enter() { /* 键盘事件,调用查找方法*/
         this.loadListData()
       },
       // 显示添加弹窗
       handleShowAddDialog() {
-        this.dialogFormVisible = true
-        this.$refs['addForm'].resetFields()/* 清空*/
+        // 清空表单
+        this.$nextTick(() => {
+          this.$refs['addForm'].resetFields()
+        })
+        this.dialogFormVisible = true;
+        //重置数据
+        this.addForm.isPayment = 0;
+        // this.$refs['addForm'].resetFields()/* 清空*/
       },
       // 编辑显示弹窗
       handleShowEditDialog(row) {
         // 数据回显
         this.dialogFormVisible = true
-        this.$refs['addForm'].resetFields()/* 清空*/
-        this.addForm = Object.assign({}, row)/* 复制*/
+        this.$nextTick(() => {
+          this.$refs['addForm'].resetFields()/* 清空*/
+          this.addForm = Object.assign({}, row)/* 赋值*/
+          //回显状态
+          this.addForm.isPayment = row.isPayment;
+        })
+        // this.$refs['addForm'].resetFields()/* 清空*/
+        // this.addForm = Object.assign({}, row)/* 复制*/
       },
       /*添加、更新 提交*/
       submitForm(formName) { /* 确认保存*/
@@ -303,8 +298,10 @@
         })
       },
       resetForm(formName) { /* 重置*/
-        var refs = this.$refs
-        refs[formName].resetFields()/* 清空*/
+        this.$nextTick(() => {
+          var refs = this.$refs
+          refs[formName].resetFields()/* 清空*/
+        })
       },
       handleSelectionChange(selection) {
         this.row = selection
@@ -373,7 +370,7 @@
         this.page = val
         this.loadListData()
       },
-      /*查询事件*/
+      /*列表*/
       loadListData() {
         var http = this.$http
         var Message = this.$Message
