@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.nine.crm.mapper.SystemlogMapper">
+
+    <select id="findAll" resultType="cn.nine.crm.domain.Systemlog">
+        select
+        *
+        from systemlog
+    </select>
+
+    <select id="selectForPage" parameterType="cn.nine.crm.query.SystemlogQuery" resultType="cn.nine.crm.domain.Systemlog">
+        select *
+        from systemlog
+        <include refid="base_where"/>
+        limit #{start},#{pageSize}
+
+    </select>
+
+    <select id="selectForCount" resultType="long">
+        select
+        count(*)
+        from systemlog
+        <include refid="base_where"/>
+    </select>
+
+    <!--抽取where-->
+    <sql id="base_where">
+        <where>
+            <if test="keyword != null">
+                and name like CONCAT("%",#{keyword},"%")
+            </if>
+        </where>
+    </sql>
+
+    <select id="findOne" parameterType="long" resultType="cn.nine.crm.domain.Systemlog">
+        select
+       *
+        from systemlog  where id = #{id}
+    </select>
+
+
+    <insert id="save" parameterType="cn.nine.crm.domain.Systemlog"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into systemlog
+        (opuser, opip, requestUri, method, params, result,optime)
+        values
+        (#{opuser},#{opip},#{requesturi},#{method},#{params},#{result},#{optime})
+    </insert>
+
+    <update id="update" parameterType="cn.nine.crm.domain.Systemlog">
+        update systemlog
+        set name = #{name},
+        sn = #{sn}
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        delete from systemlog where id = #{id}
+    </delete>
+
+    <delete id="batchDelete">
+        <!--open最前面的字符,close在最后的字符separator分隔符,每次循环使用什么分隔-->
+        delete from systemlog where id in
+        <foreach collection="list" open="(" item="id" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+
+</mapper>

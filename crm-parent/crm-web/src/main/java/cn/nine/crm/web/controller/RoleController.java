@@ -8,9 +8,12 @@ import cn.nine.crm.query.RoleQuery;
 import cn.nine.crm.service.IMenuService;
 import cn.nine.crm.service.IPermissionService;
 import cn.nine.crm.service.IRoleService;
+import cn.nine.crm.util.LogAnnotations;
 import cn.nine.crm.util.PageList;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -27,6 +30,7 @@ import java.util.Set;
 @Controller
 @RequestMapping("role")
 @SuppressWarnings(value = "all")/*抑制警告*/
+@LogAnnotations/*日志*/
 public class RoleController extends BaseController<Role, Long, RoleQuery> {
     private IRoleService roleService;
     private IPermissionService permissionService;
@@ -47,27 +51,31 @@ public class RoleController extends BaseController<Role, Long, RoleQuery> {
         this.menuService = menuService;
     }
 
-    @RequestMapping("permission/findPageByQuery")
+    @PostMapping("permission/findPageByQuery")
     @ResponseBody
+    @ApiOperation("角色新增修该页面的所有权限展示")
     public PageList<Permission> findAll(PermissionQuery permissionQuery) {
         PageList<Permission> pageUtil = permissionService.selectForPage(permissionQuery);
         return pageUtil;
     }
 
-    @RequestMapping("/Menu/findAll")
+    @PostMapping("/Menu/findAll")
     @ResponseBody
+    @ApiOperation("角色配置页面，查询菜单树")
     public List<Menu> findAllMenu() {
         return menuService.findAll();
     }
 
-    @RequestMapping("/Menu/newTreeDate")
+    @PostMapping("/Menu/newTreeDate")
     @ResponseBody
+    @ApiOperation("角色配置页面,回显已有菜单")
     public List<Menu> findAllMenunewTreeDate(Long[] ids) {
         return menuService.findAllMenunewTreeDate(ids);
     }
 
-    @RequestMapping("/Menu/findAllRolePermissionMenuByRoleId")
+    @PostMapping("/Menu/findAllRolePermissionMenuByRoleId")
     @ResponseBody
+    @ApiOperation("通过角色id查询角色所有权限")
     public List<Menu> findAllRolePermissionMenuByRoleId(Long id) {
         return menuService.findAllRolePermissionMenuByRoleId(id);
     }
@@ -78,8 +86,9 @@ public class RoleController extends BaseController<Role, Long, RoleQuery> {
      * @param ids
      * @return
      */
-    @RequestMapping("/Menu/getLastMenuByRoleSave")
+    @PostMapping("/Menu/getLastMenuByRoleSave")
     @ResponseBody
+    @ApiOperation("给该角色保存配置的权限")
     public HashMap<Object, Object> getLastMenuByRoleSave(Long[] ids, Long roleid) {
         List<Menu> byRoleSave = menuService.getLastMenuByRoleSave(ids);
         Role role = roleService.findOne(roleid);

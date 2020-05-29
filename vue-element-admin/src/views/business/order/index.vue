@@ -88,7 +88,15 @@
               <Input v-model="addForm.id" type="text"></Input>
             </FormItem>
             <FormItem label="客户姓名" prop="name">
-
+              <!--增添客户姓名带搜索下拉框-->
+              <el-select v-model="addForm.customer.name" filterable placeholder="请选择">
+                <el-option
+                  v-for="item in options"
+                  :key="item.addForm.customer.name"
+                  :label="item.label"
+                  :value="item.addForm.customer.name">
+                </el-option>
+              </el-select>
               <Input v-model="addForm.customer.name" placeholder="请选择客户姓名"></Input>
             </FormItem>
             <FormItem label="签定时间" prop="signTime">
@@ -133,6 +141,9 @@
         tableData: [],
         loading: false,
         row: [],
+        /*客户姓名选择*/
+        options: [],
+        value: '',
         //时间选择
         pickerOptions: {
           disabledDate(time) {
@@ -249,7 +260,7 @@
           //   { required: true, message: '请输入订金金额', trigger: 'blur' }
           // ],
           intro: [
-            { required: true, message: '请输入订单摘要', trigger: 'blur' }
+            { required: true, message: '请输入订单摘要', trigger: 'change' }
           ],
         }
       }
@@ -378,7 +389,24 @@
         var http = this.$http
         var Message = this.$Message
         this.loading = true
+        //获取客户姓名的下拉框
+        var paramName = {
+          "customer":this.addForm.customer
+        }
+        http.get("/order/findAll" ,paramName).then(res=>{
+          if (res.data.success) {
+            this.options = res.data.data.list
+            this.addForm.customer.name = res.data.data.customer.name
+            this.loading = false
+
+          }else {
+            Message.error('查询失败[' + res.data.message + ']')
+          }
+          }).catch(error => {
+            Message.error('查询失败[' + error.message + ']')
+        })
         // vue加载完成，发送ajax请求动态获取数据
+        //分页
         const param = {
           'currentPage': this.page,
           'pageSize': this.pageSize,

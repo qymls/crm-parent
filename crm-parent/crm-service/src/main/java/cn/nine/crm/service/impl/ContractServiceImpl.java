@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 /**
  * 合同 ServiceImpl层
@@ -24,15 +23,12 @@ public class ContractServiceImpl extends BaseServiceImpl<Contract,Long, Contract
     private ContractMapper contractMapper;
 
     public void save(Contract contract) {
-        String a = "D";
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+        //设置订单开头字符
+        String a = "C";
+        //中间数字以订单建立当天的日期及毫秒数
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
         String str = format.format(new Date());
-        int nf = 100001;
-        nf = nf++;
-        String autoNum = a+str+nf;
-        //判断数据库中是否有该编号
-        List<Contract> list = contractMapper.findAll();
-        contract.setSn(autoNum);
+        contract.setSn(a+str);
         contractMapper.save(contract);
     }
 

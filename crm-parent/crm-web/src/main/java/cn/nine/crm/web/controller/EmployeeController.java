@@ -2,6 +2,7 @@ package cn.nine.crm.web.controller;
 
 import cn.nine.crm.domain.Employee;
 import cn.nine.crm.query.EmployeeQuery;
+import cn.nine.crm.util.LogAnnotations;
 import cn.nine.crm.util.Result;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -12,10 +13,7 @@ import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +22,7 @@ import java.util.Map;
 @Controller
 @ResponseBody
 @RequestMapping("/employee")
+@LogAnnotations
 public class EmployeeController extends BaseController<Employee,Long,EmployeeQuery> {
     private DefaultSecurityManager securityManager;/*shiro的核心对象*/
 
@@ -32,7 +31,7 @@ public class EmployeeController extends BaseController<Employee,Long,EmployeeQue
         this.securityManager = securityManager;
     }
 
-    @RequestMapping(value = "/login",method = RequestMethod.POST)
+    @PostMapping("/login")
     @ResponseBody
     public Result login(@RequestBody Employee employee){
         SecurityUtils.setSecurityManager(securityManager);/*设置上下文*/
@@ -72,7 +71,7 @@ public class EmployeeController extends BaseController<Employee,Long,EmployeeQue
      * 注销
      * @return
      */
-    @RequestMapping(value = "/logout",method = RequestMethod.POST)
+    @PostMapping("/logout")
     @ResponseBody
     public Result logout(){
         Subject subject = SecurityUtils.getSubject();

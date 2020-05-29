@@ -2,7 +2,7 @@
   <div style="height: calc(100vh - 84px);">
     <el-card class="box-card" style="height: 100%">
       <div slot="header" class="clearfix">
-        <span>部门管理</span>
+        <span>信息管理</span>
       </div>
       <el-row>
         <el-col :span="3">
@@ -22,7 +22,13 @@
             placement="right"
             @onConfirm="handleBatchRemove"
           >
-            <el-button slot="reference" type="danger" icon="el-icon-delete" size="small" style="float: left;margin: auto 3px 20px 20px;">
+            <el-button
+              slot="reference"
+              type="danger"
+              icon="el-icon-delete"
+              size="small"
+              style="float: left;margin: auto 3px 20px 20px;"
+            >
               删除
             </el-button>
           </el-popconfirm>
@@ -35,20 +41,30 @@
             class="demo-form-inline"
             style="float: left;"
           >
-            <el-form-item label="部门名称">
-              <el-input v-model="searchForm.name" placeholder="部门名称" clearable />
+            <el-form-item label="用户名">
+              <el-input v-model="searchForm.name" placeholder="用户名" clearable />
             </el-form-item>
+
             <el-form-item>
               <el-button type="primary" icon="el-icon-search" @click="loadListData">查询</el-button>
             </el-form-item>
           </el-form>
         </el-col>
       </el-row>
-      <el-table v-loading="loading" border :data="tableData" style="width: 100%" max-height="690" @selection-change="handleSelectionChange">
+      <el-table
+        v-loading="loading"
+        border
+        :data="tableData"
+        style="width: 100%"
+        max-height="690"
+        @selection-change="handleSelectionChange"
+      >
         <el-table-column type="selection" width="100" align="center" />
-        <el-table-column prop="name" label="名称" />
-        <el-table-column prop="sn" label="部门编号" />
-        <el-table-column prop="manager.realName" label="部门经理" />
+        <el-table-column type="index" width="50" label="序号" align="center" />
+        <el-table-column prop="name" label="套餐名称" />
+        <el-table-column prop="price" label="价格" />
+        <el-table-column prop="expireDate" label="失效日期" />
+        <el-table-column prop="status" label="状态" :formatter="statusFormatter" />
         <el-table-column fixed="right" label="操作" width="150" align="center">
           <template slot-scope="scope">
             <el-button type="primary" size="small" @click="handleShowEditDialog(scope.row)">编辑</el-button>
@@ -80,32 +96,33 @@
       />
       <!--  新增、编辑-->
       <el-dialog title="信息管理" :visible.sync="dialogFormVisible" :close-on-click-modal="false" width="35%">
-        <el-form ref="addForm" :model="addForm" label-width="50px" :rules="rules">
+        <el-form ref="addForm" :model="addForm" label-width="100px" :rules="rules">
           <el-form-item v-show="false" prop="id">
             <el-input v-model="addForm.id" />
           </el-form-item>
-          <el-form-item label="名称" prop="name">
+          <el-form-item label="套餐名称" prop="name">
             <el-input v-model="addForm.name" autocomplete="off" />
           </el-form-item>
-          <el-form-item label="编号" prop="sn">
-            <el-input v-model="addForm.sn" autocomplete="off" />
+          <el-form-item label="套餐价格" prop="price">
+            <el-input v-model="addForm.price" autocomplete="off" />
           </el-form-item>
-          <el-form-item label="经理" prop="manager" style="width: 400px">
-            <el-select v-model="addForm.manager.id" placeholder="请选择经理">
-              <!--key:id -->
-              <el-option
-                v-for="item in manager"
-                :key="item.id"
-                :label="item.realName"
-                :value="item.id"
-              />
-            </el-select>
+          <el-form-item label="失效日期" prop="expireDate">
+            <el-date-picker
+              v-model="addForm.expireDate"
+              type="date"
+              placeholder="选择日期"
+            />
+          </el-form-item>
+          <el-form-item label="状态" prop="status">
+            <el-radio v-model="addForm.status" label="false">停用</el-radio>
+            <el-radio v-model="addForm.status" label="true">启用</el-radio>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="submitForm('addForm')">确认提交</el-button>
             <el-button @click="resetForm('addForm')">重置</el-button>
           </el-form-item>
         </el-form>
+
       </el-dialog>
     </el-card>
   </div>
@@ -114,16 +131,6 @@
 export default {
   data() {
     return {
-      //部门
-      parentId:[{
-          id:'',
-          children:{
-            id:''
-          }
-      }],
-      manager: [{
-        id: ''
-      }],
       page: 1, // 第几页
       pageSize: 5, // 每页条数
       total: 0,
@@ -137,11 +144,9 @@ export default {
       addForm: {
         id: '',
         name: '',
-        sn: '',
-        manager: {
-          id: '',
-          realName: ''
-        }
+        price: '',
+        expireDate: '',
+        status: ''
       },
       rules: {
         name: [
@@ -155,13 +160,10 @@ export default {
   },
   methods: {
     // 显示添加弹窗
-
     handleShowAddDialog() {
       this.dialogFormVisible = true
-
       this.$nextTick(() => {
         this.$refs['addForm'].resetFields()/* 清空*/
-        // 清空下拉框
       })
     },
     // 编辑显示弹窗
@@ -173,21 +175,20 @@ export default {
         this.addForm = Object.assign({}, row)/* 复制*/
       })
     },
+
     submitForm(formName) { /* 确认保存*/
       var refs = this.$refs
       var http = this.$http
       var message = this.$message
       refs[formName].validate((valid) => {
         const param = Object.assign({}, this.addForm)
-        let url = '/department/save'
+        let url = '/meal/save'
         if (this.addForm.id) {
-          url = '/department/update'
+          url = '/meal/update'
         }
         if (valid) {
           http.post(url, param).then(res => {
             if (res.data.success) {
-              // 赋值管理员
-              this.manager = res.data.data
               this.dialogFormVisible = false
               this.loadListData()
               message({ message: res.data.message, center: true, type: 'success', showClose: true })
@@ -220,7 +221,7 @@ export default {
       const param = { ids: ids }
       var http = this.$http
       var notify = this.$notify
-      http.post('/department/batchDelete', param).then(res => {
+      http.post('/meal/batchDelete', param).then(res => {
         if (res.data.success) {
           notify({ title: '删除成功', message: '恭喜你，你已经成功删除', type: 'success', offset: 100 })
           this.loadListData()
@@ -235,7 +236,7 @@ export default {
     handleRemove(row) {
       var http = this.$http
       var notify = this.$notify
-      http.delete('/department/delete/' + row.id).then(res => {
+      http.delete('/meal/delete/' + row.id).then(res => {
         if (res.data.success) {
           notify({ title: '删除成功', message: '恭喜你，你已经成功删除', type: 'success', offset: 100 })
           this.loadListData()
@@ -255,14 +256,6 @@ export default {
       this.loadListData()
     },
     loadListData() {
-      // 查询到部门给参数
-      this.$http.get('/employee/findAll').then(res => {
-        this.manager = res.data.data
-      }),
-      this.$http.get('/department/findTreeData').then(res => {
-        console.debug(res.data.data)
-      })
-      // 发送ajax请求
       this.loading = true
       // vue加载完成，发送ajax请求动态获取数据
       const param = {
@@ -272,7 +265,7 @@ export default {
       }
       var http = this.$http
       var message = this.$message
-      http.post('/department/selectForPage', param).then(res => {
+      http.post('/meal/selectForPage', param).then(res => {
         if (res.data.success) {
           this.tableData = res.data.data.list
           this.total = res.data.data.totalRows
@@ -284,6 +277,16 @@ export default {
       }).catch(error => {
         message.error('查询失败[' + error.message + ']')
       })
+    },
+    statusFormatter(row) {
+      const status = row.status
+      if (status == 0) {
+        return '注册'
+      } else if (status == 1) {
+        return '付费'
+      } else {
+        return '欠费'
+      }
     }
   }
 

@@ -17,6 +17,6 @@ public class Tenant extends BaseDomain {
     private String address;
     private String logo;
     private Meal meal;
-    private boolean ispay;
+    private boolean isPay;
 
 }

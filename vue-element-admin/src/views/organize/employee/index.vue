@@ -128,8 +128,11 @@
             />
           </el-form-item>
           <el-form-item label="状态" prop="state">
-            <el-radio v-model="addForm.state" label="0">在职</el-radio>
-            <el-radio v-model="addForm.state" label="-1">离职</el-radio>
+            <el-radio-group v-model="addForm.state">
+              <el-radio :label="0">在职</el-radio>
+              <el-radio :label="-1">离职</el-radio>
+            </el-radio-group>
+
           </el-form-item>
           <el-form-item label="所属部门" prop="department">
             <el-select v-model="addForm.department.id" placeholder="请选择部门">
@@ -163,7 +166,10 @@
   </div>
 </template>
 <script>
+import ElRadioGroup from "element-ui/packages/radio/src/radio-group";
+
 export default {
+  components: {ElRadioGroup},
   data() {
     return {
       department: [{
@@ -215,7 +221,11 @@ export default {
       this.$nextTick(() => {
         this.$refs['addForm'].resetFields()
       })
-      this.dialogFormVisible = true
+      this.dialogFormVisible = true;
+
+      this.addForm.department.id ="";
+      this.add.tenant.id="";
+      this.addForm.state = 0;
     },
     // 编辑显示弹窗
     handleShowEditDialog(row) {
@@ -224,6 +234,7 @@ export default {
       this.$nextTick(() => {
         this.$refs['addForm'].resetFields()/* 清空*/
         this.addForm = Object.assign({}, row)/* 赋值*/
+        this.addForm.state = row.state;
       })
     },
     submitForm(formName) { /* 确认保存*/
