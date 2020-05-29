@@ -27,14 +27,7 @@ public class DepartmentController extends BaseController<Department,Long, Depart
         this.departmentService = departmentService;
     }
 
-    @PostMapping("menu/getMenus")
-    public Map<Object,Object> getMenus(Long id){
-        HashMap<Object, Object> map = new HashMap<>();
-        map.put("resrult" , Result.ok());
-        map.put("code",20000);
-        System.out.println(id);
-        return map;
-    }
+
     @ResponseBody
     @RequestMapping(value = "/findTreeData" )
     public Result findTreeData(){
