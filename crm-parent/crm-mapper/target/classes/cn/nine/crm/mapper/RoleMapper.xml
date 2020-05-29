@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.nine.crm.mapper.RoleMapper">
+
+    <resultMap id="result" type="cn.nine.crm.domain.Role">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="sn" column="sn"/>
+        <collection property="permissionList"
+                    ofType="cn.nine.crm.domain.Permission"
+                    column="id"
+                    select="cn.nine.crm.mapper.PermissionMapper.roleFindPermission"/>
+
+    </resultMap>
+    <select id="findAll" resultMap="result">
+        select
+        id,
+        name,
+        sn
+        from role
+    </select>
+
+    <select id="selectForPage" parameterType="cn.nine.crm.query.RoleQuery" resultMap="result">
+        select
+        id,
+        name,
+        sn
+        from role
+        <include refid="base_where"/>
+        limit #{start},#{pageSize}
+
+    </select>
+
+    <select id="selectForCount" resultType="long">
+        select
+        count(*)
+        from role
+        <include refid="base_where"/>
+    </select>
+
+    <!--抽取where-->
+    <sql id="base_where">
+        <where>
+            <if test="keyword != null">
+                and name like CONCAT("%",#{keyword},"%")
+            </if>
+        </where>
+    </sql>
+
+    <select id="findOne" parameterType="long" resultMap="result">
+        select
+       id, name, sn
+        from role  where id = #{id}
+    </select>
+
+
+    <insert id="save" parameterType="cn.nine.crm.domain.Role"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into role
+        (name, sn)
+        values
+        (#{name},#{sn})
+    </insert>
+
+    <update id="update" parameterType="cn.nine.crm.domain.Role">
+        update role
+        set name = #{name},
+        sn = #{sn}
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        delete from role where id = #{id}
+    </delete>
+
+    <delete id="batchDelete">
+        <!--open最前面的字符,close在最后的字符separator分隔符,每次循环使用什么分隔-->
+        delete from role where id in
+        <foreach collection="list" open="(" item="id" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--role保存权限-->
+    <insert id="savePermissions" parameterType="long">
+     insert into role_permission(role_id, permission_id) values (#{role_id},#{permission_id})
+    </insert>
+
+    <!--删除权限根据roleid-->
+    <delete id="deletePermissionsByRoleId">
+        delete from role_permission where role_id = #{role_id}
+    </delete>
+
+
+
+</mapper>

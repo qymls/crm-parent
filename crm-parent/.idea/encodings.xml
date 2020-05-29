@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/base-core/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/base-util/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/crm-common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/crm-mapper/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/crm-mapper/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/crm-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/crm-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/crm-shiro/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/crm-shiro/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/crm-web/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/crm-web/src/main/resources" charset="UTF-8" />
+  </component>
+</project>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.nine.crm.mapper.SystemdictionaryitemMapper">
+
+    <select id="findAll" resultType="cn.nine.crm.domain.Systemdictionaryitem">
+        select
+        *
+        from systemdictionaryitem
+    </select>
+
+    <select id="selectForPage" parameterType="cn.nine.crm.query.SystemdictionaryitemQuery" resultType="cn.nine.crm.domain.Systemdictionaryitem">
+        select *
+        from systemdictionaryitem
+        <include refid="base_where"/>
+        limit #{start},#{pageSize}
+
+    </select>
+
+    <select id="selectForCount" resultType="long">
+        select
+        count(*)
+        from systemdictionaryitem
+        <include refid="base_where"/>
+    </select>
+
+    <!--抽取where-->
+    <sql id="base_where">
+        <where>
+            <if test="keyword != null">
+                and name like CONCAT("%",#{keyword},"%")
+            </if>
+        </where>
+    </sql>
+
+    <select id="findOne" parameterType="long" resultType="cn.nine.crm.domain.Systemdictionaryitem">
+        select
+       *
+        from systemdictionaryitem  where id = #{id}
+    </select>
+
+
+    <insert id="save" parameterType="cn.nine.crm.domain.Systemdictionaryitem"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into systemdictionaryitem
+        ()
+        values
+        ()
+    </insert>
+
+    <update id="update" parameterType="cn.nine.crm.domain.Systemdictionaryitem">
+        update systemdictionaryitem
+        set name = #{name},
+        sn = #{sn}
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        delete from systemdictionaryitem where id = #{id}
+    </delete>
+
+    <delete id="batchDelete">
+        <!--open最前面的字符,close在最后的字符separator分隔符,每次循环使用什么分隔-->
+        delete from systemdictionaryitem where id in
+        <foreach collection="list" open="(" item="id" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+
+</mapper>

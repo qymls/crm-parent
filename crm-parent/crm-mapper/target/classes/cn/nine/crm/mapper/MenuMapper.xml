@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.nine.crm.mapper.MenuMapper">
+    <resultMap id="result" type="cn.nine.crm.domain.Menu">
+        <result property="id" column="id"/>
+        <result property="name" column="name"></result>
+        <result property="url" column="url"></result>
+        <result property="label" column="label"/>
+        <result property="englishName" column="english_Name"/>
+        <result property="createTime" column="create_Time"/>
+        <result property="description" column="description"/>
+        <result property="operator" column="operator"/>
+        <result property="firstmenuid" column="firstmenuid"/>
+        <result property="rank" column="rank"/>
+        <!--自连接查询-->
+        <association property="parent"
+                     column="parent_id"
+                     select="findAllByParentId"
+                     javaType="cn.nine.crm.domain.Menu"
+        />
+    </resultMap>
+    <!--通过parent_id查询父菜单-->
+    <select id="findAllByParentId" parameterType="long" resultMap="result">
+        select
+        <include refid="base_cloumn"/>
+        from menu where id = #{parent_id}
+    </select>
+
+
+    <select id="findAll" resultMap="result">
+        select
+        <include refid="base_cloumn"/>
+        from menu order by rank
+    </select>
+
+    <select id="selectForPage" parameterType="cn.nine.crm.query.MenuQuery" resultMap="result">
+        select
+        <include refid="base_cloumn"/>
+        from menu
+        <include refid="base_where"/> order by rank
+        limit #{start},#{pageSize}
+
+    </select>
+
+    <select id="selectForCount" resultType="long">
+        select
+        count(*)
+        from menu
+        <include refid="base_where"/>
+    </select>
+
+    <sql id="base_cloumn">
+        id, name, url, icon, parent_id, label, english_name, create_time, description, operator, firstmenuid,rank
+    </sql>
+    <!--抽取where-->
+    <sql id="base_where">
+        <where>
+            <if test="keyword != null">
+                and name like CONCAT("%",#{keyword},"%")
+            </if>
+            <if test="time != null">
+                ${time}
+            </if>
+            and firstmenuid = 0
+        </where>
+    </sql>
+
+    <select id="findOne" parameterType="long" resultMap="result">
+        select
+        <include refid="base_cloumn"/>
+        from menu  where id = #{id}
+    </select>
+
+    <insert id="save" parameterType="cn.nine.crm.domain.Menu"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into menu (name, url, icon, parent_id, label, english_name, create_time, description, operator, firstmenuid,rank)
+        values (#{name},#{url},#{icon},#{parent.id},#{label},#{englishName},#{createTime},#{description},#{operator},#{firstmenuid},#{rank})
+    </insert>
+
+    <update id="update" parameterType="cn.nine.crm.domain.Menu">
+        update menu
+        set name = #{name},
+        url = #{url},
+        icon = #{icon},
+        label = #{name},
+        english_name=#{englishName},
+        description = #{description},
+        rank = #{rank}
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        delete from menu where id = #{id}
+    </delete>
+
+    <delete id="batchDelete">
+        <!--open最前面的字符,close在最后的字符separator分隔符,每次循环使用什么分隔-->
+        delete from menu where id in
+        <foreach collection="list" open="(" item="id" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+    <!--业务方法-->
+    <!--通过名称找菜单-->
+    <select id="findByName" parameterType="string" resultType="cn.nine.crm.domain.Menu">
+        select  <include refid="base_cloumn"/>
+        from menu where name = #{name}
+    </select>
+    <!--获取所有的一级菜单-->
+    <select id="getStairMenu" resultMap="result">
+            select  <include refid="base_cloumn"/>
+             from menu where firstmenuid = 0 order by rank
+    </select>
+    <!--通过员工id获取菜单-->
+    <select id="findMenuByEmployeeId" resultMap="result">
+  SELECT  DISTINCT m.*  FROM employee e  JOIN employee_role er ON er.employee_id = e.id JOIN  role_permission rp ON er.role_id =rp.role_id  JOIN permission p ON rp.permission_id = p.id
+       JOIN menu m ON p.menu_id = m.id  WHERE e.id = #{id} ORDER BY m.rank
+    </select>
+
+
+    <!--通过角色id查找权限菜单-->
+    <select id="findAllRolePermissionMenuByRoleId" parameterType="long" resultMap="result">
+       SELECT  DISTINCT m.*  FROM role_permission rp  JOIN permission p ON rp.permission_id = p.id
+       JOIN menu m ON p.menu_id = m.id WHERE rp.role_id = #{id} order by m.rank
+    </select>
+
+
+</mapper>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd"
+>
+
+    <!--使用自动装载注解-->
+    <import resource="application-mapper.xml"/><!--引入jdbc的连接池-->
+    <import resource="application-shiro.xml"/><!--引入shiro框架-->
+    <!--<import resource="applicationContext-quartz.xml"/>--><!--引入定时任务调度器-->
+    <!--<import resource="applicationContext-email.xml"/>--><!--发送邮件-->
+    <!--<context:component-scan base-package="dao"/>--><!--扫描dao层使用spring data jpa 无法使用注解，在前面配置的扫描 dataSource.xml-->
+
+    <!--事务支持-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <tx:annotation-driven transaction-manager="transactionManager"/><!--事务支持注解-->
+
+    <context:component-scan base-package="cn.nine.crm.service"/><!--扫描service层-->
+
+    <bean id="threadPoolTaskExecutor"
+          class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor"/><!--用于第三方登录，异步下载头像-->
+
+
+</beans>

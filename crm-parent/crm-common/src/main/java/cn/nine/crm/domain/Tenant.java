@@ -13,7 +13,7 @@ public class Tenant extends BaseDomain {
     private String email;
     private String sysName;
     private Date registerTime;
-    private boolean state;
+    private String state;
     private String address;
     private String logo;
     private Meal meal;
