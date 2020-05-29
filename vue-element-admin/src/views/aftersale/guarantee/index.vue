@@ -1,9 +1,10 @@
 <template>
   <div style="height: calc(100vh - 84px);">
     <el-card class="box-card" style="height: 100%">
-      <div slot="header" class="clearfix">
-        <span>保修单管理</span>
-      </div>
+      <p slot="title">
+        <Icon type="ios-list-box-outline" size="20" />
+        {{ title }}
+      </p>
 
       <!-- 顶部工具条【查询，新增，批量删除】 -->
       <el-row>
@@ -117,6 +118,7 @@
 export default {
   data() {
     return {
+      title: '保修单管理',
       page: 1, // 第几页
       pageSize: 5, // 每页条数
       total: 0,

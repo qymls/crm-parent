@@ -74,8 +74,12 @@
 
         <!-- 状态【需要格式化】 -->
         <template slot="status" slot-scope="{ row, index }">
-          <Input v-if="editIndex === index" v-model="editStatus" type="text" />
-          <span v-else>{{ row.status }}</span>
+          <Select v-if="editIndex === index" v-model="editStatus">
+            <Option v-for="item in statusList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+          </Select>
+          <span v-else-if="row.status == 0" style="color: red">未处理</span>
+          <span v-else-if="row.status == 1" style="color: #969799">已处理</span>
+          <span v-else-if="row.status == 2" style="color: #00ff09">正在处理</span>
         </template>
 
         <template slot="action" slot-scope="{ row, index }">
@@ -185,7 +189,22 @@ export default {
           width: 200,
           align: 'center'
         }
+      ],//table数据
+      statusList: [
+        {
+          value: '0',
+          label: '未处理'
+        },
+        {
+          value: '1',
+          label: '已处理'
+        },
+        {
+          value: '2',
+          label: '正在处理'
+        }
       ],
+      model1: '',
       title: '保修单明细',
       page: 1, // 第几页
       pageSize: 5, // 每页条数
