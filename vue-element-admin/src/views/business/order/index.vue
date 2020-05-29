@@ -134,9 +134,7 @@
 <script>
   export default {
     data() {
-
       return {
-
         page: 1, // 第几页
         pageSize: 5, // 每页条数
         total: 0,
@@ -280,13 +278,11 @@
       },
       // 显示添加弹窗
       handleShowAddDialog() {
-
         this.dialogFormVisible = true
         this.$refs['addForm'].resetFields()/* 清空*/
       },
       // 编辑显示弹窗
       handleShowEditDialog(row) {
-
         // 数据回显
         this.dialogFormVisible = true
         this.$refs['addForm'].resetFields()/* 清空*/
@@ -390,15 +386,25 @@
         this.loadListData()
       },
       loadListData() {
-
         var http = this.$http
         var Message = this.$Message
         this.loading = true
         //获取客户姓名的下拉框
         var paramName = {
-          "":this.
+          "customer":this.addForm.customer
         }
-        this.$http.get("/order/findAll" ,param)
+        http.get("/order/findAll" ,paramName).then(res=>{
+          if (res.data.success) {
+            this.options = res.data.data.list
+            this.addForm.customer.name = res.data.data.customer.name
+            this.loading = false
+
+          }else {
+            Message.error('查询失败[' + res.data.message + ']')
+          }
+          }).catch(error => {
+            Message.error('查询失败[' + error.message + ']')
+        })
         // vue加载完成，发送ajax请求动态获取数据
         //分页
         const param = {
