@@ -18,23 +18,23 @@
             <Button v-if="row.length>0" type="error" icon="ios-trash">删除</Button>
           </Poptip>
         </Col>
+        <!--查询工具条-->
         <Col span="21">
-          <Form ref="searchForm" :model="searchForm" inline style="margin-left: 20px;" @submit.native.prevent>
+          <Form ref="searchForm" :model="searchForm" inline style="margin-left: 20px;" @submit.native.prevent class="demo-form-inline">
+            <!--客户姓名查询-->
             <FormItem prop="name">
               <Input v-model="searchForm.customer.name" type="text" clearable
                      style="cursor: pointer" placeholder="请输入查找的客户姓名"
                      @on-enter="click_enter">
               </Input>
-              <Input v-model="searchForm.seller.username" type="text" clearable
+            </FormItem>
+            <!--营销人员查询-->
+            <FormItem prop="username">
+             <Input v-model="searchForm.seller.username" type="text" clearable
                      style="cursor: pointer" placeholder="请输入查找的营销人员姓名"
                      @on-enter="click_enter">
               </Input>
-              <Input v-model="searchForm.signTime" type="text" clearable
-                     style="cursor: pointer" placeholder="请选择需要查询的签订时间"
-                     @on-enter="click_enter">
-              </Input>
-            </FormItem>
-
+            </FormItem >
             <FormItem>
               <Button type="info" icon="ios-search" @click="loadListData">查找</Button>
             </FormItem>
@@ -88,7 +88,7 @@
             />
           </div>
         </div>
-        <!--弹出框-->
+        <!--添加/编辑弹出框-->
         <Modal v-model="dialogFormVisible" title="添加信息" class-name="vertical-center-modal" footer-hide draggable
                :styles="{top: '200px'}">
           <Form ref="addForm" :model="addForm" :rules="rules" :label-width="80">
@@ -97,12 +97,12 @@
             </FormItem>
             <FormItem label="客户姓名" prop="name">
               <!--增添客户姓名带搜索下拉框 配置搜索方法 dataFilter-->
-              <el-select v-model="addForm.customer" filterable placeholder="请选择"  :filter-method="dataFilter">
+              <el-select v-model="addForm.customer" filterable placeholder="请输入" @change="selectCustomerName">
                 <el-option
-                  v-for="item in options"
-                  :key="item.addForm.customer"
-                  :label="item.label"
-                  :value="item.addForm.customer">
+                  v-for="(item,index) in options"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
                 </el-option>
               </el-select>
             </FormItem>
@@ -143,14 +143,17 @@
     data() {
       return {
         page: 1, // 第几页
-        pageSize: 5, // 每页条数
+        pageSize: 10, // 每页条数
         total: 0,
         tableData: [],
         loading: false,
         row: [],
         /*客户姓名选择*/
         options: [],
-        customer: '',
+        // customer: {
+        //   id:'',
+        //   name:''
+        // },
         //时间选择
         pickerOptions: {
           disabledDate(time) {
@@ -180,9 +183,11 @@
         signTime:'',//签订时间测试
         searchForm: {
           customer:{
+            id:'',
             name: ''
           },
           seller:{
+            id:'',
             username:''
           },
           signTime:''
@@ -192,6 +197,7 @@
         addForm: {
           id: '',
           customer:{
+            id:"",
             name: '',
           },
           signTime:'',
@@ -204,18 +210,18 @@
         columns: [
           {
             type: 'selection',
-            width: 60,
+            width: 0,
             align: 'center'
           },
           {
             title: '序号',
             type: 'index',
-            width: 100,
+            width: 80,
             align: 'center'
           },
           {
             title: '订单编号',
-            width: 100,
+            width: 120,
             align: 'center',
             key: 'sn'
           },
@@ -227,7 +233,7 @@
           },
           {
             title: '签订时间',
-            width: 120,
+            width: 180,
             align: 'center',
             key: 'signTime'
           },
@@ -260,7 +266,7 @@
             title: '操作',
             slot: 'action',
             align: 'center',
-            width: 150
+            width: 180
           }
         ],
         rules: {
@@ -291,17 +297,12 @@
     },
     methods: {
       /*客户姓名带搜索下拉框*/
-      dataFilter(val) {
-        this.value = val;
-        if (val) { //val存在
-          this.options = this.options.filter((item) => {
-            if (!!~item.label.indexOf(val) || !!~item.label.toUpperCase().indexOf(val.toUpperCase())) {
-              return true
-            }
-          })
-        } else { //val为空时，还原数组
-          this.options = this.options;
-        }
+      selectCustomerName(id){
+        let obj = {};
+        obj = this.$store.state.customer.options.find((item)=>{//这里的userRoleList就是上面遍历的数据源
+          return item.id === id;//筛选出匹配数据
+        });
+        this.addForm.name = obj.name;
       },
       click_enter() { /* 键盘事件,调用查找方法*/
         this.loadListData()
@@ -419,24 +420,6 @@
         var http = this.$http
         var Message = this.$Message
         this.loading = true
-        //获取客户姓名的下拉框
-        var paramName = {
-          "customer":this.addForm.customer
-        }
-        http.get("/order/findAll" ,paramName).then(res=>{
-          if (res.data.success) {
-            //获取用户列表清单
-            this.options = res.data.data.list
-            this.addForm.customer = res.data.data.customer
-
-            this.loading = false
-
-          }else {
-            Message.error('查询失败[' + res.data.message + ']')
-          }
-          }).catch(error => {
-            Message.error('查询失败[' + error.message + ']')
-        })
         // vue加载完成，发送ajax请求动态获取数据
         //分页
         const param = {

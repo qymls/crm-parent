@@ -21,12 +21,11 @@
         <!--查询操作展示列-->
         <Col span="21">
           <Form ref="searchForm" :model="searchForm" inline style="margin-left: 20px;" @submit.native.prevent>
-            <!-- -->
-            <FormItem prop="name">
+            <!-- 所属合同编号-->
+            <FormItem prop="sn">
               <Input v-model="searchForm.contract.sn" type="text" clearable style="cursor: pointer" placeholder="请输入查找的名称" @on-enter="click_enter">
               </Input>
             </FormItem>
-
             <FormItem>
               <Button type="info" icon="ios-search" @click="loadListData">查找</Button>
             </FormItem>
@@ -34,11 +33,12 @@
         </Col>
 
       </Row>
-
-      <Row justify="center" align="middle">
+      <!--列表-->
+      <Row justify="center" align="middle" >
         <div style="margin-top:20px">
           <Table border :loading="loading" :columns="columns" :data="tableData" max-height="690"
-                 @on-selection-change="handleSelectionChange">
+                 @on-selection-change="handleSelectionChange" >
+
             <template slot-scope="{ row, index }" slot="action">
               <Button type="primary" size="small" style="margin-right: 5px"
                       @click="handleShowEditDialog(row)">编辑</Button>
@@ -123,7 +123,7 @@
     data() {
       return {
         page: 1, // 第几页
-        pageSize: 5, // 每页条数
+        pageSize: 10, // 每页条数
         total: 0,
         tableData: [],
         loading: false,
@@ -184,7 +184,7 @@
         columns: [
           {
             type: 'selection',
-            width: 60,
+            width: 0,
             align: 'center'
           },
           {
@@ -195,25 +195,25 @@
           },
           {
             title: '合同编号',
-            width: 100,
+            width: 250,
             align: 'center',
             slot: 'contract'
           },
           {
             title: '付款时间',
-            width: 120,
+            width: 250,
             align: 'center',
             key: 'payTime'
           },
           {
             title: '所占比例(%)',
-            width: 120,
+            width: 200,
             align: 'center',
             key: 'scale'
           },
           {
             title: '是否支付',
-            width: 100,
+            width: 120,
             align: 'center',
             key: 'isPayment'
           },
@@ -221,7 +221,7 @@
             title: '操作',
             slot: 'action',
             align: 'center',
-            width: 150
+            width: 190
           }
         ],
         /*添加规则*/
