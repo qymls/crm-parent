@@ -310,7 +310,7 @@
         menuData: [],
         total: 0,
         page: 1,/*当前页默认为1*/
-        pageSize: 5,/* 默认5条*/
+        pageSize: 10,/* 默认5条*/
         menuName: '',/*解决当前菜单不被当成重复菜单的标识*/
         permissionDsiable: {
           children: []

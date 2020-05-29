@@ -1,13 +1,8 @@
 package cn.crm.test;
 
 
-import cn.nine.crm.domain.Employee;
+import cn.nine.crm.mapper.DepartmentMapper;
 import cn.nine.crm.mapper.EmployeeMapper;
-import cn.nine.crm.query.EmployeeQuery;
-import cn.nine.crm.service.IEmployeeService;
-import cn.nine.crm.service.ITenantService;
-import cn.nine.crm.util.PageList;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -21,16 +16,7 @@ public class TestCrud {
     private EmployeeMapper employeeMapper;
 
     @Autowired
-    private ITenantService tenant;
-    @Autowired
-    private IEmployeeService service;
-    @Test
-     public void test() throws Exception{
-        EmployeeQuery employeeQuery = new EmployeeQuery();
-        employeeQuery.setKeyword("admin");
-        PageList<Employee> employeePageList = service.selectForPage(employeeQuery);
-        System.out.println(employeePageList);
-    }
+    private DepartmentMapper departmentMapper;
 
 
 }

@@ -22,61 +22,7 @@ import java.util.Map;
 @Controller
 @ResponseBody
 @RequestMapping("/employee")
-@LogAnnotations
 public class EmployeeController extends BaseController<Employee,Long,EmployeeQuery> {
-    private DefaultSecurityManager securityManager;/*shiro的核心对象*/
 
-    @Autowired
-    public void setSecurityManager(DefaultSecurityManager securityManager) {
-        this.securityManager = securityManager;
-    }
-
-    @PostMapping("/login")
-    @ResponseBody
-    public Result login(@RequestBody Employee employee){
-        SecurityUtils.setSecurityManager(securityManager);/*设置上下文*/
-
-        Subject subject;
-        try{
-            //SecurityUtils :获取到当前的登录用户(主体)
-            subject = SecurityUtils.getSubject();
-
-            if(!subject.isAuthenticated()){
-                //如果没登录
-                UsernamePasswordToken token =
-                        new UsernamePasswordToken(employee.getUsername(),employee.getPassword());
-                //执行登录
-                subject.login(token);
-            }
-        } catch (UnknownAccountException e) {
-            e.printStackTrace();
-            return Result.error("用户名不存在!");
-        } catch (IncorrectCredentialsException e){
-            e.printStackTrace();
-            return Result.error("密码错误!");
-        } catch (AuthenticationException e){
-            e.printStackTrace();
-            return Result.error("系统异常,吊打程序员！");
-        }
-
-        employee.setPassword("");
-        Map<String,Object> result = new HashMap<>();
-        result.put("user",employee);
-        result.put("sessionId",subject.getSession().getId());
-
-        return Result.ok(result,20000l);
-    }
-
-    /**
-     * 注销
-     * @return
-     */
-    @PostMapping("/logout")
-    @ResponseBody
-    public Result logout(){
-        Subject subject = SecurityUtils.getSubject();
-        subject.logout();
-        return Result.singcode(20000l);
-    }
 
 }

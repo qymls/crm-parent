@@ -5,7 +5,7 @@ import lombok.Data;
  * (Systemlog)实体类
  *
  * @author 申林
- * @since 2020-05-28 21:53:21
+ * @since 2020-05-29 10:11:04
  */
 @Data
 public class Systemlog extends BaseDomain{

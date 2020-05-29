@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ResponseBody
 @RequestMapping("/contract")
 @CrossOrigin
-@LogAnnotations
 public class ContractController extends BaseController<Contract,Long, ContractQuery>{
 
 }

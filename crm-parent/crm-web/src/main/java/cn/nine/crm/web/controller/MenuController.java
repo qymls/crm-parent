@@ -31,7 +31,6 @@ import java.util.*;
 @Controller
 @RequestMapping("menu")
 @SuppressWarnings(value = "all")/*抑制警告*/
-@LogAnnotations
 public class MenuController extends BaseController<Menu, Long, MenuQuery> {
     private IMenuService menuService;
     private IPermissionService permissionService;
