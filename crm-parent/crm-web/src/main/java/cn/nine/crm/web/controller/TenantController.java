@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller
 @RequestMapping("tenant")
-@LogAnnotations
 @SuppressWarnings(value = "all")/*抑制警告*/
 public class TenantController extends BaseController<Tenant,Long, TenantQuery>{
     private ITenantService tenantService;

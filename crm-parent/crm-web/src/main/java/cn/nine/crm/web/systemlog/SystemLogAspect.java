@@ -37,7 +37,8 @@ public class SystemLogAspect {
     //在注解的位置切入代码
     //@within 定义在类上，该类下的方法都被拦截
     //@annotation 写在方法上才能被拦截
-    @Pointcut("@within( cn.nine.crm.util.LogAnnotations)")
+    //方法和类上都支持
+    @Pointcut("@within(cn.nine.crm.util.LogAnnotations) || @annotation(cn.nine.crm.util.LogAnnotations)")
     public void logPoinCut() {
 
     }

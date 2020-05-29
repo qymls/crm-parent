@@ -17,7 +17,6 @@ import java.util.Map;
 @Controller
 @RequestMapping("/department")
 @SuppressWarnings(value = "all")/*抑制警告*/
-@LogAnnotations
 public class DepartmentController extends BaseController<Department,Long, DepartmentQuery> {
     private IDepartmentService departmentService;
 

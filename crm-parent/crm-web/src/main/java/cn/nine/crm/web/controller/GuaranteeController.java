@@ -10,6 +10,5 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @ResponseBody
 @RequestMapping("/guarantee")
-@LogAnnotations
 public class GuaranteeController extends BaseController<Guarantee, Long, GuaranteeQuery> {
 }
