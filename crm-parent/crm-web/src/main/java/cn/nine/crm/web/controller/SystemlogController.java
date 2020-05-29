@@ -3,6 +3,7 @@ package cn.nine.crm.web.controller;
 import cn.nine.crm.domain.Systemlog;
 import cn.nine.crm.query.SystemlogQuery;
 import cn.nine.crm.service.ISystemlogService;
+import cn.nine.crm.util.LogAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller
 @RequestMapping("systemlog")
+@LogAnnotations
 @SuppressWarnings(value = "all")/*抑制警告*/
 public class SystemlogController extends BaseController<Systemlog,Long, SystemlogQuery>{
     private ISystemlogService systemlogService;

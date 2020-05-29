@@ -5,6 +5,7 @@ import cn.nine.crm.domain.Permission;
 import cn.nine.crm.query.PermissionQuery;
 import cn.nine.crm.service.IMenuService;
 import cn.nine.crm.service.IPermissionService;
+import cn.nine.crm.util.LogAnnotations;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,6 +23,7 @@ import java.util.List;
 @Controller
 @RequestMapping("permission")
 @SuppressWarnings(value = "all")/*抑制警告*/
+@LogAnnotations
 public class PermissionController extends BaseController<Permission,Long, PermissionQuery>{
     private IPermissionService permissionService;
     private IMenuService menuService;

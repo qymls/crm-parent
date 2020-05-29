@@ -2,6 +2,7 @@ package cn.nine.crm.web.controller;
 
 import cn.nine.crm.domain.Employee;
 import cn.nine.crm.query.EmployeeQuery;
+import cn.nine.crm.util.LogAnnotations;
 import cn.nine.crm.util.Result;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -24,6 +25,7 @@ import java.util.Map;
 @Controller
 @ResponseBody
 @RequestMapping("/employee")
+@LogAnnotations
 public class EmployeeController extends BaseController<Employee,Long,EmployeeQuery> {
     private DefaultSecurityManager securityManager;/*shiro的核心对象*/
 

@@ -8,6 +8,7 @@ import cn.nine.crm.query.MenuQuery;
 import cn.nine.crm.service.IMenuService;
 import cn.nine.crm.service.IPermissionService;
 import cn.nine.crm.util.ConstantApi;
+import cn.nine.crm.util.LogAnnotations;
 import cn.nine.crm.util.Result;
 import cn.nine.crm.web.com.baidu.translate.demo.TransApi;
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +30,7 @@ import java.util.*;
 @Controller
 @RequestMapping("menu")
 @SuppressWarnings(value = "all")/*抑制警告*/
+@LogAnnotations
 public class MenuController extends BaseController<Menu, Long, MenuQuery> {
     private IMenuService menuService;
     private IPermissionService permissionService;

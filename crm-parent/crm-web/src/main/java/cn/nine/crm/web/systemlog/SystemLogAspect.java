@@ -4,6 +4,7 @@ package cn.nine.crm.web.systemlog;
 import cn.nine.crm.domain.Employee;
 import cn.nine.crm.domain.Systemlog;
 import cn.nine.crm.service.ISystemlogService;
+import cn.nine.crm.util.LogAnnotations;
 import com.alibaba.fastjson.JSON;
 import org.apache.shiro.SecurityUtils;
 import org.aspectj.lang.JoinPoint;
@@ -34,7 +35,9 @@ public class SystemLogAspect {
 
     //定义切点 @Pointcut
     //在注解的位置切入代码
-    @Pointcut("@annotation( cn.nine.crm.web.systemlog.LogAnnotations)")
+    //@within 定义在类上，该类下的方法都被拦截
+    //@annotation 写在方法上才能被拦截
+    @Pointcut("@within( cn.nine.crm.util.LogAnnotations)")
     public void logPoinCut() {
 
     }
@@ -59,7 +62,6 @@ public class SystemLogAspect {
             //sysLog.setOpip(value);//保存获取的操作
         }
 
-        Class clazz = joinPoint.getTarget().getClass();//具体要访问的类
         //获取请求的url地址,两种方式
         String url = ((ServletRequestAttributes)
                 RequestContextHolder.getRequestAttributes()).getRequest().getRequestURI();

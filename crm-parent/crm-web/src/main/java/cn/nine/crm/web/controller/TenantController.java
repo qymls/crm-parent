@@ -3,6 +3,7 @@ package cn.nine.crm.web.controller;
 import cn.nine.crm.domain.Tenant;
 import cn.nine.crm.query.TenantQuery;
 import cn.nine.crm.service.ITenantService;
+import cn.nine.crm.util.LogAnnotations;
 import cn.nine.crm.util.Result;
 import io.swagger.annotations.ApiOperation;
 import org.apache.poi.ss.formula.functions.T;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("tenant")
+@LogAnnotations
 public class TenantController extends BaseController<Tenant,Long, TenantQuery> {
 
     private ITenantService tenantService;
