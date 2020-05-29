@@ -97,9 +97,9 @@
             </FormItem>
             <FormItem label="客户姓名" prop="name">
               <!--增添客户姓名带搜索下拉框 配置搜索方法 dataFilter-->
-              <el-select v-model="addForm.customer" filterable placeholder="请输入" @change="selectCustomerName">
+              <el-select v-model="addForm.customer" filterable placeholder="请选择客户姓名">
                 <el-option
-                  v-for="(item,index) in options"
+                  v-for="item in customers"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id">
@@ -118,7 +118,16 @@
               </div>
             </FormItem>
             <FormItem label="营销人员" prop="username">
-              <Input v-model="addForm.seller.username" placeholder="请输入营销人员姓名"></Input>
+              <!--营销人员姓名搜索选择下拉框-->
+              <el-select v-model="addForm.seller.id" filterable placeholder=""  >
+                <el-option
+                  v-for="item in sellers"
+                  :key="item.id"
+                  :label="item.username"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <!--<Input v-model="addForm.seller.username" placeholder="请输入营销人员姓名"></Input>-->
             </FormItem>
             <FormItem label="订金金额" prop="amount">
               <Input v-model="addForm.amount" placeholder="请输入订金金额"></Input>
@@ -148,12 +157,16 @@
         tableData: [],
         loading: false,
         row: [],
-        /*客户姓名选择*/
-        options: [],
-        // customer: {
-        //   id:'',
-        //   name:''
-        // },
+        customers:[],
+        sellers:[],
+        customer: {
+          id:'',
+          name:''
+        },
+        seller:{
+          id:'',
+          username:''
+        },
         //时间选择
         pickerOptions: {
           disabledDate(time) {
@@ -202,6 +215,7 @@
           },
           signTime:'',
           seller:{
+            id:'',
             username:''
           },
           amount:'',
@@ -296,24 +310,32 @@
       this.loadListData()
     },
     methods: {
-      /*客户姓名带搜索下拉框*/
-      selectCustomerName(id){
-        let obj = {};
-        obj = this.$store.state.customer.options.find((item)=>{//这里的userRoleList就是上面遍历的数据源
-          return item.id === id;//筛选出匹配数据
-        });
-        this.addForm.name = obj.name;
-      },
       click_enter() { /* 键盘事件,调用查找方法*/
         this.loadListData()
       },
       // 显示添加弹窗
       handleShowAddDialog() {
+        this.$http.get("/customer/findAll").then(res=>{
+          console.debug(res.data.data)
+          this.customers = res.data.data;
+        })
+        this.$http.get("/employee/findAll").then(res=>{
+          console.debug(res.data.data)
+          this.sellers = res.data.data;
+        })
         this.dialogFormVisible = true
         this.$refs['addForm'].resetFields()/* 清空*/
       },
       // 编辑显示弹窗
       handleShowEditDialog(row) {
+        this.$http.get("/customer/findAll").then(res=>{
+          console.debug(res.data.data)
+          this.customers = res.data.data;
+        })
+        this.$http.get("/employee/findAll").then(res=>{
+          console.debug(res.data.data)
+          this.sellers = res.data.data;
+        })
         // 数据回显
         this.dialogFormVisible = true
         this.$refs['addForm'].resetFields()/* 清空*/
