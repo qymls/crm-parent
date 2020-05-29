@@ -88,7 +88,15 @@
               <Input v-model="addForm.id" type="text"></Input>
             </FormItem>
             <FormItem label="客户姓名" prop="name">
-
+              <!--增添客户姓名带搜索下拉框-->
+              <el-select v-model="addForm.customer.name" filterable placeholder="请选择">
+                <el-option
+                  v-for="item in options"
+                  :key="item.addForm.customer.name"
+                  :label="item.label"
+                  :value="item.addForm.customer.name">
+                </el-option>
+              </el-select>
               <Input v-model="addForm.customer.name" placeholder="请选择客户姓名"></Input>
             </FormItem>
             <FormItem label="签定时间" prop="signTime">
@@ -126,13 +134,18 @@
 <script>
   export default {
     data() {
+
       return {
+
         page: 1, // 第几页
         pageSize: 5, // 每页条数
         total: 0,
         tableData: [],
         loading: false,
         row: [],
+        /*客户姓名选择*/
+        options: [],
+        value: '',
         //时间选择
         pickerOptions: {
           disabledDate(time) {
@@ -249,7 +262,7 @@
           //   { required: true, message: '请输入订金金额', trigger: 'blur' }
           // ],
           intro: [
-            { required: true, message: '请输入订单摘要', trigger: 'blur' }
+            { required: true, message: '请输入订单摘要', trigger: 'change' }
           ],
         }
       }
@@ -267,11 +280,13 @@
       },
       // 显示添加弹窗
       handleShowAddDialog() {
+
         this.dialogFormVisible = true
         this.$refs['addForm'].resetFields()/* 清空*/
       },
       // 编辑显示弹窗
       handleShowEditDialog(row) {
+
         // 数据回显
         this.dialogFormVisible = true
         this.$refs['addForm'].resetFields()/* 清空*/
@@ -375,10 +390,17 @@
         this.loadListData()
       },
       loadListData() {
+
         var http = this.$http
         var Message = this.$Message
         this.loading = true
+        //获取客户姓名的下拉框
+        var paramName = {
+          "":this.
+        }
+        this.$http.get("/order/findAll" ,param)
         // vue加载完成，发送ajax请求动态获取数据
+        //分页
         const param = {
           'currentPage': this.page,
           'pageSize': this.pageSize,
