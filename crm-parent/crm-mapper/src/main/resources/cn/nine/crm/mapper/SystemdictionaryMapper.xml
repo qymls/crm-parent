@@ -3,18 +3,41 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.nine.crm.mapper.SystemdictionaryMapper">
 
+    <resultMap id="baseResultMap" type="cn.nine.crm.domain.Systemdictionary">
+        <id column="s_id" property="id"/>
+        <result column="sn" property="sn"/>
+        <result column="name" property="name"/>
+        <result column="intro" property="intro"/>
+        <result column="state" property="state"/>
+        <association property="tenant" javaType="cn.nine.crm.domain.Tenant">
+            <id column="t_id" property="id"></id>
+            <result column="companyName" property="companyName"/>
+        </association>
+    </resultMap>
     <select id="findAll" resultType="cn.nine.crm.domain.Systemdictionary">
-        select
-        id, sn, name, intro, state, item_id, tenant_id
-        from systemdictionary
+        select s.id as s_id,
+               s.sn,
+               s.name,
+               s.intro,
+               s.state
+
+        from systemdictionary s
     </select>
 
-    <select id="selectForPage" parameterType="cn.nine.crm.query.SystemdictionaryQuery" resultType="cn.nine.crm.domain.Systemdictionary">
-        select *
-        from systemdictionary
+    <select id="selectForPage" resultMap="baseResultMap">
+        select
+        s.id as s_id,
+        s.sn,
+        s.name,
+        s.intro,
+        s.state,
+
+        t.id as t_id,
+        t.companyName
+        from systemdictionary s
+        join tenant t on t.id = s.tenant_id
         <include refid="base_where"/>
         limit #{start},#{pageSize}
-
     </select>
 
     <select id="selectForCount" resultType="long">
@@ -34,29 +57,51 @@
     </sql>
 
     <select id="findOne" parameterType="long" resultType="cn.nine.crm.domain.Systemdictionary">
-        select
-       *
-        from systemdictionary  where id = #{id}
+        select id,
+               sn,
+               name,
+               intro,
+               state,
+               item_id,
+               tenant_id
+        from systemdictionary
+        where id = #{id}
     </select>
 
 
     <insert id="save" parameterType="cn.nine.crm.domain.Systemdictionary"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         insert into systemdictionary
-        ()
-        values
-        ()
+            (sn, name, intro, state, tenant_id)
+        values (#{sn}, #{name}, #{intro}, #{state}, #{tenant.id})
     </insert>
 
-    <update id="update" parameterType="cn.nine.crm.domain.Systemdictionary">
+    <update id="update">
         update systemdictionary
-        set name = #{name},
-        sn = #{sn}
+        <set>
+            <if test="sn != null">
+                sn = #{sn},
+            </if>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="intro != null">
+                intro = #{intro},
+            </if>
+            <if test="state != null">
+                state = #{state},
+            </if>
+            <if test="tenant != null and tenant.id != null">
+                tenant_id = #{tenant.id},
+            </if>
+        </set>
         where id = #{id}
     </update>
 
     <delete id="delete" parameterType="long">
-        delete from systemdictionary where id = #{id}
+        delete
+        from systemdictionary
+        where id = #{id}
     </delete>
 
     <delete id="batchDelete">

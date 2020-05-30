@@ -15,11 +15,11 @@ public class Systemdictionary extends BaseDomain{
     
     private String intro;
     
-    private Object state;
+    private boolean state;
     
     private Systemdictionaryitem item;
     
-    private Long tenantId;
+    private Tenant tenant;
 
 
 

@@ -9,14 +9,12 @@ import lombok.Data;
 @Data
 public class Systemdictionaryitem extends BaseDomain{
     
-    private Long parentId;
+    private Systemdictionary systemdictionary;
     
     private String name;
     
     private Integer requence;
     
     private String intro;
-
-
 
 }
