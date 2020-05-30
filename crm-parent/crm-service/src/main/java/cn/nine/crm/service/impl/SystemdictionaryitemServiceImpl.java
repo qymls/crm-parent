@@ -7,6 +7,9 @@ import cn.nine.crm.service.ISystemdictionaryitemService;
 import cn.nine.crm.service.Impl.BaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+
 /**
  * (Systemdictionaryitem)表Service层接口
  *
@@ -21,5 +24,10 @@ public class SystemdictionaryitemServiceImpl extends BaseServiceImpl<Systemdicti
     @Autowired
     public void setSystemdictionaryitemMapper(SystemdictionaryitemMapper systemdictionaryitemMapper) {
         this.systemdictionaryitemMapper = systemdictionaryitemMapper;
+    }
+
+    @Override
+    public List<Systemdictionaryitem> selectByName(String name) {
+        return systemdictionaryitemMapper.selectByName(name);
     }
 }
