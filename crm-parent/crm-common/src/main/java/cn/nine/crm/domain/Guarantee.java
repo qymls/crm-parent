@@ -16,7 +16,7 @@ import java.util.List;
 public class Guarantee extends BaseDomain {
 
     //保修单编号【自动生成】
-    private String sn = String.valueOf(System.currentTimeMillis());
+    private String sn;
 
     //结束日期【+1年】
     private Date endDate;
@@ -26,6 +26,17 @@ public class Guarantee extends BaseDomain {
 
     //所属合同
     private Contract contract;
+
+    public String getSn() {
+        if (sn == null) {
+            sn = String.valueOf(System.currentTimeMillis());
+        }
+        return sn;
+    }
+
+    public void setSn(String sn) {
+        this.sn = sn;
+    }
 
     @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
     public Date getEndDate() {

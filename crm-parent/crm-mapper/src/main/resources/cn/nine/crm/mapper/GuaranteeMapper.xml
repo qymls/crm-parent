@@ -23,7 +23,7 @@
 
     <!-- 抽取 JOIN -->
     <sql id="base_join">
-        JOIN guaranteeitem gi ON g.sn = gi.guarantee_sn
+        LEFT JOIN guaranteeitem gi ON g.sn = gi.guarantee_sn
         JOIN contract co ON g.contract_sn = co.sn
         JOIN customer cu ON co.customer_id = cu.id
         JOIN tenant t ON co.tenant_id = t.id

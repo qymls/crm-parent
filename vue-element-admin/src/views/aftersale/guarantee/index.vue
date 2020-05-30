@@ -1,10 +1,9 @@
 <template>
   <div style="height: calc(100vh - 84px);">
     <el-card class="box-card" style="height: 100%">
-      <p slot="title">
-        <Icon type="ios-list-box-outline" size="20" />
-        {{ title }}
-      </p>
+      <div slot="header" class="clearfix">
+        <span>保修单管理</span>
+      </div>
 
       <!-- 顶部工具条【查询，新增，批量删除】 -->
       <el-row>
@@ -42,7 +41,7 @@
             style="float: left;"
           >
             <el-form-item label="合同单号">
-              <el-input v-model="searchForm.name" placeholder="合同单号" clearable />
+              <el-input search enter-button v-model="searchForm.name" placeholder="合同单号" clearable />
             </el-form-item>
             <el-form-item>
               <el-button type="primary" icon="el-icon-search" @click="loadListData">查询</el-button>
@@ -56,7 +55,6 @@
         <el-table-column type="selection" width="80" align="center" />
         <el-table-column type="index" label="序号" width="80" align="center" />
         <el-table-column prop="sn" label="保修单号" width="200" align="center" />
-        <el-table-column prop="contract.signTime" label="保修开始日期" align="center" />
         <el-table-column prop="endDate" label="保修截止日期" align="center" />
         <el-table-column prop="contract.sn" label="所属合同单号" align="center" />
         <el-table-column prop="contract.customer.name" label="所属客户" align="center" />
@@ -64,7 +62,6 @@
 
         <el-table-column fixed="right" label="操作" width="150" align="center">
           <template slot-scope="scope">
-            <!-- 查看明细 -->
             <el-button type="primary" size="small" @click="handleShowEditDialog(scope.row)">编辑</el-button>
             <el-popconfirm
               confirm-button-text="确认"
@@ -98,12 +95,15 @@
           <el-form-item v-show="false" prop="id">
             <el-input v-model="addForm.id" />
           </el-form-item>
-          <el-form-item label="名称" prop="name">
-            <el-input v-model="addForm.name" autocomplete="off" />
-          </el-form-item>
-          <el-form-item label="sn" prop="sn">
+          <el-form-item label="保修单号" prop="sn">
             <el-input v-model="addForm.sn" autocomplete="off" />
           </el-form-item>
+          <!--<el-form-item label="保修截止日期" prop="endDate">
+            <el-input v-model="addForm.endDate" autocomplete="off" />
+          </el-form-item>
+          <el-form-item label="所属合同" prop="contract.sn">
+            <el-input v-model="addForm.contract.sn" autocomplete="off" />
+          </el-form-item>-->
           <el-form-item>
             <el-button type="primary" @click="submitForm('addForm')">确认提交</el-button>
             <el-button @click="resetForm('addForm')">重置</el-button>
@@ -118,7 +118,6 @@
 export default {
   data() {
     return {
-      title: '保修单管理',
       page: 1, // 第几页
       pageSize: 5, // 每页条数
       total: 0,

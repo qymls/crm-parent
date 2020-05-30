@@ -1,6 +1,7 @@
 <template>
   <div style="height: calc(100vh - 84px);">
-    <Card class="box-card" tyle="height: 100%">
+    <Card tyle="height: 100%">
+      <!-- 标题 -->
       <p slot="title">
         <Icon type="ios-list-box-outline" size="20" />
         {{ title }}
@@ -8,16 +9,14 @@
 
       <!-- 顶部工具条【查询，新增，批量删除】 -->
       <row>
-        <el-col :span="3">
-          <el-button
+        <col :span="3">
+          <button
             type="primary"
             icon="el-icon-plus"
             size="small"
-            style="float: left;"
             @click="handleShowAddDialog"
-          >新增
-          </el-button>
-          <el-popconfirm
+          >新增</button>
+          <popconfirm
             v-if="row.length>0"
             icon="el-icon-info"
             icon-color="red"
@@ -25,16 +24,17 @@
             placement="right"
             @onConfirm="handleBatchRemove"
           >
-            <el-button
+            <button
               slot="reference"
               type="danger"
               icon="el-icon-delete"
               size="small"
               style="float: left;margin: auto 3px 20px 20px;"
             >删除
-            </el-button>
-          </el-popconfirm>
-        </el-col>
+            </button>
+          </popconfirm>
+        </col>
+
         <el-col :span="21" class="toolbar">
           <el-form
             :inline="true"
@@ -72,14 +72,14 @@
           <span v-else>{{ row.details }}</span>
         </template>
 
-        <!-- 状态【需要格式化】 -->
+        <!-- 状态 -->
         <template slot="status" slot-scope="{ row, index }">
           <Select v-if="editIndex === index" v-model="editStatus">
             <Option v-for="item in statusList" :value="item.value" :key="item.value">{{ item.label }}</Option>
           </Select>
-          <span v-else-if="row.status == 0" style="color: red">未处理</span>
-          <span v-else-if="row.status == 1" style="color: #969799">已处理</span>
-          <span v-else-if="row.status == 2" style="color: #00ff09">正在处理</span>
+          <span v-else-if="row.status == 0" style="color: #ff9900">未处理</span>
+          <span v-else-if="row.status == 1" style="color: #19be6b">已处理</span>
+          <span v-else-if="row.status == 2" style="color: #2db7f5">正在处理</span>
         </template>
 
         <template slot="action" slot-scope="{ row, index }">
@@ -110,7 +110,7 @@
         background
         layout="total, sizes, prev, pager, next, jumper"
         :current-page="page"
-        :page-sizes="[5,10, 20]"
+        :page-sizes="[5,10,20]"
         :page-size="pageSize"
         :total="total"
         show-total
