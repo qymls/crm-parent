@@ -114,7 +114,9 @@
               </Select>
             </FormItem>
             <FormItem label="职业" prop="job">
-              <Input v-model="addForm.job" placeholder="请输入相关值"/>
+              <Select v-model="addForm.job" style="width:200px" placeholder="请选择相关值">
+                <Option v-for="item in jobList" v-model="item.id" :key="item.id">{{ item.name}}</Option>
+              </Select>
             </FormItem>
             <FormItem label="收入水平" prop="salarylevel">
               <Input v-model="addForm.salarylevel" placeholder="请输入相关值"/>
@@ -264,6 +266,7 @@
         },
         employeeList:[],
         tenantList:[],
+        jobList:[],
       }
     },
     mounted() {
@@ -275,6 +278,12 @@
       this.loadListData()
     },
     methods: {
+      getAllJob(){
+        var param = "职位"
+        this.$http.post('/customer/getAllJob/'+param).then(res => {
+          this.jobList = res.data.data;
+        })
+      },
       getAllEmployeebyDepartmentName(){
         var param = "营销部"
         this.$http.post('/customer/getAllEmployeebyDepartmentName/'+param).then(res => {
