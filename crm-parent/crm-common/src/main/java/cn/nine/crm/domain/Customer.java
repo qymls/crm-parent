@@ -27,7 +27,7 @@ public class Customer extends BaseDomain{
     /*营销人员*/
     private Employee seller;
     /*职业*/
-    private String job;
+    private Systemdictionaryitem job;
     /*收入水平*/
     private String salarylevel;
     /*客户来源*/

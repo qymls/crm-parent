@@ -73,7 +73,7 @@
         insert into customer
         (name, age, sex, tel, email, qq, wechat, seller, job, salarylevel, customersource,
         inputuser, inputtime, tenant, successrate, remark, status,state) VALUES
-        (#{name},#{age},#{sex},#{tel},#{email},#{qq},#{wechat},#{seller.id},#{job},#{salarylevel},#{customersource},
+        (#{name},#{age},#{sex},#{tel},#{email},#{qq},#{wechat},#{seller.id},#{job.id},#{salarylevel},#{customersource},
         #{inputuser.id},#{inputtime},#{tenant.id},#{successrate},#{remark},#{status},#{state}
         )
 
@@ -90,7 +90,7 @@
          qq = #{qq},
          wechat = #{wechat},
          seller = #{seller.id},
-         job = #{job},
+         job = #{job.id},
          salarylevel = #{salarylevel},
          customersource = #{customersource},
          tenant = #{tenant.id},
