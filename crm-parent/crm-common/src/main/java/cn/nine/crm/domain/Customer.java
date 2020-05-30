@@ -36,9 +36,9 @@ public class Customer extends BaseDomain{
     /*创建时间*/
     private Date inputtime;
     /*所属租户*/
-    private String tenant;
+    private Tenant tenant;
     /*成功率*/
-    private String successrate;
+    private Double successrate;
     /*备注*/
     private String remark;
     /**
@@ -48,7 +48,7 @@ public class Customer extends BaseDomain{
     /**
     * 启用禁用
     */
-    private String state;
+    private Boolean state;
 
 
 
