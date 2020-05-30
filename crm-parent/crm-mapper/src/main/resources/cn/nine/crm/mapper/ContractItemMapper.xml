@@ -46,7 +46,7 @@
     </sql>
     <!--查询总条数  <include refid="baseWhere"/>-->
     <select id="selectForCount" resultType="java.lang.Long">
-        SELECT count(id) FROM contractitem
+        SELECT count(*) FROM contractitem
         <include refid="baseWhere"/>
     </select>
     <!--分页查询 <include refid="baseWhere"/> -->

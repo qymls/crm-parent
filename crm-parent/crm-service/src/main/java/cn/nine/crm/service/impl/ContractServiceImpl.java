@@ -45,10 +45,8 @@ public class ContractServiceImpl extends BaseServiceImpl<Contract,Long, Contract
         contractItem.setPayMoney(contract.getTotalAmount());
         //默认合同明细表的付款占额==100
         contractItem.setScale("100");
-//        contractItem.setSn(contract.getSn());
         contractItemMapper.saveByContract(contractItem);
-        //通过id查询到新增的合同明细表-更改当前合同明细表中的contract_id
-//        contractItemMapper.updateContractId(contractItem.getId());
+
 
     }
 

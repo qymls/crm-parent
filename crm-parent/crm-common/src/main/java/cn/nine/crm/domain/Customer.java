@@ -15,7 +15,7 @@ public class Customer extends BaseDomain{
     /*客户年龄*/
     private Integer age;
     /*客户性别*/
-    private Boolean sex;
+    private Boolean gender;
     /*电话号码*/
     private String tel;
     /*邮箱*/
