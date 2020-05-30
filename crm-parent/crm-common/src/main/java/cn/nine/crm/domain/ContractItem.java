@@ -26,6 +26,8 @@ public class ContractItem extends BaseDomain {
 
     //所属合同 通过合同订单id关联
     private Contract contract;
+    //所属合同关联id
+    private Long contract_id;
     //付款时间
     private Date payTime;
     //付款金额 自客户合同项目成功履行后，开始计时1年
@@ -34,14 +36,14 @@ public class ContractItem extends BaseDomain {
     //所占比例 100% 本次支付占总需要支付金额的比例 不加定金金额
     private String scale;
     //本次是否支付  0--待支付  1--已支付
-    private Integer isPayment;
+    private Integer isPayment = PAY_NO;
     //合同金额是否结算完成
     private Integer pay;
-    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     public Date getPayTime() {
         return payTime;
     }
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     public void setPayTime(Date payTime) {
         this.payTime = payTime;
     }

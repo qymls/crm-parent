@@ -63,7 +63,7 @@
 
     <!--抽取sql 查询-->
     <sql id="baseWhere">
-        /*查询 ：客户姓名 营销人员姓名 后期补充：查询签订时间*/
+        /*查询 ：客户姓名 营销人员姓名*/
         <where>
             <if test=" keyword !=null ">
                 and (cu.name like  CONCAT("%",#{keyword},"%") OR e.name like  CONCAT("%",#{keyword},"%"))
@@ -117,8 +117,6 @@
         intro,
         contractitem_id,
         tenant_id
-
-
         )
         VALUES
         (

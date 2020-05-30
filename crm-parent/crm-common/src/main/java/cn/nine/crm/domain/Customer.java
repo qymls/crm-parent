@@ -1,6 +1,7 @@
 package cn.nine.crm.domain;
-import java.util.Date;
 import lombok.Data;
+
+import java.util.Date;
 /**
  * (Customer)实体类
  *

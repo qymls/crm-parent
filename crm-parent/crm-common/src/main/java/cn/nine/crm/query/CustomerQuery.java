@@ -10,6 +10,6 @@ import java.util.Date;
  */
 @Data
 public class CustomerQuery extends BaseQuery{
-  
+
 
 }
