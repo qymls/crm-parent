@@ -76,9 +76,7 @@
           </Form-Item>
         </i-Form>
       </i-col>
-
     </Row>
-
     <Row justify="center" align="middle">
       <div style="margin-top:20px" class="roleTable_style">
         <i-Table :columns="columns" :data="RoleData" border max-height="650"

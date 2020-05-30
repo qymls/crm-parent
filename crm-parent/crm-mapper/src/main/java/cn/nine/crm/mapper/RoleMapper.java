@@ -18,4 +18,5 @@ public interface RoleMapper extends BaseMapper<Role,Long,RoleQuery>{
 
     void deletePermissionsByRoleId (@Param("role_id") Long role_id);
 
+
 }
