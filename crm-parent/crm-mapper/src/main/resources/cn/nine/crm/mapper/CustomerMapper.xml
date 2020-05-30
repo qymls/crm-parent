@@ -7,7 +7,7 @@
         <result property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="age" column="age"/>
-        <result property="sex" column="sex"/>
+        <result property="gender" column="gender"/>
         <result property="tel" column="tel"/>
         <result property="email" column="email"/>
         <result property="qq" column="qq"/>
@@ -61,7 +61,7 @@
     </sql>
 
     <sql id="base_cloumn">
-       id, name, age, sex, tel, email, qq, wechat, seller, job, salarylevel, customersource, inputuser, inputtime, tenant, successrate, remark, status, state
+       id, name, age, gender, tel, email, qq, wechat, seller, job, salarylevel, customersource, inputuser, inputtime, tenant, successrate, remark, status, state
     </sql>
 
     <select id="findOne" parameterType="long" resultMap="result">
@@ -84,9 +84,9 @@
     <insert id="save" parameterType="cn.nine.crm.domain.Customer"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         insert into customer
-        (name, age, sex, tel, email, qq, wechat, seller, job, salarylevel, customersource,
+        (name, age, gender, tel, email, qq, wechat, seller, job, salarylevel, customersource,
         inputuser, inputtime, tenant, successrate, remark, status,state) VALUES
-        (#{name},#{age},#{sex},#{tel},#{email},#{qq},#{wechat},#{seller.id},#{job.id},#{salarylevel},#{customersource},
+        (#{name},#{age},#{gender},#{tel},#{email},#{qq},#{wechat},#{seller.id},#{job.id},#{salarylevel},#{customersource},
         #{inputuser.id},#{inputtime},#{tenant.id},#{successrate},#{remark},#{status},#{state}
         )
 
@@ -97,7 +97,7 @@
         update customer
         set name = #{name},
          age = #{age},
-         sex = #{sex},
+         gender = #{gender},
          tel = #{tel},
          email = #{email},
          qq = #{qq},
