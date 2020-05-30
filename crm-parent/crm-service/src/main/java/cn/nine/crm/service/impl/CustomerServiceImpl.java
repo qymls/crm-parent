@@ -22,4 +22,9 @@ public class CustomerServiceImpl extends BaseServiceImpl<Customer,Long,CustomerQ
     public void setCustomerMapper(CustomerMapper customerMapper) {
         this.customerMapper = customerMapper;
     }
+
+    @Override
+    public void updateStateByid(Boolean state,Long id) {
+        customerMapper.updateStateByid(state,id);
+    }
 }

@@ -10,4 +10,6 @@ import cn.nine.crm.query.CustomerQuery;
  */
 public interface ICustomerService extends IBaseService<Customer,Long,CustomerQuery>{
 
+    void updateStateByid(Boolean state,Long id);
+
 }

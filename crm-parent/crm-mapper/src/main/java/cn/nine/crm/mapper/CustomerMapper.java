@@ -2,6 +2,8 @@ package cn.nine.crm.mapper;
 
 import cn.nine.crm.domain.Customer;
 import cn.nine.crm.query.CustomerQuery;
+import org.apache.ibatis.annotations.Param;
+
 /**
  * (Customer)表数据库访问层
  *
@@ -10,4 +12,5 @@ import cn.nine.crm.query.CustomerQuery;
  */
 public interface CustomerMapper extends BaseMapper<Customer,Long,CustomerQuery>{
 
+    void updateStateByid(@Param("state")Boolean state,@Param("id") Long id);
 }
