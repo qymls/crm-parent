@@ -20,10 +20,12 @@
         <result property="remark" column="remark"/>
         <result property="status" column="status"/>
         <result property="state" column="state"/>
-        <!--<association property="seller" column="seller" javaType="cn.nine.crm.domain.Employee"
-                     select="cn.nine.crm.mapper.EmployeeMapper.findOne"/>-->
+        <association property="seller" column="seller" javaType="cn.nine.crm.domain.Employee"
+                     select="cn.nine.crm.mapper.EmployeeMapper.findOne"/>
         <association property="tenant" column="tenant" javaType="cn.nine.crm.domain.Tenant"
                      select="cn.nine.crm.mapper.TenantMapper.findOne"/>
+        <association property="job" column="job" javaType="cn.nine.crm.domain.Systemdictionaryitem"
+                     select="cn.nine.crm.mapper.SystemdictionaryitemMapper.findOne"/>
 
     </resultMap>
     <select id="findAll" resultMap="result">
@@ -41,7 +43,7 @@
 
     </select>
 
-    <select id="selectForCount" resultType="long">
+    <select id="selectForCount" parameterType="cn.nine.crm.query.CustomerQuery" resultType="long">
         select
         count(*)
         from customer
@@ -54,6 +56,7 @@
             <if test="keyword != null">
                 and name like CONCAT("%",#{keyword},"%")
             </if>
+             and state = #{state}
         </where>
     </sql>
 
@@ -65,6 +68,12 @@
         select
         <include refid="base_cloumn"/>
         from customer where id = #{id}
+    </select>
+    <!--查询潜在客户，status为初始录入的客户-->
+    <select id="getdevCustomer" resultMap="result">
+        select
+        <include refid="base_cloumn"/>
+        from customer where status=#{status}
     </select>
 
 
@@ -100,6 +109,11 @@
         where id = #{id}
     </update>
 
+    <update id="updateStateByid">
+        update  customer
+        set state = #{state}
+        where id = #{id}
+    </update>
     <delete id="delete" parameterType="long">
         delete from customer where id = #{id}
     </delete>

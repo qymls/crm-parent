@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.nine.crm.mapper.CustomertracehistoryMapper">
+    <resultMap id="result" type="cn.nine.crm.domain.Customertracehistory">
+        <result property="id" column="id"/>
+        <result property="tracetime" column="tracetime"/>
+        <result property="tracetype" column="tracetype"/>
+        <result property="traceresult" column="traceresult"/>
+        <result property="title" column="title"/>
+        <result property="remark" column="remark"/>
+        <association property="customer" column="customer" javaType="cn.nine.crm.domain.Customer"
+                     select="cn.nine.crm.mapper.CustomerMapper.findOne"/>
+
+        <association property="traceuser" column="traceuser" javaType="cn.nine.crm.domain.Employee"
+                     select="cn.nine.crm.mapper.EmployeeMapper.findOne"/>
+
+        <association property="tenant" column="tenant" javaType="cn.nine.crm.domain.Tenant"
+                     select="cn.nine.crm.mapper.TenantMapper.findOne"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="result">
+        select
+        <include refid="base_cloumn"/>
+        from customertracehistory
+    </select>
+
+    <select id="selectForPage" parameterType="cn.nine.crm.query.CustomertracehistoryQuery" resultMap="result">
+        select
+        <include refid="base_cloumn"/>
+        from customertracehistory
+        <include refid="base_where"/>
+        limit #{start},#{pageSize}
+
+    </select>
+
+    <select id="selectForCount" resultType="long">
+        select
+        count(*)
+        from customertracehistory
+        <include refid="base_where"/>
+    </select>
+
+    <sql id="base_cloumn">
+         id, customer, traceuser, tracetime, tracetype, traceresult, title, remark, tenant
+    </sql>
+    <!--抽取where-->
+    <sql id="base_where">
+        <where>
+            <if test="keyword != null">
+                and customer = #{keyword}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findOne" parameterType="long" resultMap="result">
+        select
+        <include refid="base_cloumn"/>
+        from customertracehistory  where id = #{id}
+    </select>
+
+
+    <insert id="save" parameterType="cn.nine.crm.domain.Customertracehistory"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into customertracehistory
+        (customer, traceuser, tracetime, tracetype, traceresult, title, remark, tenant)
+        values
+        (#{customer.id},#{traceuser.id},#{tracetime},#{tracetype},#{traceresult},#{title},#{remark},#{tenant.id})
+    </insert>
+
+    <update id="update" parameterType="cn.nine.crm.domain.Customertracehistory">
+        update customertracehistory
+        set
+        customer = #{customer.id},
+        traceuser = #{traceuser.id},
+        tracetime = #{tracetime},
+        tracetype = #{tracetype},
+        traceresult = #{traceresult},
+        title = #{title},
+        remark = #{remark},
+        tenant = #{tenant.id}
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        delete from customertracehistory where id = #{id}
+    </delete>
+
+    <delete id="batchDelete">
+        <!--open最前面的字符,close在最后的字符separator分隔符,每次循环使用什么分隔-->
+        delete from customertracehistory where id in
+        <foreach collection="list" open="(" item="id" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+
+</mapper>
