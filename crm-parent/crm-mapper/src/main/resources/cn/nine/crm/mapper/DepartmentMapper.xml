@@ -15,7 +15,7 @@
         <id column="d_id" property="id"/>
         <result column="name" property="name"/>
         <result column="sn" property="sn"/>
-        <association property="prentId" javaType="cn.nine.crm.domain.Department">
+        <association property="parentId" javaType="cn.nine.crm.domain.Department">
             <id column="f_id" property="id"/>
             <result column="name" property="name"/>
         </association>
@@ -87,9 +87,9 @@
     <insert id="save" parameterType="cn.nine.crm.domain.Department"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         insert into department
-        (name, sn,manager)
+        (name, sn,manager,parent_id)
         values
-        (#{name},#{sn},#{manager.id})
+        (#{name},#{sn},#{manager.id},#{parentId.id})
     </insert>
     <update id="update" parameterType="cn.nine.crm.domain.Department">
         update department
@@ -102,6 +102,9 @@
                     </if>
                     <if test="manager !=null and manager.id !=''">
                     manager=#{manager.id}
+                    </if>
+                    <if test="parentId != null and parentId.id !='">
+                    parent_id=#{parentId.id}
                     </if>
                 </set>
                 where id = #{id}

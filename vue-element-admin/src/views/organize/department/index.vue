@@ -102,10 +102,8 @@
               />
             </el-select>
           </el-form-item>
-          <div title="请选择">
-          <Cascader   filterable :data="departmentList" v-model="addForm.children">
+          <Cascader   filterable :data="departmentList" v-model="addForm.parentId">
           </Cascader >
-          </div>
           <el-form-item>
             <el-button type="primary" @click="submitForm('addForm')">确认提交</el-button>
             <el-button @click="resetForm('addForm')">重置</el-button>
@@ -143,7 +141,7 @@ export default {
           id: '',
           realName: ''
         },
-        children:[{
+        parentId:[{
             id:'',
             name:'',
         }],
@@ -160,7 +158,7 @@ export default {
   },
   methods: {
     formatDept:function (row,column) {
-        return row && row.name ? row.name : "";;
+        return row && row.name ? row.name : "";
 
     },
     // 显示添加弹窗
@@ -188,7 +186,7 @@ export default {
       });
       // 清空下拉框
       this.addForm.manager.id='';
-      this.addForm.children=[];
+      this.addForm.parentId=[];
     },
     // 编辑显示弹窗
     handleShowEditDialog(row) {
@@ -203,9 +201,14 @@ export default {
     submitForm(formName) { /* 确认保存*/
       var refs = this.$refs
       var http = this.$http
-      var message = this.$message
+
+      var message = this.$message;
       refs[formName].validate((valid) => {
         const param = Object.assign({}, this.addForm);
+        //传唤json格式
+        if(this.addForm.parentId.length>0){
+            param['parentId']={id:this.addForm.parentId[this.addForm.parentId.length-1]}
+        }
         let url = '/department/save'
         if (this.addForm.id) {
           url = '/department/update'
@@ -215,7 +218,7 @@ export default {
             if (res.data.success) {
               // 赋值管理员
               this.manager = res.data.data
-              this.children =res.data;
+              this.parentId =res.data;
               this.dialogFormVisible = false
               this.loadListData()
               message({ message: res.data.message, center: true, type: 'success', showClose: true })

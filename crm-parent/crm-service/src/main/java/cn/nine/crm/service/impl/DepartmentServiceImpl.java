@@ -28,4 +28,5 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department,Long, Depa
 
         return treeData;
     }
+
 }

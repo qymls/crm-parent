@@ -12,4 +12,7 @@ import java.util.List;
 public interface DepartmentMapper extends BaseMapper<Department,Long, DepartmentQuery>{
     //查询子部门
     List<Department>findTreeData();
+
+
+
 }

@@ -220,20 +220,27 @@ export default {
     this.loadListData()
   },
   methods: {
+    //格式化角色
+    formatRoles:function (row,column) {
+      return row && row.name ? row.name : "";
+    },
+
     // 格式化状态
     formatState: function(row, column) {
       return row.state == -1 ? '在职' : '离职'
     },
     // 显示添加弹窗
     handleShowAddDialog() {
+      this.dialogFormVisible = true;
       // 清空表单
       this.$nextTick(() => {
         this.$refs['addForm'].resetFields()
       })
-      this.dialogFormVisible = true;
-
+      if(!this.addForm.tenant){
+        this.addForm.tenant = {id:''}
+      }
       this.addForm.department.id ="";
-      this.add.tenant.id="";
+      this.addForm.inputTime="";
       this.addForm.state = 0;
     },
     // 编辑显示弹窗
