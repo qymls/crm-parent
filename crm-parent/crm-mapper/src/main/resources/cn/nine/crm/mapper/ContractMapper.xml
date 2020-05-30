@@ -38,7 +38,7 @@
             co.id as co_id,
             co.sn,
 
-            cu.id as c_id,
+            cu.id as cu_id,
             cu.name,
 
             co.signTime,
@@ -55,10 +55,10 @@
             t.companyName
 
         from contract co
-        JOIN customer cu ON  co.customer_id = cu.id
-        JOIN employee e ON co.seller_id = e.id
-        JOIN contractitem ci ON co.contractitem_id = ci.id
-        JOIN tenant t ON co.tenant_id = t.id
+        LEFT JOIN customer cu ON  co.customer_id = cu.id
+        LEFT JOIN employee e ON co.seller_id = e.id
+        LEFT JOIN contractitem ci ON co.contractitem_id = ci.id
+        LEFT JOIN tenant t ON co.tenant_id = t.id
     </select>
 
     <!--抽取sql 查询-->
@@ -98,10 +98,10 @@
         t.companyName
 
         from contract co
-        JOIN customer cu ON  co.customer_id = cu.id
-        JOIN employee e ON co.seller_id = e.id
-        JOIN contractitem ci ON co.contractitem_id = ci.id
-        JOIN tenant t ON co.tenant_id = t.id
+        LEFT JOIN customer cu ON  co.customer_id = cu.id
+        LEFT JOIN employee e ON co.seller_id = e.id
+        LEFT JOIN contractitem ci ON co.contractitem_id = ci.id
+        LEFT JOIN tenant t ON co.tenant_id = t.id
         <include refid="baseWhere"/>
         LIMIT #{start} , #{pageSize}
     </select>
@@ -137,13 +137,13 @@
             <if test="sn != null">
                 sn = #{sn},
             </if>
-            <if test="customer != null and customer.id != null">
+            <if test="customer != null and customer.id != ''">
                 customer_id = #{customer.id},
             </if>
             <if test="signTime != null">
                 signTime = #{signTime},
             </if>
-            <if test="seller != null seller.id != null">
+            <if test="seller != null seller.id != ''">
                 seller_id = #{seller.id},
             </if>
             <if test="totalAmount != null">
@@ -152,10 +152,10 @@
             <if test="intro != null">
                 intro = #{intro},
             </if>
-            <if test="contractitem != null and contractitem.id != null">
+            <if test="contractitem != null and contractitem.id != ''">
                 contractitem_id = #{contractitem.id},
             </if>
-            <if test="tenant != null and tenant.id != null">
+            <if test="tenant != null and tenant.id != ''">
                 tenant_id = #{tenant.id}
             </if>
         </set>

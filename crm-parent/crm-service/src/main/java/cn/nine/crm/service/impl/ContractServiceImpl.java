@@ -26,7 +26,7 @@ public class ContractServiceImpl extends BaseServiceImpl<Contract,Long, Contract
     @Autowired
     private ContractItemMapper contractItemMapper;
 
-
+    //添加合同编号自动生成功能
     public void save(Contract contract) {
         //设置订单开头字符
         String a = "C";
@@ -45,8 +45,11 @@ public class ContractServiceImpl extends BaseServiceImpl<Contract,Long, Contract
         contractItem.setPayMoney(contract.getTotalAmount());
         //默认合同明细表的付款占额==100
         contractItem.setScale("100");
-        contractItem.setContract_id(contract.getId());
+//        contractItem.setSn(contract.getSn());
         contractItemMapper.saveByContract(contractItem);
+        //通过id查询到新增的合同明细表-更改当前合同明细表中的contract_id
+//        contractItemMapper.updateContractId(contractItem.getId());
+
     }
 
 
