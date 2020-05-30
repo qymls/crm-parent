@@ -23,6 +23,7 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department,Long, Depa
 
     @Override
     public List<Department> findTreeData() {
+
         List<Department> treeData = departmentMapper.findTreeData();
 
         return treeData;
