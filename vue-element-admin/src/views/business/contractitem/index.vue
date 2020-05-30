@@ -36,8 +36,10 @@
       <!--列表-->
       <Row justify="center" align="middle" >
         <div style="margin-top:20px">
-          <Table border :loading="loading" :columns="columns" :data="tableData" max-height="690"
-                 @on-selection-change="handleSelectionChange" >
+          <Table border :loading="loading" :columns="columns" :data="tableData"
+                 height="350"
+                 @on-selection-change="handleSelectionChange"
+                 :default-sort = "{key: 'payTime', order: 'descending'}">
 
             <template slot-scope="{ row, index }" slot="action">
               <Button type="primary" size="small" style="margin-right: 5px"
@@ -173,8 +175,8 @@
         columns: [
           {
             type: 'selection',
-            width: 0,
-            align: 'center'
+            width: 60,
+            align: 'center',
           },
           {
             title: '序号',
@@ -186,13 +188,14 @@
             title: '合同编号',
             width: 250,
             align: 'center',
-            slot: 'contract'
+            slot: 'contract',
           },
           {
             title: '付款时间',
             width: 250,
             align: 'center',
-            key: 'payTime'
+            key: 'payTime',
+            sortable:'true'
           },
           {
             title: '所占比例(%)',
@@ -214,20 +217,20 @@
           }
         ],
         /*添加规则*/
-        rules: {
-          sn: [
-            { required: false, message: '请输入合同编号', trigger: 'blur' }
-          ],
-          // payTime: [
-          //   { required: true, message: '请选择支付时间', trigger: 'blur' }
-          // ],
-          scale: [
-            { required: true, message: '请输入所占比例(%)', trigger: 'blur' }
-          ],
-          // isPayment: [
-          //   { required: true, message: '请选择是否支付', trigger: 'blur' }
-          // ]
-        }
+        // rules: {
+        //   sn: [
+        //     { required: false, message: '请输入合同编号', trigger: 'blur' }
+        //   ],
+        //   // payTime: [
+        //   //   { required: true, message: '请选择支付时间', trigger: 'blur' }
+        //   // ],
+        //   scale: [
+        //     { required: true, message: '请输入所占比例(%)', trigger: 'blur' }
+        //   ],
+        //   // isPayment: [
+        //   //   { required: true, message: '请选择是否支付', trigger: 'blur' }
+        //   // ]
+        // }
       }
     },
     mounted() {
@@ -248,26 +251,19 @@
       // 显示添加弹窗
       handleShowAddDialog() {
         // 清空表单
-        this.$nextTick(() => {
-          this.$refs['addForm'].resetFields()
-        })
         this.dialogFormVisible = true;
         //重置数据
-        this.addForm.isPayment = 0;
-        // this.$refs['addForm'].resetFields()/* 清空*/
+        // this.addForm.isPayment = 0;
+        this.$refs['addForm'].resetFields()/* 清空*/
       },
       // 编辑显示弹窗
       handleShowEditDialog(row) {
         // 数据回显
         this.dialogFormVisible = true
-        this.$nextTick(() => {
-          this.$refs['addForm'].resetFields()/* 清空*/
-          this.addForm = Object.assign({}, row)/* 赋值*/
-          //回显状态
-          this.addForm.isPayment = row.isPayment;
-        })
-        // this.$refs['addForm'].resetFields()/* 清空*/
-        // this.addForm = Object.assign({}, row)/* 复制*/
+        //回显状态
+        this.addForm.isPayment = row.isPayment;
+        this.$refs['addForm'].resetFields()/* 清空*/
+        this.addForm = Object.assign({}, row)/* 复制*/
       },
       /*添加、更新 提交*/
       submitForm(formName) { /* 确认保存*/

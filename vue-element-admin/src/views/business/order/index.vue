@@ -15,7 +15,7 @@
             title="您确认删除这些信息吗?"
             @on-ok="handleBatchRemove"
           >
-            <Button v-if="row.length>0" type="error" icon="ios-trash">删除</Button>
+            <Button v-if="row.length>0" type="error" icon="ios-trash">批量删除</Button>
           </Poptip>
         </Col>
         <!--查询工具条-->
@@ -42,11 +42,14 @@
         </Col>
 
       </Row>
-      <!--列表-->
+      <!--列表  max-height="690"-->
       <Row justify="center" align="middle">
         <div style="margin-top:20px">
-          <Table border :loading="loading" :columns="columns" :data="tableData" max-height="690"
-                 @on-selection-change="handleSelectionChange">
+          <Table border :loading="loading" :columns="columns" :data="tableData"
+                 @on-selection-change="handleSelectionChange"
+                 height="350"
+                 :default-sort = "{key: 'signTime', order: 'descending'}"
+              >
             <template slot-scope="{ row, index }" slot="action">
               <Button type="primary" size="small" style="margin-right: 5px" @click="handleShowEditDialog(row)">编辑
               </Button>
@@ -135,6 +138,17 @@
             <FormItem label="摘要" prop="intro">
               <Input v-model="addForm.intro" placeholder="请输入摘要"></Input>
             </FormItem>
+            <FormItem label="所属公司" prop="companyName">
+              <el-select v-model="addForm.tenant.id" filterable placeholder=""  >
+                <el-option
+                  v-for="item in tenants"
+                  :key="item.id"
+                  :label="item.companyName"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <!--<Input v-model="addForm.tenant.id" placeholder="请选择所属公司"></Input>-->
+            </FormItem>
 
             <FormItem>
               <Button type="primary" @click="submitForm('addForm')">确认</Button>
@@ -157,8 +171,9 @@
         tableData: [],
         loading: false,
         row: [],
-        customers:[],
-        sellers:[],
+        customers:[{id:''}],
+        sellers:[{id:''}],
+        tenants:[{id:''}],
         customer: {
           id:'',
           name:''
@@ -166,6 +181,10 @@
         seller:{
           id:'',
           username:''
+        },
+        tenant:{
+          id:'',
+          companyName:''
         },
         //时间选择
         pickerOptions: {
@@ -219,25 +238,31 @@
             username:''
           },
           amount:'',
-          intro: ''
+          intro: '',
+          tenant:{
+            id:'',
+            companyName:''
+          }
+
         },
         columns: [
           {
             type: 'selection',
-            width: 0,
-            align: 'center'
+            width: 60,
+            align: 'center',
+
           },
           {
             title: '序号',
             type: 'index',
             width: 80,
-            align: 'center'
+            align: 'center',
           },
           {
             title: '订单编号',
             width: 120,
             align: 'center',
-            key: 'sn'
+            key: 'sn',
           },
           {
             title: '客户姓名',
@@ -249,7 +274,8 @@
             title: '签订时间',
             width: 180,
             align: 'center',
-            key: 'signTime'
+            key: 'signTime',
+            sortable:'true'
           },
           {
             title: '营销人员',
@@ -283,23 +309,24 @@
             width: 180
           }
         ],
-        rules: {
-          // name: [
-          //   { required: true, message: '请输入客户姓名', trigger: 'blur' }
-          // ],
-          // signTime: [
-          //   { required: true, message: '请选择签订时间', trigger: 'blur' }
-          // ],
-          // username: [
-          //   { required: true, message: '请输入营销人员姓名', trigger: 'blur' }
-          // ],
-          // totalAmount: [
-          //   { required: true, message: '请输入订金金额', trigger: 'blur' }
-          // ],
-          intro: [
-            { required: true, message: '请输入订单摘要', trigger: 'change' }
-          ],
-        }
+        // rules: {
+        //   // name: [
+        //   //   { required: true, message: '请输入客户姓名', trigger: 'blur' }
+        //   // ],
+        //   // signTime: [
+        //   //   { required: true, message: '请选择签订时间', trigger: 'blur' }
+        //   // ],
+        //   // username: [
+        //   //   { required: true, message: '请输入营销人员姓名', trigger: 'blur' }
+        //   // ],
+        //   // totalAmount: [
+        //   //   { required: true, message: '请输入订金金额', trigger: 'blur' }
+        //   // ],
+        //   intro: [
+        //     { required: true, message: '请输入订单摘要', trigger: 'change' }
+        //   ],
+        //
+        // }
       }
     },
     mounted() {
@@ -316,25 +343,18 @@
       // 显示添加弹窗
       handleShowAddDialog() {
         // 清空表单
-        this.$nextTick(() => {
-          this.$refs['addForm'].resetFields()
-        })
         this.addForm.customer.id = "";
         this.addForm.seller.id = "";
-        this.dialogFormVisible = true
-        // this.$refs['addForm'].resetFields()/* 清空*/
+        this.addForm.tenant.id = '';
+        this.dialogFormVisible = true;
+        this.$refs['addForm'].resetFields()
       },
       // 编辑显示弹窗
       handleShowEditDialog(row) {
         // 数据回显
         this.dialogFormVisible = true
-        this.$nextTick(() => {
-          this.$refs['addForm'].resetFields()/* 清空*/
-          this.addForm = Object.assign({}, row)/* 赋值*/
-        })
-        // this.dialogFormVisible = true
-        // this.$refs['addForm'].resetFields()/* 清空*/
-        // this.addForm = Object.assign({}, row)/* 复制*/
+        this.$refs['addForm'].resetFields()/* 清空*/
+        this.addForm = Object.assign({}, row)/* 复制*/
       },
 
       submitForm(formName) { /* 确认保存*/
@@ -352,6 +372,7 @@
               if (res.data.success) {
                 this.customers = res.data.data;
                 this.sellers = res.data.data;
+                this.tenants = res.data.data;
                 this.dialogFormVisible = false
                 this.loadListData()
                 Message.success(res.data.message)
@@ -446,6 +467,9 @@
           // console.debug(res.data.data)
           this.sellers = res.data.data;
         })
+        this.$http.get("/tenant/findAll").then(res=>{
+          this.tenants = res.data.data;
+          })
         var http = this.$http
         var Message = this.$Message
         this.loading = true
