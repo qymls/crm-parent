@@ -57,7 +57,7 @@ public class CustomerdevplanController extends BaseController<Customerdevplan,Lo
     }
 
     @PostMapping("/getdevCustomer")
-    @ApiOperation("顾客页面修改state,与上方代码重复可优化")
+    @ApiOperation("通过判断status获取潜在客户")
     public Result getdevCustomer(@RequestBody CustomerdevplanQuery customerdevplanQuery) {
         List<Customer> customerList = customerService.getdevCustomer(customerdevplanQuery.getStatus());
         return Result.ok(customerList);
