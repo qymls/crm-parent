@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.nine.crm.mapper.CustomerMapper">
+
+    <resultMap id="result" type="cn.nine.crm.domain.Customer">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="age" column="age"/>
+        <result property="sex" column="sex"/>
+        <result property="tel" column="tel"/>
+        <result property="email" column="email"/>
+        <result property="qq" column="qq"/>
+        <result property="wechat" column="wechat"/>
+        <result property="job" column="job"/>
+        <result property="salarylevel" column="salarylevel"/>
+        <result property="customersource" column="customersource"/>
+        <result property="inputtime" column="inputtime"/>
+        <result property="successrate" column="successrate"/>
+        <result property="remark" column="remark"/>
+        <result property="status" column="status"/>
+        <result property="state" column="state"/>
+        <!--<association property="seller" column="seller" javaType="cn.nine.crm.domain.Employee"
+                     select="cn.nine.crm.mapper.EmployeeMapper.findOne"/>-->
+        <association property="tenant" column="tenant" javaType="cn.nine.crm.domain.Tenant"
+                     select="cn.nine.crm.mapper.TenantMapper.findOne"/>
+
+    </resultMap>
+    <select id="findAll" resultMap="result">
+        select
+        <include refid="base_cloumn"/>
+        from customer
+    </select>
+
+    <select id="selectForPage" parameterType="cn.nine.crm.query.CustomerQuery" resultMap="result">
+        select
+        <include refid="base_cloumn"/>
+        from customer
+        <include refid="base_where"/>
+        limit #{start},#{pageSize}
+
+    </select>
+
+    <select id="selectForCount" resultType="long">
+        select
+        count(*)
+        from customer
+        <include refid="base_where"/>
+    </select>
+
+    <!--抽取where-->
+    <sql id="base_where">
+        <where>
+            <if test="keyword != null">
+                and name like CONCAT("%",#{keyword},"%")
+            </if>
+        </where>
+    </sql>
+
+    <sql id="base_cloumn">
+       id, name, age, sex, tel, email, qq, wechat, seller, job, salarylevel, customersource, inputuser, inputtime, tenant, successrate, remark, status, state
+    </sql>
+
+    <select id="findOne" parameterType="long" resultMap="result">
+        select
+        <include refid="base_cloumn"/>
+        from customer where id = #{id}
+    </select>
+
+
+    <insert id="save" parameterType="cn.nine.crm.domain.Customer"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into customer
+        (name, age, sex, tel, email, qq, wechat, seller, job, salarylevel, customersource,
+        inputuser, inputtime, tenant, successrate, remark, status,state) VALUES
+        (#{name},#{age},#{sex},#{tel},#{email},#{qq},#{wechat},#{seller.id},#{job},#{salarylevel},#{customersource},
+        #{inputuser.id},#{inputtime},#{tenant.id},#{successrate},#{remark},#{status},#{state}
+        )
+
+
+    </insert>
+
+    <update id="update" parameterType="cn.nine.crm.domain.Customer">
+        update customer
+        set name = #{name},
+         age = #{age},
+         sex = #{sex},
+         tel = #{tel},
+         email = #{email},
+         qq = #{qq},
+         wechat = #{wechat},
+         seller = #{seller.id},
+         job = #{job},
+         salarylevel = #{salarylevel},
+         customersource = #{customersource},
+         tenant = #{tenant.id},
+         successrate = #{successrate},
+         remark = #{remark},
+         status = #{status}
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        delete from customer where id = #{id}
+    </delete>
+
+    <delete id="batchDelete">
+        <!--open最前面的字符,close在最后的字符separator分隔符,每次循环使用什么分隔-->
+        delete from customer where id in
+        <foreach collection="list" open="(" item="id" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+
+</mapper>
