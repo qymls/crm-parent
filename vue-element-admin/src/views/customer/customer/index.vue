@@ -73,48 +73,50 @@
                :styles="{top: '200px'}" width="1200">
           <Form ref="addForm" :model="addForm" :rules="rules" :label-width="80" inline>
             <FormItem v-show="false" prop="id">
-              <Input v-model="addForm.id" type="text"></Input>
+              <Input v-model="addForm.id" type="text"/>
             </FormItem>
             <Row>
               <form-item label="基本信息" required/>
             </Row>
             <FormItem label="客户姓名" prop="name">
-              <Input v-model="addForm.name" placeholder="请输入相关值"></Input>
+              <Input v-model="addForm.name" placeholder="请输入相关值"/>
             </FormItem>
             <FormItem label="客户年龄" prop="age">
-              <Input v-model="addForm.age" placeholder="请输入相关值"></Input>
+              <Input v-model="addForm.age" placeholder="请输入相关值"/>
             </FormItem>
             <FormItem label="客户性别" prop="sex">
               <RadioGroup  v-model="addForm.sex">
-                <Radio label="0">男</Radio>
-                <Radio label="1">女</Radio>
+                <Radio label="true">男</Radio>
+                <Radio label="false">女</Radio>
               </RadioGroup>
             </FormItem>
             <Row>
               <form-item label="联系方式" required/>
             </Row>
             <FormItem label="电话号码" prop="tel">
-              <Input v-model="addForm.tel" placeholder="请输入相关值"></Input>
+              <Input v-model="addForm.tel" placeholder="请输入相关值"/>
             </FormItem>
             <FormItem label="邮箱" prop="email">
-              <Input v-model="addForm.email" placeholder="请输入相关值"></Input>
+              <Input v-model="addForm.email" placeholder="请输入相关值"/>
             </FormItem>
             <FormItem label="QQ" prop="qq">
-              <Input v-model="addForm.qq" placeholder="请输入相关值"></Input>
+              <Input v-model="addForm.qq" placeholder="请输入相关值"/>
             </FormItem>
             <FormItem label="微信" prop="wechat">
-              <Input v-model="addForm.wechat" placeholder="请输入相关值"></Input>
+              <Input v-model="addForm.wechat" placeholder="请输入相关值"/>
             </FormItem>
             <Row>
               <form-item label="扩展信息"/>
             </Row>
             <FormItem label="营销人员" prop="seller">
-              <Select v-model="addForm.seller" style="width:200px" placeholder="请选择相关值">
-                <Option v-for="item in employeeList" v-model="item.id" :key="item.value">{{ item.username}}</Option>
+              <Select v-model="addForm.sellerId" style="width:200px" placeholder="请选择相关值">
+                <Option v-for="item in employeeList" v-model="item.id" :key="item.id">{{ item.username}}</Option>
               </Select>
             </FormItem>
             <FormItem label="职业" prop="job">
-              <Input v-model="addForm.job" placeholder="请输入相关值"/>
+              <Select v-model="addForm.job" style="width:200px" placeholder="请选择相关值">
+                <Option v-for="item in jobList" v-model="item.id" :key="item.id">{{ item.name}}</Option>
+              </Select>
             </FormItem>
             <FormItem label="收入水平" prop="salarylevel">
               <Input v-model="addForm.salarylevel" placeholder="请输入相关值"/>
@@ -126,27 +128,30 @@
               <form-item label="扩展信息"/>
             </Row>
             <FormItem label="所属租户" prop="tenant">
-              <Input v-model="addForm.tenant" placeholder="请输入相关值"/>
+              <Select v-model="addForm.tenantId" style="width:200px" placeholder="请选择相关值">
+                <Option v-for="item in tenantList" v-model="item.id" :key="item.id">{{ item.companyName}}</Option>
+              </Select>
             </FormItem>
 
             <FormItem label="顾客状态" prop="status">
               <Select v-model="addForm.status" style="width:200px" placeholder="请选择相关值">
                 <Option value="初始录入">初始录入</Option>
+                <Option value="初始录入">正常客户</Option>
               </Select>
             </FormItem>
-            <FormItem label="是否启用" prop="state">
-              <Input v-model="addForm.state" placeholder="请输入相关值"/>
-            </FormItem>
+            <Row/>
             <FormItem label="备注" prop="remark">
-              <Input v-model="addForm.remark" placeholder="请输入相关值"/>
+              <Input v-model="addForm.remark" maxlength="100" show-word-limit type="textarea" placeholder="请输入相关值"/>
             </FormItem>
-            <FormItem label="成功率" prop="successrate">
-              <Input v-model="addForm.successrate" placeholder="请输入相关值"/>
+            <FormItem label="成功率" prop="successrate" style="width: 500px">
+              <Slider v-model="addForm.successrate" show-input />
             </FormItem>
+            <diV style="text-align: center">
             <FormItem>
-              <Button type="primary" @click="submitForm('addForm')">确认</Button>
+              <Button type="primary" @click="submitForm('addForm')">确认保存</Button>
               <Button style="margin-left: 8px" @click="resetForm('addForm')">重置</Button>
             </FormItem>
+            </diV>
           </Form>
 
         </Modal>
@@ -177,14 +182,12 @@
           email: '',
           qq: '',
           wechat: '',
-          seller: '',
+          sellerId: '',
           job: '',
           salarylevel: '',
           customersource: '',
-          inputuser: '',
-          inputtime: '',
-          tenant: '',
-          successrate: '',
+          tenantId: '',
+          successrate: 0,
           remark: '',
           status: '',
           state: '',
@@ -261,7 +264,9 @@
             {required: true, message: '请填写年龄', trigger: 'blur'}
           ]
         },
-        employeeList:[]
+        employeeList:[],
+        tenantList:[],
+        jobList:[],
       }
     },
     mounted() {
@@ -273,9 +278,21 @@
       this.loadListData()
     },
     methods: {
-      getAllEmployee(){
-        this.$http.post('/customer/getAllEmployee').then(res => {
+      getAllJob(){
+        var param = "职位"
+        this.$http.post('/customer/getAllJob/'+param).then(res => {
+          this.jobList = res.data.data;
+        })
+      },
+      getAllEmployeebyDepartmentName(){
+        var param = "营销部"
+        this.$http.post('/customer/getAllEmployeebyDepartmentName/'+param).then(res => {
           this.employeeList = res.data.data;
+        })
+      },
+      getAllTenant(){
+        this.$http.post('/customer/getAllTenant').then(res => {
+          this.tenantList = res.data.data;
         })
       },
       click_enter() { /* 键盘事件,调用查找方法*/
@@ -285,15 +302,29 @@
       handleShowAddDialog() {
         this.dialogFormVisible = true
         this.$refs['addForm'].resetFields()/* 清空*/
-        this.getAllEmployee();
+        this.getAllEmployeebyDepartmentName();
+        this.getAllTenant();
       },
       // 编辑显示弹窗
       handleShowEditDialog(row) {
+        console.log(row)
         // 数据回显
         this.dialogFormVisible = true
         this.$refs['addForm'].resetFields()/* 清空*/
-        this.getAllEmployee();
+        this.getAllEmployeebyDepartmentName();
+        this.getAllTenant();
+        row.sex = row.sex.toString();
+        row.age = row.age.toString();
+        row.successrate = Number(row.successrate)
+        if(row.seller){
+          row.sellerId = row.seller.id
+        }
+        if(row.tenant){
+          row.tenantId = row.tenant.id
+        }
+
         this.addForm = Object.assign({}, row)/* 复制*/
+        console.log(this.addForm)
       },
 
       submitForm(formName) { /* 确认保存*/
@@ -302,6 +333,10 @@
         var Message = this.$Message
         refs[formName].validate((valid) => {
           const param = Object.assign({}, this.addForm)
+          param['seller'] = {id:param.sellerId}
+          param['tenant'] = {id:param.tenantId}
+          delete param['tenantId']
+          delete param['sellerId']
           let url = '/customer/save'
           if (this.addForm.id) {
             url = '/customer/update'

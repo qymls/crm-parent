@@ -154,10 +154,8 @@ public class SystemLogAspect {
 
             systemlog.setRequesturi(url);
 
-            String exMsg = e.getCause().toString();
-
+            String exMsg =e.getMessage();
             systemlog.setResult("error: "+ exMsg);
-
             Class clazz = joinPoint.getTarget().getClass();//具体要访问的类
             if (clazz != SystemlogController.class){/*日志管理不记录*/
                 systemLogService.save(systemlog);

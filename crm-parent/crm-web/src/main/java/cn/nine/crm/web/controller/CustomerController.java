@@ -2,16 +2,21 @@ package cn.nine.crm.web.controller;
 
 import cn.nine.crm.domain.Customer;
 import cn.nine.crm.domain.Employee;
+import cn.nine.crm.domain.Systemdictionaryitem;
+import cn.nine.crm.domain.Tenant;
 import cn.nine.crm.query.CustomerQuery;
 import cn.nine.crm.service.ICustomerService;
 import cn.nine.crm.service.IEmployeeService;
+import cn.nine.crm.service.ISystemdictionaryitemService;
+import cn.nine.crm.service.ITenantService;
 import cn.nine.crm.util.Result;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,6 +31,8 @@ import java.util.List;
 public class CustomerController extends BaseController<Customer,Long, CustomerQuery>{
     private ICustomerService customerService;
     private IEmployeeService employeeService;
+    private ITenantService tenantService;
+    private ISystemdictionaryitemService systemdictionaryitemService;
 
     @Autowired
     public void setCustomerService(ICustomerService customerService) {
@@ -37,10 +44,42 @@ public class CustomerController extends BaseController<Customer,Long, CustomerQu
         this.employeeService = employeeService;
     }
 
-    @PostMapping("/getAllEmployee")
-    @ApiOperation("顾客页面查询所有员工")
-    public Result getAllEmployee(){
-        List<Employee> employeeList = employeeService.findAll();
+    @Autowired
+    public void setTenantService(ITenantService tenantService) {
+        this.tenantService = tenantService;
+    }
+
+    @Autowired
+    public void setSystemdictionaryitemService(ISystemdictionaryitemService systemdictionaryitemService) {
+        this.systemdictionaryitemService = systemdictionaryitemService;
+    }
+
+    @Override
+    public Result save(@RequestBody Customer customer) {
+        customer.setInputuser((Employee) SecurityUtils.getSubject().getPrincipal());
+        customer.setInputtime(new Date());
+        customer.setState(true);/*默认正常客户*/
+        return super.save(customer);
+    }
+
+    @PostMapping("/getAllEmployeebyDepartmentName/{departmentName}")
+    @ApiOperation("顾客页面查询所有员工通过部门名称")
+    public Result getAllEmployeebyDepartmentName(@PathVariable("departmentName") String departmentName){
+        List<Employee> employeeList = employeeService.findEmployeeByDepartmentName(departmentName);
         return Result.ok(employeeList);
+    }
+
+    @PostMapping("/getAllTenant")
+    @ApiOperation("顾客页面查询所有租户")
+    public Result getAllTenantList(){
+        List<Tenant> tenantList = tenantService.findAll();
+        return Result.ok(tenantList);
+    }
+
+    @PostMapping("/getAllJob/{name}")
+    @ApiOperation("顾客页面查询所有租户")
+    public Result getAllJob(@PathVariable("name") String name){
+       /* List<Systemdictionaryitem> systemdictionaryitemList = systemdictionaryitemService*/
+        return Result.ok();
     }
 }

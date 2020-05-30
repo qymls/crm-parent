@@ -1,6 +1,7 @@
 package cn.nine.crm.web.controller;
 
 import cn.nine.crm.domain.Tenant;
+import cn.nine.crm.dto.TenantSettleInDto;
 import cn.nine.crm.query.TenantQuery;
 import cn.nine.crm.service.ITenantService;
 import cn.nine.crm.util.LogAnnotations;
@@ -31,15 +32,14 @@ public class TenantController extends BaseController<Tenant,Long, TenantQuery>{
 
     @PostMapping("/settleIn")
     @ApiOperation(value = "保存一个实体")
-    public Result save(@RequestBody T t) {
+    public Result save(@RequestBody TenantSettleInDto dto) {
         try {
-            //tenantService.settleIn();        //添加
+            tenantService.settleIn(dto);        //添加
             return Result.ok();
         } catch (Exception e) {
             e.printStackTrace();
             return Result.error("服务器异常");
         }
-
     }
 
 }

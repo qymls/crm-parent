@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+
 /**
  * 孟俊江
  * 员工实体类
@@ -31,7 +32,6 @@ public class Employee extends BaseDomain{
     private String salt;
     //所属租户
     private Tenant tenant;
-    //角色
+    //关联角色
     private Role role;
-
 }

@@ -4,17 +4,13 @@ package cn.nine.crm.web.controller;
 import cn.nine.crm.domain.Department;
 import cn.nine.crm.query.DepartmentQuery;
 import cn.nine.crm.service.IDepartmentService;
-import cn.nine.crm.util.LogAnnotations;
-import cn.nine.crm.util.Result;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/department")
@@ -30,13 +26,8 @@ public class DepartmentController extends BaseController<Department,Long, Depart
 
     @ResponseBody
     @RequestMapping(value = "/findTreeData" )
-    public Result findTreeData(){
-        try {
-            List<Department> treeData = departmentService.findTreeData();
-            return Result.ok(treeData);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Result.error("服务器异常");
-        }
+    @ApiOperation("查询子部门")
+    public List<Department>  findTreeData(){
+          return departmentService.findTreeData();
     }
-}
+ }
