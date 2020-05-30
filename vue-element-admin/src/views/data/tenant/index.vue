@@ -157,7 +157,7 @@
               <el-option
                 v-for="item in meals"
                 :key="item.id"
-                v-model="item.id"
+                :value="item.id"
                 :label="item.name"
               />
             </el-select>
@@ -215,6 +215,9 @@ export default {
   methods: {
     // 显示添加弹窗
     handleShowAddDialog() {
+      this.$http.get('/meal/findAll').then(res => {
+        this.meals = res.data.data
+      });
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['addForm'].resetFields()/* 清空*/
@@ -222,6 +225,9 @@ export default {
     },
     // 编辑显示弹窗
     handleShowEditDialog(row) {
+      this.$http.get('/meal/findAll').then(res => {
+        this.meals = res.data.data
+      });
       // 数据回显
       this.dialogFormVisible = true
       console.log(row)
@@ -314,9 +320,6 @@ export default {
       this.loadListData()
     },
     loadListData() {
-      this.$http.get('/meal/findAll').then(res => {
-        this.meals = res.data.data
-      })
       this.loading = true
       // vue加载完成，发送ajax请求动态获取数据
       const param = {
