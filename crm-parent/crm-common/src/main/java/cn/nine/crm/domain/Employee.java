@@ -6,9 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * 孟俊江
@@ -35,5 +33,5 @@ public class Employee extends BaseDomain{
     //所属租户
     private Tenant tenant;
     //关联角色
-    private List<Role>roles = new ArrayList<>();
+    private Role role;
 }

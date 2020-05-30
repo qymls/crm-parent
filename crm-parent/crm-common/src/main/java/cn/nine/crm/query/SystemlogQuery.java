@@ -1,7 +1,7 @@
 package cn.nine.crm.query;
 
 import lombok.Data;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * (Systemlog)Query实体类
