@@ -276,7 +276,8 @@
     },
     methods: {
       getAllEmployeebyDepartmentName(){
-        this.$http.post('/customer/getAllEmployeebyDepartmentName').then(res => {
+        var param = "营销部"
+        this.$http.post('/customer/getAllEmployeebyDepartmentName/'+param).then(res => {
           this.employeeList = res.data.data;
         })
       },

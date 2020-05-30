@@ -63,7 +63,7 @@
         <el-table-column prop="email" label="邮箱" />
         <el-table-column prop="inputTime" label="录入时间" />
         <el-table-column prop="state" label="状态" :formatter="formatState">
-          <template scope="scope">
+          <template slot-scope="scope">
             <span v-if=" scope.row.state=== 0 " style="color: #2acd33">在职</span>
             <span v-else style="color: red">离职</span>
           </template>

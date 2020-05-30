@@ -12,10 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
@@ -57,10 +54,10 @@ public class CustomerController extends BaseController<Customer,Long, CustomerQu
         return super.save(customer);
     }
 
-    @PostMapping("/getAllEmployeebyDepartmentName")
+    @PostMapping("/getAllEmployeebyDepartmentName/{departmentName}")
     @ApiOperation("顾客页面查询所有员工通过部门名称")
-    public Result getAllEmployeebyDepartmentName(){
-        List<Employee> employeeList = employeeService.findAll();
+    public Result getAllEmployeebyDepartmentName(@PathVariable("departmentName") String departmentName){
+        List<Employee> employeeList = employeeService.findEmployeeByDepartmentName(departmentName);
         return Result.ok(employeeList);
     }
 
