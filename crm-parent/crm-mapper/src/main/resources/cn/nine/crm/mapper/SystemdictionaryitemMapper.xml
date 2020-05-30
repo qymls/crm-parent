@@ -42,7 +42,8 @@
     <select id="selectForCount" resultType="long">
         select
         count(*)
-        from systemdictionaryitem
+        from systemdictionaryitem d
+        join systemdictionary s on d.parent_id = s.id
         <include refid="base_where"/>
     </select>
 
@@ -70,7 +71,7 @@
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         insert into systemdictionaryitem
             (parent_id, name, requence, intro)
-        values (#{systemdictionary.id},#{name},#{requence},#{intro})
+        values (#{systemdictionary.id}, #{name}, #{requence}, #{intro})
     </insert>
 
     <update id="update" parameterType="cn.nine.crm.domain.Systemdictionaryitem">
@@ -99,12 +100,24 @@
     </delete>
 
     <delete id="batchDelete">
-        <!--open最前面的字符,close在最后的字符separator分隔符,每次循环使用什么分隔-->
+        <!--open最前面的字符, close在最后的字符separator分隔符, 每次循环使用什么分隔-->
         delete from systemdictionaryitem where id in
         <foreach collection="list" open="(" item="id" close=")" separator=",">
             #{id}
         </foreach>
     </delete>
 
+    <select id="selectByName" resultMap="baseResultMap">
+        select d.id   as d_id,
+               d.name as d_name,
+               d.requence,
+               d.intro,
+
+               s.id   as s_id,
+               s.name as s_name
+        from systemdictionaryitem d
+                 join systemdictionary s on s.id = d.parent_id
+        where s.name = #{name}
+    </select>
 
 </mapper>
