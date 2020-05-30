@@ -35,4 +35,9 @@ public class CustomerServiceImpl extends BaseServiceImpl<Customer,Long,CustomerQ
     public List<Customer> getdevCustomer(String status) {
         return customerMapper.getdevCustomer(status);
     }
+
+    @Override
+    public List<Customer> getreSourceByState(Boolean state) {
+        return customerMapper.getreSourceByState(state);
+    }
 }

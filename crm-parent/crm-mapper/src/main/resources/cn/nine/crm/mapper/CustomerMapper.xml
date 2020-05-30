@@ -75,6 +75,10 @@
         <include refid="base_cloumn"/>
         from customer where status=#{status}
     </select>
+    <select id="getreSourceByState" resultMap="result">
+        select <include refid="base_cloumn"/>
+        from customer where state=#{state}
+    </select>
 
 
     <insert id="save" parameterType="cn.nine.crm.domain.Customer"

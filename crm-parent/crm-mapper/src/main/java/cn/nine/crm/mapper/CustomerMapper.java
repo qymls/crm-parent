@@ -17,4 +17,6 @@ public interface CustomerMapper extends BaseMapper<Customer,Long,CustomerQuery>{
     void updateStateByid(@Param("state")Boolean state,@Param("id") Long id);
 
     List<Customer> getdevCustomer(String status);
+
+    List<Customer> getreSourceByState(Boolean state);
 }

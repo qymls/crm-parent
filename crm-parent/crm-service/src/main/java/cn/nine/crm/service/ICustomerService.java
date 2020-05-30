@@ -16,4 +16,6 @@ public interface ICustomerService extends IBaseService<Customer,Long,CustomerQue
     void updateStateByid(Boolean state,Long id);
 
     List<Customer> getdevCustomer(String status);
+    /*通过satte查询顾客，是否在资源池为false的就在资源池*/
+    List<Customer> getreSourceByState(Boolean state);
 }
