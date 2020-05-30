@@ -57,9 +57,9 @@ public class CustomerController extends BaseController<Customer,Long, CustomerQu
         return super.save(customer);
     }
 
-    @PostMapping("/getAllEmployeebyName")
+    @PostMapping("/getAllEmployeebyDepartmentName")
     @ApiOperation("顾客页面查询所有员工通过部门名称")
-    public Result getAllEmployeebyName(){
+    public Result getAllEmployeebyDepartmentName(){
         List<Employee> employeeList = employeeService.findAll();
         return Result.ok(employeeList);
     }
