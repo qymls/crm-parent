@@ -275,8 +275,8 @@
       this.loadListData()
     },
     methods: {
-      getAllEmployeebyName(){
-        this.$http.post('/customer/getAllEmployeebyName').then(res => {
+      getAllEmployeebyDepartmentName(){
+        this.$http.post('/customer/getAllEmployeebyDepartmentName').then(res => {
           this.employeeList = res.data.data;
         })
       },
@@ -292,7 +292,7 @@
       handleShowAddDialog() {
         this.dialogFormVisible = true
         this.$refs['addForm'].resetFields()/* 清空*/
-        this.getAllEmployeebyName();
+        this.getAllEmployeebyDepartmentName();
         this.getAllTenant();
       },
       // 编辑显示弹窗
@@ -301,7 +301,7 @@
         // 数据回显
         this.dialogFormVisible = true
         this.$refs['addForm'].resetFields()/* 清空*/
-        this.getAllEmployeebyName();
+        this.getAllEmployeebyDepartmentName();
         this.getAllTenant();
         row.sex = row.sex.toString();
         row.age = row.age.toString();
