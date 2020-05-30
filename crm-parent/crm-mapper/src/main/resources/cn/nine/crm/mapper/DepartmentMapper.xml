@@ -15,6 +15,10 @@
         <id column="d_id" property="id"/>
         <result column="name" property="name"/>
         <result column="sn" property="sn"/>
+        <association property="prentId" javaType="cn.nine.crm.domain.Department">
+            <id column="f_id" property="id"/>
+            <result column="name" property="name"/>
+        </association>
         <association property="manager"
                      javaType="cn.nine.crm.domain.Employee">
             <id column="e_id" property="id"/>
@@ -27,12 +31,17 @@
         d.name,
         d.sn,
         d.manager,
+        d.parent_id AS d_id,
 
         e.id AS e_id,
-        e.realName
+        e.realName,
+
+        f.id AS f_id,
+        f.name
         from
         department d
         LEFT JOIN  employee e ON d.manager= e.id
+        LEFT JOIN department f ON  d.parent_id = f.id
         <include refid="base_where"/>
         LIMIT #{start} , #{pageSize}
     </select>
@@ -97,7 +106,6 @@
                 </set>
                 where id = #{id}
     </update>
-
     <delete id="delete" parameterType="long">
         delete from department where id = #{id}
     </delete>

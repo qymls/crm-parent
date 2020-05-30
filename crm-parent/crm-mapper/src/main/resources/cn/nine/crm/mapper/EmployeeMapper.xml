@@ -23,10 +23,6 @@
             <id column="tt_id" property="id"/>
             <result column="companyName" property="companyName"/>
         </association>
-        <association property="role" javaType="cn.nine.crm.domain.Role">
-            <id column="r_id" property="id"/>
-            <result column="name" property="name"/>
-        </association>
     </resultMap>
     <!--添加员工-->
     <insert id="save" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
@@ -43,21 +39,20 @@
             tenant_id
         )
         VALUES
-            (
-                #{username},
-                #{password},
-                #{realName},
-                #{tel},
-                #{email},
-                #{inputTime},
-                #{state},
-                #{department.id},
-                #{salt},
-                #{tenant.id}
-            )
+        (
+            #{username},
+            #{password},
+            #{realName},
+            #{tel},
+            #{email},
+            #{inputTime},
+            #{state},
+            #{department.id},
+            #{salt},
+            #{tenant.id}
+        )
 
     </insert>
-    <!--xiu-->
     <update id="update" parameterType="cn.nine.crm.domain.Employee">
         UPDATE employee
         <set>
@@ -88,9 +83,6 @@
             <if test="tenant != null and tenant.id !=''">
                 tenant_id = #{tenant.id},
             </if>
-            <if test="role !=null and role.id !=''">
-                role_id = #{role.id},
-            </if>
         </set>
         where id =#{id}
     </update>
@@ -106,13 +98,26 @@
         </foreach>
     </delete>
     <!--查询所有数据-->
-    <select id="findAll" resultType="cn.nine.crm.domain.Employee">
+    <select id="findAll" resultMap="baseMap">
         select
-            id,
-            username,
-            realName
+            te.id AS te_id,
+            te.username,
+            te.password,
+            te.realName,
+            te.tel,
+            te.email,
+            te.inputTime,
+            te.state,
+            te.salt,
+            te.tenant_id,
+            td.id AS td_id,
+            td.name AS td_name,
+            tt.id AS  tt_id,
+            tt.companyName
         from
-            employee
+            employee te
+            JOIN department  td ON te.department_id = td.id
+            JOIN tenant  tt ON tt.id=te.tenant_id
     </select>
     <!--抽取sql-->
     <sql id="baseWhere">
@@ -145,15 +150,11 @@
         td.name AS td_name,
 
         tt.id  AS tt_id,
-        tt.companyName,
-
-        r.id AS  r_id,
-        r.name
+        tt.companyName
         from
         employee te
         LEFT JOIN department  td ON te.department_id = td.id
         LEFT JOIN tenant  tt ON tt.id=te.tenant_id
-        LEFT JOIN role r  ON  r.id=te.role_id
         <include refid="baseWhere"/>
         LIMIT #{start} , #{pageSize}
     </select>
@@ -161,6 +162,13 @@
     <select id="findByUsername" resultType="cn.nine.crm.domain.Employee">
         select * from employee where username = #{username}
     </select>
-
+    <select id="findOne" resultType="cn.nine.crm.domain.Employee">
+        SELECT * FROM employee WHERE id=#{id}
+    </select>
+    <select id="findEmployeeByDepartmentName" resultType="cn.nine.crm.domain.Employee">
+        SELECT *
+        FROM employee e LEFT JOIN  department d ON e.department_id =d.id
+        WHERE d.name=#{departmentName}
+    </select>
     <!--分页查询-->
 </mapper>

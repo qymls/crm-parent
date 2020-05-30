@@ -25,4 +25,6 @@ public class BaseConstant {
     public static final Integer TYPE_CUSTOMER = 1;
     public static final Integer TYPE_PLAT_ADMIN = 2;
     public static final Integer TYPE_TENANT_ADMIN = 3;
+
+
 }

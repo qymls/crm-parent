@@ -49,6 +49,7 @@
         <el-table-column prop="name" label="名称" />
         <el-table-column prop="sn" label="部门编号" />
         <el-table-column prop="manager.realName" label="部门经理" />
+        <el-table-column prop="parentId.name" label="父级部门" :formatter="formatDept"/>
         <el-table-column fixed="right" label="操作" width="150" align="center">
           <template slot-scope="scope">
             <el-button type="primary" size="small" @click="handleShowEditDialog(scope.row)">编辑</el-button>
@@ -101,6 +102,10 @@
               />
             </el-select>
           </el-form-item>
+          <div title="请选择">
+          <Cascader   filterable :data="departmentList" v-model="addForm.children">
+          </Cascader >
+          </div>
           <el-form-item>
             <el-button type="primary" @click="submitForm('addForm')">确认提交</el-button>
             <el-button @click="resetForm('addForm')">重置</el-button>
@@ -115,12 +120,8 @@ export default {
   data() {
     return {
       //部门
-      parentId:[{
-          id:'',
-          children:{
-            id:''
-          }
-      }],
+      departmentList:[],
+      id:[],
       manager: [{
         id: ''
       }],
@@ -141,7 +142,11 @@ export default {
         manager: {
           id: '',
           realName: ''
-        }
+        },
+        children:[{
+            id:'',
+            name:'',
+        }],
       },
       rules: {
         name: [
@@ -154,18 +159,40 @@ export default {
     this.loadListData()
   },
   methods: {
+    formatDept:function (row,column) {
+        return row && row.name ? row.name : "";;
+
+    },
     // 显示添加弹窗
-
+    findChildren(){
+      this.$http.get('/department/findTreeData').then(res => {
+        this.formartData(res.data);
+        this.departmentList = res.data;
+      })
+    },
+    formartData(data){
+      for(let i = 0 ;i<data.length;i++){
+        if (data[i].children && data[i].children.length>0){
+          data[i] = $.extend({},data[i],{value:data[i].id,label:data[i].name})
+          this.formartData(data[i].children)
+        }else {
+          data[i] = $.extend({},data[i],{value:data[i].id,label:data[i].name})
+        }
+      }
+    },
     handleShowAddDialog() {
+      this.findChildren();
       this.dialogFormVisible = true
-
       this.$nextTick(() => {
         this.$refs['addForm'].resetFields()/* 清空*/
-        // 清空下拉框
-      })
+      });
+      // 清空下拉框
+      this.addForm.manager.id='';
+      this.addForm.children=[];
     },
     // 编辑显示弹窗
     handleShowEditDialog(row) {
+      this.findChildren();
       // 数据回显
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -178,7 +205,7 @@ export default {
       var http = this.$http
       var message = this.$message
       refs[formName].validate((valid) => {
-        const param = Object.assign({}, this.addForm)
+        const param = Object.assign({}, this.addForm);
         let url = '/department/save'
         if (this.addForm.id) {
           url = '/department/update'
@@ -188,6 +215,7 @@ export default {
             if (res.data.success) {
               // 赋值管理员
               this.manager = res.data.data
+              this.children =res.data;
               this.dialogFormVisible = false
               this.loadListData()
               message({ message: res.data.message, center: true, type: 'success', showClose: true })
@@ -216,7 +244,7 @@ export default {
       // 把对象数组转成 id数组
       const ids = this.row.map(function(obj, index, arr) {
         return obj.id
-      })
+      });
       const param = { ids: ids }
       var http = this.$http
       var notify = this.$notify
@@ -231,7 +259,6 @@ export default {
         notify({ title: '删除失败', message: error.message, type: 'error', offset: 100 })
       })
     },
-
     handleRemove(row) {
       var http = this.$http
       var notify = this.$notify
@@ -259,9 +286,6 @@ export default {
       this.$http.get('/employee/findAll').then(res => {
         this.manager = res.data.data
       }),
-      this.$http.get('/department/findTreeData').then(res => {
-        console.debug(res.data.data)
-      })
       // 发送ajax请求
       this.loading = true
       // vue加载完成，发送ajax请求动态获取数据
@@ -273,6 +297,7 @@ export default {
       var http = this.$http
       var message = this.$message
       http.post('/department/selectForPage', param).then(res => {
+        console.debug(res.data.data)
         if (res.data.success) {
           this.tableData = res.data.data.list
           this.total = res.data.data.totalRows

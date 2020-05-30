@@ -30,7 +30,6 @@ import java.util.Set;
 @Controller
 @RequestMapping("role")
 @SuppressWarnings(value = "all")/*抑制警告*/
-@LogAnnotations/*日志*/
 public class RoleController extends BaseController<Role, Long, RoleQuery> {
     private IRoleService roleService;
     private IPermissionService permissionService;

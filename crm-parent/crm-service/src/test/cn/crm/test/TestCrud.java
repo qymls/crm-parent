@@ -1,9 +1,8 @@
 package cn.crm.test;
 
 
+import cn.nine.crm.mapper.DepartmentMapper;
 import cn.nine.crm.mapper.EmployeeMapper;
-import cn.nine.crm.service.IEmployeeService;
-import cn.nine.crm.service.ITenantService;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -17,8 +16,7 @@ public class TestCrud {
     private EmployeeMapper employeeMapper;
 
     @Autowired
-    private ITenantService tenant;
-    @Autowired
-    private IEmployeeService service;
+    private DepartmentMapper departmentMapper;
+
 
 }

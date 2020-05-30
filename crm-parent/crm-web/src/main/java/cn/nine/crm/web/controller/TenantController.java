@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller
 @RequestMapping("tenant")
-@LogAnnotations
 @SuppressWarnings(value = "all")/*抑制警告*/
 public class TenantController extends BaseController<Tenant,Long, TenantQuery>{
     private ITenantService tenantService;
@@ -42,4 +41,5 @@ public class TenantController extends BaseController<Tenant,Long, TenantQuery>{
             return Result.error("服务器异常");
         }
     }
+
 }

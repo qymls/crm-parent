@@ -76,9 +76,7 @@
           </Form-Item>
         </i-Form>
       </i-col>
-
     </Row>
-
     <Row justify="center" align="middle">
       <div style="margin-top:20px" class="roleTable_style">
         <i-Table :columns="columns" :data="RoleData" border max-height="650"
@@ -276,7 +274,7 @@
         RoleData: [],
         total: 0,
         page: 1,/*当前页默认为1*/
-        pageSize: 5,/* 默认5条*/
+        pageSize: 10,/* 默认5条*/
         roleSetting: false,
         columnSource: [
           {

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ResponseBody
 @RequestMapping("/order")
 @CrossOrigin
-@LogAnnotations
 public class OrdersController extends BaseController<Orders,Long, OrdersQuery>{
 
 }

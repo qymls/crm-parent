@@ -29,11 +29,11 @@ public class Orders extends BaseDomain {
     private String intro;
     //租户对象 显示租户的公司名称
     private Tenant tenant;
-    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     public Date getSignTime() {
         return signTime;
     }
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     public void setSignTime(Date signTime) {
         this.signTime = signTime;
     }
