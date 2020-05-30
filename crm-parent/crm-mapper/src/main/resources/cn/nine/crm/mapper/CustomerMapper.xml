@@ -69,6 +69,12 @@
         <include refid="base_cloumn"/>
         from customer where id = #{id}
     </select>
+    <!--查询潜在客户，status为初始录入的客户-->
+    <select id="getdevCustomer" resultMap="result">
+        select
+        <include refid="base_cloumn"/>
+        from customer where status=#{status}
+    </select>
 
 
     <insert id="save" parameterType="cn.nine.crm.domain.Customer"

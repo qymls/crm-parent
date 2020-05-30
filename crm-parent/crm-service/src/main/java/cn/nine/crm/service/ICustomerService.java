@@ -2,6 +2,9 @@ package cn.nine.crm.service;
 
 import cn.nine.crm.domain.Customer;
 import cn.nine.crm.query.CustomerQuery;
+
+import java.util.List;
+
 /**
  * (Customer)表Service层接口
  *
@@ -12,4 +15,5 @@ public interface ICustomerService extends IBaseService<Customer,Long,CustomerQue
 
     void updateStateByid(Boolean state,Long id);
 
+    List<Customer> getdevCustomer(String status);
 }
