@@ -23,17 +23,34 @@
           <Form ref="searchForm" :model="searchForm" inline style="margin-left: 20px;" @submit.native.prevent class="demo-form-inline">
             <!--客户姓名查询-->
             <FormItem prop="name">
-              <Input v-model="searchForm.customer.name" type="text" clearable
-                     style="cursor: pointer" placeholder="请输入查找的客户姓名"
-                     @on-enter="click_enter">
-              </Input>
+              <el-select v-model="searchForm.customer.id" filterable placeholder="请选择需要查询的客户姓名">
+                <el-option
+                  v-for="item in customers"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <!--<Input v-model="searchForm.customer.name" type="text" clearable-->
+                     <!--style="cursor: pointer" placeholder="请输入查找的客户姓名"-->
+                     <!--@on-enter="click_enter">-->
+              <!--</Input>-->
             </FormItem>
             <!--营销人员查询-->
             <FormItem prop="username">
-             <Input v-model="searchForm.seller.username" type="text" clearable
-                     style="cursor: pointer" placeholder="请输入查找的营销人员姓名"
-                     @on-enter="click_enter">
-              </Input>
+              <!--营销人员姓名搜索选择下拉框-->
+              <el-select v-model="searchForm.seller.id" filterable placeholder="请选择需要查询的营销人员姓名"  >
+                <el-option
+                  v-for="item in sellers"
+                  :key="item.id"
+                  :label="item.username"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+             <!--<Input v-model="searchForm.seller.username" type="text" clearable-->
+                     <!--style="cursor: pointer" placeholder="请输入查找的营销人员姓名"-->
+                     <!--@on-enter="click_enter">-->
+              <!--</Input>-->
             </FormItem >
             <FormItem>
               <Button type="info" icon="ios-search" @click="loadListData">查找</Button>
@@ -92,7 +109,7 @@
           </div>
         </div>
         <!--添加/编辑弹出框-->
-        <Modal v-model="dialogFormVisible" title="添加信息" class-name="vertical-center-modal" footer-hide draggable
+        <Modal v-model="dialogFormVisible" title="订单管理" class-name="vertical-center-modal" footer-hide draggable
                :styles="{top: '200px'}">
           <Form ref="addForm" :model="addForm" :rules="rules" :label-width="80">
             <FormItem v-show="false" prop="id">
@@ -100,7 +117,7 @@
             </FormItem>
             <FormItem label="客户姓名" prop="name">
               <!--增添客户姓名带搜索下拉框 配置搜索方法 dataFilter-->
-              <el-select v-model="addForm.customer" filterable placeholder="请选择客户姓名">
+              <el-select v-model="addForm.customer.id" filterable placeholder="请选择客户姓名">
                 <el-option
                   v-for="item in customers"
                   :key="item.id"
@@ -122,7 +139,7 @@
             </FormItem>
             <FormItem label="营销人员" prop="username">
               <!--营销人员姓名搜索选择下拉框-->
-              <el-select v-model="addForm.seller.id" filterable placeholder=""  >
+              <el-select v-model="addForm.seller.id" filterable placeholder="请选择营销人员姓名" >
                 <el-option
                   v-for="item in sellers"
                   :key="item.id"
@@ -162,7 +179,9 @@
   </div>
 </template>
 <script>
+  import ElRadioGroup from "element-ui/packages/radio/src/radio-group";
   export default {
+    components: {ElRadioGroup},
     data() {
       return {
         page: 1, // 第几页
@@ -309,24 +328,24 @@
             width: 180
           }
         ],
-        // rules: {
-        //   // name: [
-        //   //   { required: true, message: '请输入客户姓名', trigger: 'blur' }
-        //   // ],
-        //   // signTime: [
-        //   //   { required: true, message: '请选择签订时间', trigger: 'blur' }
-        //   // ],
-        //   // username: [
-        //   //   { required: true, message: '请输入营销人员姓名', trigger: 'blur' }
-        //   // ],
-        //   // totalAmount: [
-        //   //   { required: true, message: '请输入订金金额', trigger: 'blur' }
-        //   // ],
-        //   intro: [
-        //     { required: true, message: '请输入订单摘要', trigger: 'change' }
-        //   ],
-        //
-        // }
+        rules: {
+          // name: [
+          //   { required: true, message: '请输入客户姓名', trigger: 'blur' }
+          // ],
+          // signTime: [
+          //   { required: true, message: '请选择签订时间', trigger: 'blur' }
+          // ],
+          // username: [
+          //   { required: true, message: '请输入营销人员姓名', trigger: 'blur' }
+          // ],
+          // totalAmount: [
+          //   { required: true, message: '请输入订金金额', trigger: 'blur' }
+          // ],
+          intro: [
+            { required: true, message: '请输入订单摘要', trigger: 'change' }
+          ],
+
+        }
       }
     },
     mounted() {
@@ -354,7 +373,7 @@
         // 数据回显
         this.dialogFormVisible = true
         this.$refs['addForm'].resetFields()/* 清空*/
-        this.addForm = Object.assign({}, row)/* 复制*/
+        this.addForm = Object.assign({}, row)/* 赋值*/
       },
 
       submitForm(formName) { /* 确认保存*/

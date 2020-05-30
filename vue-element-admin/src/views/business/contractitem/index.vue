@@ -23,7 +23,7 @@
           <Form ref="searchForm" :model="searchForm" inline style="margin-left: 20px;" @submit.native.prevent>
             <!-- 所属合同编号-->
             <FormItem prop="sn">
-              <Input v-model="searchForm.contract.sn" type="text" clearable style="cursor: pointer" placeholder="请输入查找的名称" @on-enter="click_enter">
+              <Input v-model="searchForm.contract.sn" type="text" clearable style="cursor: pointer" placeholder="请输入查找合同编号" @on-enter="click_enter">
               </Input>
             </FormItem>
             <FormItem>
@@ -75,7 +75,7 @@
             />
           </div>
         </div>
-        <Modal v-model="dialogFormVisible" title="添加信息" class-name="vertical-center-modal" footer-hide draggable
+        <Modal v-model="dialogFormVisible" title="合同明细管理" class-name="vertical-center-modal" footer-hide draggable
                :styles="{top: '200px'}">
           <Form ref="addForm" :model="addForm" :rules="rules" :label-width="80">
             <!--id 值隐藏-->
@@ -117,7 +117,9 @@
   </div>
 </template>
 <script>
+  import ElRadioGroup from "element-ui/packages/radio/src/radio-group";
   export default {
+    components: {ElRadioGroup},
     data() {
       return {
         page: 1, // 第几页
@@ -158,13 +160,19 @@
         //查询
         searchForm: {
           contract:{
+            id:'',
             sn:''
           },
+        },
+        contract:{
+          id:'',
+          sn:''
         },
         dialogFormVisible: false,
         addForm: {
           id: '',
           contract:{
+            id:'',
             sn:''
           },
           payTime:'',
@@ -372,6 +380,10 @@
         var Message = this.$Message
         this.loading = true
         // vue加载完成，发送ajax请求动态获取数据
+        this.$http.get("/contract/findByContractitemId").then(res=>{
+          // console.debug(res.data.data)
+          this.contract.sn = res.data.data.sn;
+        })
         const param = {
           'currentPage': this.page,
           'pageSize': this.pageSize,

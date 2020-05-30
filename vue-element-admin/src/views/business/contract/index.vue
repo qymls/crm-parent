@@ -18,19 +18,37 @@
             <Button v-if="row.length>0" type="error" icon="ios-trash">批量删除</Button>
           </Poptip>
         </Col>
-        <Col span="21">
-          <Form ref="searchForm" :model="searchForm" inline style="margin-left: 20px;" @submit.native.prevent class="demo-form-inline">
+        <Col span="21" class="toolbar">
+          <Form ref="searchForm" :model="searchForm"
+                inline
+                style="margin-left: 20px;"
+                @submit.native.prevent
+                class="demo-form-inline">
             <!--客户姓名查询-->
             <FormItem prop="name">
-              <Input v-model="searchForm.customer.name" type="text" clearable
-                     style="cursor: pointer" placeholder="请输入查找的客户姓名"
-                     @on-enter="click_enter" />
+              <el-select v-model="searchForm.customer.id" filterable placeholder="请选择需要查询的客户姓名">
+                <el-option
+                  v-for="item in customers"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <!--<Input v-model="searchForm.customer.name"  clearable-->
+                     <!--style="cursor: pointer" placeholder="请输入查找的客户姓名"-->
+                      <!--/>&lt;!&ndash;@on-enter="click_enter"&ndash;&gt;-->
             </FormItem>
             <!--营销人员查询-->
             <FormItem prop="username">
-              <Input v-model="searchForm.seller.username" type="text" clearable
-                     style="cursor: pointer" placeholder="请输入查找的营销人员姓名"
-                     @on-enter="click_enter" />
+              <!--营销人员姓名搜索选择下拉框-->
+              <el-select v-model="searchForm.seller.id" filterable placeholder="请选择需要查询的营销人员姓名"  >
+                <el-option
+                  v-for="item in sellers"
+                  :key="item.id"
+                  :label="item.username"
+                  :value="item.id">
+                </el-option>
+              </el-select>
             </FormItem >
             <FormItem>
               <Button type="info" icon="ios-search" @click="loadListData">查找</Button>
@@ -44,8 +62,7 @@
           <Table border :loading="loading" :columns="columns"
                  :data="tableData"  height="350"
                  @on-selection-change="handleSelectionChange"
-                 :default-sort = "{key: 'signTime', order: 'descending'}"
-          >
+                 :default-sort = "{key: 'signTime', order: 'descending'}">
               <!--合同明细 按钮 -->
               <template slot-scope="{ row, index }" slot="detail">
                 <el-button type="success" size="small" plain @click="dialogDetailVisible = true">明细</el-button>
@@ -103,7 +120,7 @@
             />
           </div>
         </div>
-        <Modal v-model="dialogFormVisible" title="添加信息" class-name="vertical-center-modal" footer-hide draggable
+        <Modal v-model="dialogFormVisible" title="合同管理" class-name="vertical-center-modal" footer-hide draggable
                :styles="{top: '200px'}">
           <Form ref="addForm" :model="addForm" :rules="rules" :label-width="80">
             <FormItem v-show="false" prop="id">
@@ -174,7 +191,9 @@
   </div>
 </template>
 <script>
+  import ElRadioGroup from "element-ui/packages/radio/src/radio-group";
   export default {
+    components: {ElRadioGroup},
     data() {
       return {
         page: 1, // 第几页
@@ -183,9 +202,15 @@
         tableData: [],
         loading: false,
         row: [],
-        customers:[{id:''}],
-        sellers:[{id:''}],
-        tenants:[{id:''}],
+        customers:[{
+          id:''
+        }],
+        sellers:[{
+          id:''
+        }],
+        tenants:[{
+          id:''
+        }],
         customer: {
           id:'',
           name:''
@@ -349,9 +374,9 @@
     },
     methods: {
 
-      click_enter() { /* 键盘事件,调用查找方法*/
-        this.loadListData()
-      },
+      // click_enter() { /* 键盘事件,调用查找方法*/
+      //   this.loadListData()
+      // },
       // 显示添加弹窗
       handleShowAddDialog() {
         //清空数据
