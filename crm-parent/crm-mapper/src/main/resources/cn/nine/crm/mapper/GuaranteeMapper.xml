@@ -7,7 +7,7 @@
     <sql id="base_where">
         <where>
             <if test="keyword != null">
-                AND sn LIKE CONCAT("%",#{keyword},"%")
+                AND contract_sn LIKE CONCAT("%",#{keyword},"%")
             </if>
         </where>
     </sql>
@@ -32,7 +32,7 @@
     <!-- 关联查询 -->
     <resultMap id="baseResultMap" type="cn.nine.crm.domain.Guarantee">
         <id column="g_id" property="id"/>
-        <result column="sn" property="sn"/>
+        <result column="g_sn" property="sn"/>
         <result column="end_date" property="endDate"/>
 
         <!-- 关联 合同 -->
@@ -80,6 +80,7 @@
         FROM guarantee g
         <include refid="base_join"/>
         <include refid="base_where"/>
+        ORDER BY guarantee_sn ASC
         limit #{start},#{pageSize}
     </select>
 
@@ -111,7 +112,7 @@
         VALUES(
             #{sn},
             #{endDate},
-            #{contract.id}
+            #{contract.sn}
         )
     </insert>
 
@@ -119,9 +120,8 @@
     <update id="update" parameterType="cn.nine.crm.domain.Guarantee">
         UPDATE guarantee
         SET
-            sn = #{sn},
             end_date = #{endDate},
-            contract_id = #{contract.id}
+            contract_sn = #{contract.sn}
         WHERE id = #{id}
     </update>
 
