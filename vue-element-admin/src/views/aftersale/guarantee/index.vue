@@ -84,7 +84,7 @@
         show-elevator
         show-sizer
         show-total
-        styles="float: right; margin: 12px; overflow: hidden"
+        style="float: right; margin: 12px; overflow: hidden"
         @on-change="handleCurrentChange"
         @on-page-size-change="handleSizeChange"
       ></Page>
