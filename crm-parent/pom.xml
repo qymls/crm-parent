@@ -141,7 +141,12 @@
                 <artifactId>commons-fileupload</artifactId>
                 <version>1.2.2</version>
             </dependency>
-
+            <!--用于发http请求-->
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>4.5.12</version>
+            </dependency>
             <!--添加json转换包,使用阿里的FastJson-->
             <dependency>
                 <groupId>com.alibaba</groupId>

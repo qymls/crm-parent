@@ -34,6 +34,22 @@ export const constantRoutes = [
     hidden: true
   },
 
+  /*微信登录的绑定账号路由*/
+  {
+    path: '/bind',
+    component: () => import('@/views/bind'),
+    hidden: true
+  },
+
+  /**
+   * 微信登录成功的页面
+   */
+  {
+    path: '/success',
+    component: () => import('@/views/success'),
+    hidden: true
+  },
+
   {
     path: '/',
     component: Layout,

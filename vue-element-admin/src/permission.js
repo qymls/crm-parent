@@ -8,7 +8,7 @@ import getPageTitle from '@/utils/get-page-title'
 import Layout from '@/layout/index'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
-const whiteList = ['/login','/register'] /*白名单*/
+const whiteList = ['/login','/register','/bind','/success'] /*白名单*/
 
 
 router.beforeEach(async(to, from, next) => {
@@ -55,7 +55,7 @@ router.beforeEach(async(to, from, next) => {
     }
   } else {
     /* has no token*/
-
+console.log("没有token")
     if (whiteList.indexOf(to.path) !== -1) {
       // in the free login whitelist, go directly
       next()

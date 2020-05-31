@@ -1,7 +1,6 @@
 package cn.nine.crm.mapper;
 
 
-import cn.nine.crm.domain.Customer;
 import cn.nine.crm.domain.Department;
 import cn.nine.crm.domain.Employee;
 import cn.nine.crm.query.DepartmentQuery;
@@ -16,4 +15,8 @@ public interface DepartmentMapper extends BaseMapper<Department,Long, Department
     List<Department>findTreeData();
 
     List<Employee> getManagerByDepartMentName(String name);
+
+    //通过id获取父级部门
+    List<Department> findParentDeptById(Long id);
+
 }

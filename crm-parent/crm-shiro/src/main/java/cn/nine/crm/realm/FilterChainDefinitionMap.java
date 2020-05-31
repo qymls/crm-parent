@@ -21,6 +21,8 @@ public class FilterChainDefinitionMap {
         map.put("/admin/login", "anon");
         map.put("/admin/logout", "anon");
         map.put("/settleIn/settleIn", "anon");
+        map.put("/wechat/**", "anon");
+        map.put("/weixin/**", "anon");
         map.put("/swagger-ui.html","anon");
         map.put("/webjars/**","anon");
         map.put("/v2/**","anon");
@@ -28,7 +30,6 @@ public class FilterChainDefinitionMap {
         map.put("*.js","anon");
         map.put("/configuration/ui","anon");
         map.put("*.html","anon");
-        map.put("/weixin/*","anon");
         map.put("/settleIn/upload","anon");//入驻页面放开拦截
 
        /* map.put("/Admin/Employee/save", "perms[employee:save]");
