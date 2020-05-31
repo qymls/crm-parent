@@ -15,14 +15,14 @@
         <id column="d_id" property="id"/>
         <result column="name" property="name"/>
         <result column="sn" property="sn"/>
+        <association property="parentId" javaType="cn.nine.crm.domain.Department">
+            <id column="f_id" property="id"/>
+            <result column="name" property="name"/>
+        </association>
         <association property="manager"
                      javaType="cn.nine.crm.domain.Employee">
             <id column="e_id" property="id"/>
             <id column="realName" property="realName"/>
-        </association>
-        <association property="parentId" javaType="cn.nine.crm.domain.Department">
-            <id column="f_id" property="id"/>
-            <result column="name" property="name"/>
         </association>
     </resultMap>
     <select id="selectForPage" resultMap="baseMap">
@@ -91,10 +91,11 @@
     <insert id="save" parameterType="cn.nine.crm.domain.Department"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         insert into department
-        (name, sn,manager,parent_id)
+        (name, sn,manager)
         values
-        (#{name},#{sn},#{manager.id},#{parentId.id})
+        (#{name},#{sn},#{manager.id})
     </insert>
+
 
     <!--修改-->
     <update id="update" parameterType="cn.nine.crm.domain.Department">

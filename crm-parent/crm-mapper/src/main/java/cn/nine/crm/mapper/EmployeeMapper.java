@@ -13,6 +13,9 @@ public interface EmployeeMapper extends BaseMapper<Employee,Long,EmployeeQuery>{
 
     Employee findByUsername(String username);
 
+    //根据部门查询员工
+    List<Employee> findEmployeeByDepartmentName(String departmentName);
+
     List<Role> findRoleList(Long id);
 
     //保存角色表
@@ -21,5 +24,4 @@ public interface EmployeeMapper extends BaseMapper<Employee,Long,EmployeeQuery>{
     //删除所属角色
     void deleteRole(Long employee_id);
 
-    List<Employee> findEmployeeByDepartmentName(String departmentName);
 }
