@@ -280,6 +280,9 @@ export default {
         this.addForm = data;
         //回显状态
       })
+
+
+
     },
     submitForm(formName) { /* 确认保存*/
       var refs = this.$refs
