@@ -30,6 +30,4 @@ public class DepartmentController extends BaseController<Department,Long, Depart
     public List<Department>  findTreeData(){
           return departmentService.findTreeData();
     }
-
-
- }
+}

@@ -159,6 +159,7 @@ export default {
     this.loadListData()
   },
   methods: {
+    //格式化部门
     formatDept:function (row,column) {
         return row && row.name ? row.name : "";
 
@@ -166,6 +167,7 @@ export default {
     // 显示添加弹窗
     findChildren(){
       this.$http.get('/department/findTreeData').then(res => {
+        //将对象转换数组
         this.formartData(res.data);
         this.departmentList = res.data;
       })
@@ -192,13 +194,15 @@ export default {
     },
     // 编辑显示弹窗
     handleShowEditDialog(row) {
-      this.findChildren();
+
       // 数据回显
-      this.dialogFormVisible = true
+      this.findChildren();
+      this.dialogFormVisible = true;
+
       this.$nextTick(() => {
         this.$refs['addForm'].resetFields()/* 清空*/
         this.addForm = Object.assign({}, row)/* 复制*/
-      })
+      });
     },
     submitForm(formName) { /* 确认保存*/
       var refs = this.$refs
@@ -303,7 +307,6 @@ export default {
       var message = this.$message
       http.post('/department/selectForPage', param).then(res => {
         if (res.data.success) {
-          console.debug(res.data.data);
           this.tableData = res.data.data.list
           this.total = res.data.data.totalRows
           this.page = res.data.data.currentPage

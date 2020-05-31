@@ -48,7 +48,7 @@
           </el-form>
         </el-col>
       </el-row>
-      <el-table  v-loading="loading" border :data="tableData" style="width: 100%" max-height="200px"  @selection-change="handleSelectionChange"
+      <el-table  v-loading="loading" border :data="tableData" style="width: 100%" @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="100" align="center" />
         <el-table-column prop="username" label="用户名" />
