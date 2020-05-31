@@ -185,6 +185,7 @@
           this.$refs['addForm'].resetFields()/* 清空*/
           this.addForm = Object.assign({}, row)/* 复制*/
         })
+
       },
 
       submitForm(formName) { /* 确认保存*/

@@ -278,15 +278,8 @@ export default {
         message.error('查询失败[' + error.message + ']')
       })
     },
-    statusFormatter(row) {
-      const status = row.status
-      if (status == 0) {
-        return '注册'
-      } else if (status == 1) {
-        return '付费'
-      } else {
-        return '欠费'
-      }
+    statusFormatter:function(row) {
+      return row.status == 0 ? '停用':'启用';
     }
   }
 
