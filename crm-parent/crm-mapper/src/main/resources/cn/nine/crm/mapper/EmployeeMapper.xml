@@ -26,7 +26,7 @@
         <collection
                 property="role"
                 ofType="cn.nine.crm.domain.Role"
-                column="id"
+                column="te_id"
                 select="cn.nine.crm.mapper.EmployeeMapper.findRoleList">
         </collection>
     </resultMap>
