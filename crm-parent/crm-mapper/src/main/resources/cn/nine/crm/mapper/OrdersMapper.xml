@@ -57,11 +57,11 @@
     <sql id="baseWhere">
         /*查询 ：客户姓名 营销人员姓名*/
         <where>
-            <if test=" keyword !=null ">
-              and cu.name like  CONCAT("%",#{keyword},"%"
+            <if test="keyword != null">
+                and cu.id = #{keyword}
             </if>
-            <if test=" keyword !=null ">
-                AND e.username like CONCAT("%",#{keyword},"%")
+            <if test=" username != null ">
+                AND e.id = #{username}
             </if>
         </where>
     </sql>

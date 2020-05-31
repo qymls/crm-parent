@@ -6,6 +6,7 @@
     <resultMap id="baseMap" type="cn.nine.crm.domain.ContractItem">
         <!--合同明细-->
         <id column="ci_id" property="id"></id>
+        <result column="contractSn" property="contractSn"></result>
         <result column="payTime" property="payTime"></result>
         <result column="payMoney" property="payMoney"></result>
         <result column="scale" property="scale"></result>
@@ -21,6 +22,7 @@
     <select id="findAll" resultMap="baseMap">
         select
         ci.id as ci_id,
+        ci.contractSn,
 
         co.id as co_id,
         co.sn,
@@ -40,19 +42,39 @@
         /*查询 ：合同编号*/
         <where>
             <if test=" keyword !=null ">
-                and sn like  CONCAT("%",#{keyword},"%")
+                and ci.contractSn = #{keyword}
             </if>
         </where>
     </sql>
+    <!--通过合同sn 查询合同明细-->
+    <select id="findByContractSn" parameterType="string" resultMap="baseMap">
+       select
+        ci.id as ci_id,
+        ci.contractSn,
+
+        co.id as co_id,
+        co.sn,
+
+        ci.payTime,
+        ci.payMoney,
+        ci.scale,
+        ci.isPayment
+
+        FROM contractitem ci
+        LEFT JOIN contract co ON  ci.contract_id = co.id
+        WHERE ci.contractSn = #{sn}
+        </select>
     <!--查询总条数  <include refid="baseWhere"/>-->
     <select id="selectForCount" resultType="java.lang.Long">
-        SELECT count(*) FROM contractitem
+        SELECT count(ci.id) FROM contractitem ci
+        LEFT JOIN contract co ON  ci.contract_id = co.id
         <include refid="baseWhere"/>
     </select>
     <!--分页查询 <include refid="baseWhere"/> -->
     <select id="selectForPage" resultMap="baseMap">
         select
         ci.id as ci_id,
+        ci.contractSn,
 
         co.id as co_id,
         co.sn,
@@ -67,12 +89,30 @@
         <include refid="baseWhere"/>
         LIMIT #{start} , #{pageSize}
     </select>
+    <select id="findOne" resultType="cn.nine.crm.domain.ContractItem">
+         select
+        ci.id as ci_id,
+        ci.contractSn,
+
+        co.id as co_id,
+        co.sn,
+
+        ci.payTime,
+        ci.payMoney,
+        ci.scale,
+        ci.isPayment
+
+        from contractitem ci
+        LEFT JOIN contract co ON  co.id = ci.contract_id
+        WHERE ci.id = #{id}
+    </select>
     <!--添加-->
     <insert id="save" parameterType="cn.nine.crm.domain.ContractItem"
     useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         INSERT INTO contractitem
         (
         contract_id,
+        contractSn,
         payTime,
         payMoney,
         scale,
@@ -81,26 +121,7 @@
         VALUES
         (
         #{contract.id},
-        #{payTime},
-        #{payMoney},
-        #{scale},
-        #{isPayment}
-        )
-
-    </insert>
-    <insert id="saveByContract" parameterType="cn.nine.crm.domain.ContractItem">
-        INSERT INTO contractitem
-        (
-        contract_id,
-        payTime,
-        payMoney,
-        scale,
-        isPayment
-
-        )
-        VALUES
-        (
-        #{contract.id},
+        #{contractSn},
         #{payTime},
         #{payMoney},
         #{scale},
@@ -114,6 +135,9 @@
         <set>
             <if test="contract != null and contract.id != ''">
                 contract_id = #{contract.id},
+            </if>
+            <if test="contractSn!= null">
+                contractSn = #{contractSn},
             </if>
             <if test="payTime != null">
                 payTime = #{payTime},

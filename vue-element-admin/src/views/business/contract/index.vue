@@ -26,7 +26,7 @@
                 class="demo-form-inline">
             <!--客户姓名查询-->
             <FormItem prop="name">
-              <el-select v-model="searchForm.customer.id" filterable placeholder="请选择需要查询的客户姓名">
+              <el-select v-model="searchForm.customer.name" clearable filterable placeholder="请选择需要查询的客户姓名">
                 <el-option
                   v-for="item in customers"
                   :key="item.id"
@@ -34,14 +34,12 @@
                   :value="item.id">
                 </el-option>
               </el-select>
-              <!--<Input v-model="searchForm.customer.name"  clearable-->
-                     <!--style="cursor: pointer" placeholder="请输入查找的客户姓名"-->
-                      <!--/>&lt;!&ndash;@on-enter="click_enter"&ndash;&gt;-->
             </FormItem>
             <!--营销人员查询-->
             <FormItem prop="username">
               <!--营销人员姓名搜索选择下拉框-->
-              <el-select v-model="searchForm.seller.id" filterable placeholder="请选择需要查询的营销人员姓名"  >
+              <el-select v-model="searchForm.seller.username" clearable filterable placeholder="请选择需要查询的营销人员姓名"
+              style="width: 245px">
                 <el-option
                   v-for="item in sellers"
                   :key="item.id"
@@ -50,6 +48,7 @@
                 </el-option>
               </el-select>
             </FormItem >
+
             <FormItem>
               <Button type="info" icon="ios-search" @click="loadListData">查找</Button>
             </FormItem>
@@ -62,23 +61,13 @@
           <Table border :loading="loading" :columns="columns"
                  :data="tableData"  height="350"
                  @on-selection-change="handleSelectionChange"
-                 :default-sort = "{key: 'signTime', order: 'descending'}">
-              <!--合同明细 按钮 -->
-              <template slot-scope="{ row, index }" slot="detail">
-                <el-button type="success" size="small" plain @click="dialogDetailVisible = true">明细</el-button>
-                <el-dialog
-                  title="明细单"
-                  :visible.sync="dialogDetailVisible"
-                  width="30%">
-                    <span>
-
-                    </span>
-                  <span slot="footer" class="dialog-footer">
-                  <el-button type="primary" @click="dialogDetailVisible = false">确 定</el-button>
-                  </span>
-                </el-dialog>
-              </template>
-
+                 :default-sort = "{key: 'signTime', order: 'descending'}"
+                  >
+            <!--合同明细  点击 对话弹窗事件-->
+            <template slot-scope="{ row, index }" slot="detail">
+              <Button type="success" plain size="small" @click="showDetail(row)">查看</Button>
+            </template>
+            <!--操作-->
             <template slot-scope="{ row, index }" slot="action">
               <Button type="primary" size="small" style="margin-right: 5px" @click="handleShowEditDialog(row)">编辑
               </Button>
@@ -101,6 +90,41 @@
               {{row.tenant.companyName}}
             </template>
           </Table>
+          <!--合同明细弹窗-->
+          <Modal title="合同明细" v-model="dialogDetailVisible" width="30%" center>
+            <Form ref="detail" :model="detail" label-position="left"
+                  inline
+                  style="margin-left: 20px;"
+                  @submit.native.prevent
+                  class="demo-form-inline">
+              <div>
+                <span style="color: #99a9bf">所属合同编号</span>&emsp;&emsp;<span>{{detail.contractSn}} </span>
+              </div>
+              <br/>
+              <div>
+                <span style="color: #99a9bf">支付时间</span>&emsp;&emsp;&emsp;&emsp;<span>{{detail.payTime}} </span>
+              </div>
+              <br/>
+              <div>
+                <span style="color: #99a9bf">合同总金额</span>&emsp;&emsp;&emsp;<span>{{detail.payMoney}}RMB</span>
+              </div>
+              <br/>
+              <div>
+                <span style="color: #99a9bf">已支付份额</span>&emsp;&emsp;&emsp;<span>{{detail.scale}}% </span>
+              </div>
+              <br/>
+              <div>
+                <span style="color: #99a9bf">支付状态</span>&emsp;&emsp;&emsp;&emsp;
+                <span v-if="detail.isPayment ==0" style="color: red">未支付</span>
+                <span v-if="detail.isPayment ==1" style="color: green">已支付</span>
+              </div>
+
+            </Form>
+            <span slot="footer" class="dialog-footer">
+                  <el-button @click="dialogDetailVisible = false">取 消</el-button>
+                  <el-button type="primary" @click="dialogDetailVisible = false">确 定</el-button>
+            </span>
+          </Modal>
         </div>
         <div style="overflow: hidden">
           <div style="float: right;">
@@ -121,7 +145,7 @@
           </div>
         </div>
         <Modal v-model="dialogFormVisible" title="合同管理" class-name="vertical-center-modal" footer-hide draggable
-               :styles="{top: '200px'}">
+               :styles="{top: '90px'}">
           <Form ref="addForm" :model="addForm" :rules="rules" :label-width="80">
             <FormItem v-show="false" prop="id">
               <Input v-model="addForm.id" type="text"></Input>
@@ -141,13 +165,12 @@
 
             </FormItem>
             <FormItem label="签定时间" prop="signTime">
-              <div class="block" >
+              <div class="block">
                 <el-date-picker
                   v-model="addForm.signTime"
-                  align="right"
-                  type="date"
-                  placeholder="请选择日期"
-                  :picker-options="pickerOptions">
+                  type="datetime"
+                  placeholder="选择日期时间"
+                  default-time="12:00:00">
                 </el-date-picker>
               </div>
             </FormItem>
@@ -192,8 +215,13 @@
 </template>
 <script>
   import ElRadioGroup from "element-ui/packages/radio/src/radio-group";
+  import Button from "view-design/src/components/button/button";
+  import Modal from "view-design/src/components/modal/modal";
   export default {
-    components: {ElRadioGroup},
+    components: {
+      Modal,
+      Button,
+      ElRadioGroup},
     data() {
       return {
         page: 1, // 第几页
@@ -254,6 +282,7 @@
           customer:{id:'',name: ''},
           seller:{id:'',username:''}
         },
+
         dialogFormVisible: false,
         dialogDetailVisible :false,
         addForm: {
@@ -283,20 +312,22 @@
           {
             title: '序号',
             type: 'index',
-            width: 90,
+            width: 70,
             align: 'center'
           },
           {
             title: '合同编号',
-            width: 100,
+            width: 160,
             align: 'center',
             key: 'sn',
+            sortable:'true'
           },
           {
             title: '客户姓名',
-            width: 100,
+            width: 120,
             align: 'center',
-            slot: 'customer'
+            slot: 'customer',
+            sortable:'true'
           },
           {
             title: '签订时间',
@@ -307,62 +338,55 @@
           },
           {
             title: '营销人员',
-            width: 100,
+            width: 120,
             align: 'center',
-            slot: 'seller'
+            slot: 'seller',
+            sortable:'true'
           },
           {
             title: '合同金额',
-            width: 100,
+            width: 120,
             align: 'center',
-            key: 'totalAmount'
+            key: 'totalAmount',
+            sortable:'true'
           },
           {
             title: '摘要',
-            width: 100,
+            width: 95,
             align: 'center',
             key: 'intro'
           },
           {
-            title: '合同明细',
-            width: 100,
+            title: '所属公司',
+            width: 115,
             align: 'center',
-            slot: 'detail',
+            slot: 'tenant',
+            sortable:'true'
           },
           {
-            title: '所属公司',
-            width: 150,
+            title: '合同明细',
+            width: 115,
             align: 'center',
-            slot: 'tenant'
+            slot: 'detail',
           },
           {
             title: '操作',
             slot: 'action',
             align: 'center',
-            width: 150
+            width: 140
           }
         ],
-        rules: {
-          // name: [
-          //   { required: false, message: '请输入客户姓名', trigger: 'blur' }
-          // ],
-          // signTime: [
-          //   { required: false, message: '请选择签订时间', trigger: 'blur' }
-          // ],
-          // username: [
-          //   { required: false, message: '请选择营销人员姓名', trigger: 'blur' }
-          // ],
-          // totalAmount: [
-          //   { required: true, message: '请输入合同金额', trigger: 'blur' }
-          // ],
-          // intro: [
-          //   { required: false, message: '请输入合同摘要', trigger: 'blur' }
-          // ],
-          // companyName: [
-          //   { required: false, message: '请输入合同摘要', trigger: 'blur' }
-          // ],
+        rules:{},
+        /*合同明细model 绑定*/
+        detail:{
+          contractSn:'',
+          payTime:'',
+          payMoney:'',
+          scale:'',
+          isPayment:''
 
         }
+
       }
     },
     mounted() {
@@ -373,10 +397,18 @@
       this.loadListData()
     },
     methods: {
+      /**/
+      showDetail(row){
+        this.dialogDetailVisible = true;
+        this.$http.get("/contractitem/findByContractSn/"+ row.sn).then(res=>{
+          this.detail = res.data.data
+          // this.detail.sn = res.data.data.contractSn;
+        })
 
-      // click_enter() { /* 键盘事件,调用查找方法*/
-      //   this.loadListData()
-      // },
+      },
+      click_enter() { /* 键盘事件,调用查找方法*/
+        this.loadListData()
+      },
       // 显示添加弹窗
       handleShowAddDialog() {
         //清空数据
@@ -519,7 +551,8 @@
         const param = {
           'currentPage': this.page,
           'pageSize': this.pageSize,
-          'keyword': this.searchForm.name
+          'keyword': this.searchForm.customer.name,
+          'username':this.searchForm.seller.username
         }
         http.post('/contract/selectForPage', param).then(res => {
           if (res.data.success) {

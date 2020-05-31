@@ -36,17 +36,19 @@ public class ContractServiceImpl extends BaseServiceImpl<Contract,Long, Contract
         contract.setSn(a+str);
         contractMapper.save(contract);
 
+        Contract contract01 = contractMapper.findOne(contract.getId());
+
         //如果调用contract中save方法，则在contractitem 表中创建一条新的记录
         ContractItem contractItem = new ContractItem();
-        contractItem.setContract(contract);
+        contractItem.setContract(contract01);
+        contractItem.setContractSn(contract01.getSn());
         //默认合同明细表的付款时间==合同的签订时间
-        contractItem.setPayTime(contract.getSignTime());
+        contractItem.setPayTime(contract01.getSignTime());
         //默认合同明细表的总金额==合同的总金额
-        contractItem.setPayMoney(contract.getTotalAmount());
+        contractItem.setPayMoney(contract01.getTotalAmount());
         //默认合同明细表的付款占额==100
         contractItem.setScale("100");
-        contractItemMapper.saveByContract(contractItem);
-
+        contractItemMapper.save(contractItem);
 
     }
 
