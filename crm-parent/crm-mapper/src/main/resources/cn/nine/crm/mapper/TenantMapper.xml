@@ -127,7 +127,7 @@
     <sql id="base_where">
         <where>
             <if test="keyword != null">
-                and name like CONCAT("%",#{keyword},"%")
+                and companyName like CONCAT("%",#{keyword},"%")
             </if>
         </where>
     </sql>
@@ -155,8 +155,9 @@
         m.expire_date,
         m.status
         FROM tenant t
-        JOIN meal m on t.meal_id = m.id
+        LEFT JOIN meal m on t.meal_id = m.id
         <include refid="base_where"/>
+        ORDER BY t.id
         limit #{start},#{pageSize}
     </select>
 
