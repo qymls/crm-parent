@@ -48,13 +48,7 @@
           </el-form>
         </el-col>
       </el-row>
-      <el-table
-        v-loading="loading"
-        border
-        :data="tableData"
-        style="width: 100%"
-        max-height="690"
-        @selection-change="handleSelectionChange"
+      <el-table  v-loading="loading" border :data="tableData" style="width: 100%" @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="100" align="center" />
         <el-table-column prop="username" label="用户名" />
@@ -62,14 +56,14 @@
         <el-table-column prop="tel" label="联系方式" />
         <el-table-column prop="email" label="邮箱" />
         <el-table-column prop="inputTime" label="录入时间" />
+        <el-table-column prop="department.name" label="所属部门" />
+        <el-table-column prop="tenant.companyName" label="所属租户" />
         <el-table-column prop="state" label="状态" :formatter="formatState">
           <template slot-scope="scope">
             <span v-if=" scope.row.state=== 0 " style="color: #2acd33">在职</span>
             <span v-else style="color: red">离职</span>
           </template>
         </el-table-column>
-        <el-table-column prop="department.name" label="所属部门" />
-        <el-table-column prop="tenant.companyName" label="所属租户" />
         <el-table-column fixed="right" label="操作" width="150" align="center">
           <template slot-scope="scope">
             <el-button type="primary" size="small" @click="handleShowEditDialog(scope.row)">编辑</el-button>
@@ -100,33 +94,34 @@
         @current-change="handleCurrentChange"
       />
       <!--  新增、编辑-->
-      <el-dialog title="员工管理" :visible.sync="dialogFormVisible" :close-on-click-modal="false" width="35%">
-        <el-form ref="addForm" :model="addForm" label-width="100px">
+      <el-dialog  title="员工管理" :visible.sync="dialogFormVisible" maxheight="1000px" :close-on-click-modal="false" width="35%">
+        <hr style="margin-right: auto"/>
+        <el-form ref="addForm" :model="addForm" label-width="80px">
           <el-form-item v-show="false" prop="id">
             <el-input v-model="addForm.id" />
           </el-form-item>
           <el-form-item  label="用户名" prop="username" minlength="20">
-            <el-col :span="18">
-            <el-input v-model="addForm.username" autocomplete="off" />
+            <el-col :span="14">
+            <el-input v-model="addForm.username" autocomplete="off"/>
             </el-col>
           </el-form-item>
           <el-form-item label="密码" prop="password">
-            <el-col :span="16">
-            <el-input v-model="addForm.password" autocomplete="off" />
+            <el-col :span="14">
+            <el-input v-model="addForm.password" autocomplete="off"/>
             </el-col>
           </el-form-item>
           <el-form-item label="真实姓名" prop="realName">
-            <el-col :span="16">
+            <el-col :span="14">
             <el-input v-model="addForm.realName" autocomplete="off" />
             </el-col>
           </el-form-item>
           <el-form-item label="邮箱地址" prop="email">
-            <el-col :span="16">
+            <el-col :span="14">
             <el-input v-model="addForm.email" autocomplete="off" />
             </el-col>
           </el-form-item>
           <el-form-item label="联系方式" prop="tel">
-            <el-col :span="16">
+            <el-col :span="14">
             <el-input v-model="addForm.tel" autocomplete="off" />
             </el-col>
           </el-form-item>
@@ -165,6 +160,22 @@
               />
             </el-select>
           </el-form-item>
+          <el-form-item label="所属角色">
+          <el-select
+            v-model="roleValueList"
+            multiple
+            filterable
+            allow-create
+            default-first-option
+            placeholder="请选择角色">
+            <el-option
+              v-for="item in roleList"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
+          </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="submitForm('addForm')">确认提交</el-button>
             <el-button @click="resetForm('addForm')">重置</el-button>
@@ -181,6 +192,10 @@ export default {
   components: {ElRadioGroup},
   data() {
     return {
+      roleValueList:[],
+      roleList:[],
+
+      //权限
       department: [{
         id: ''
       }],
@@ -188,7 +203,7 @@ export default {
         id: ''
       }],
       page: 1, // 第几页
-      pageSize: 5, // 每页条数
+      pageSize: 10, // 每页条数
       total: 0,
       tableData: [],
       loading: false,
@@ -204,7 +219,7 @@ export default {
         tel: '',
         email: '',
         inputTime: '',
-        state: '',
+        state: 0,
         department: {
           id: '',
           name: ''
@@ -212,7 +227,7 @@ export default {
         tenant: {
           id: '',
           companyName: ''
-        }
+        },
       }
     }
   },
@@ -220,20 +235,26 @@ export default {
     this.loadListData()
   },
   methods: {
+
     // 格式化状态
     formatState: function(row, column) {
       return row.state == -1 ? '在职' : '离职'
     },
     // 显示添加弹窗
     handleShowAddDialog() {
+      this.dialogFormVisible = true;
       // 清空表单
       this.$nextTick(() => {
         this.$refs['addForm'].resetFields()
       })
-      this.dialogFormVisible = true;
-
+      if(!this.addForm.tenant){
+        this.addForm.tenant = {id:''}
+      }
+      //清空角色
       this.addForm.department.id ="";
-      this.add.tenant.id="";
+      //清空角色
+      this.roleValueList = []
+      this.addForm.inputTime="";
       this.addForm.state = 0;
     },
     // 编辑显示弹窗
@@ -242,10 +263,26 @@ export default {
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['addForm'].resetFields()/* 清空*/
-        this.addForm = Object.assign({}, row)/* 赋值*/
+        var data= Object.assign({}, row)/* 赋值*/
+        if(data.role.length>0){
+          var tempDtae = []
+          for (let i = 0; i < data.role.length; i++) {
+            tempDtae.push(data.role[i].id)
+          }
+          this.roleValueList = tempDtae;
+        }
+        if (!data.department){
+          data.department = {id:''};
+        }
+        if (!data.tenant){
+          data.tenant = {id:''};
+        }
+        this.addForm = data;
         //回显状态
-        this.addForm.state = row.state;
       })
+
+
+
     },
     submitForm(formName) { /* 确认保存*/
       var refs = this.$refs
@@ -253,6 +290,12 @@ export default {
       var message = this.$message
       refs[formName].validate((valid) => {
         const param = Object.assign({}, this.addForm)
+        var rolees=[]
+        for(let i=0;i<this.roleValueList.length;i++){
+          var roles={id:this.roleValueList[i]}
+          rolees.push(roles);
+        }
+        param['role']=rolees;
         let url = '/employee/save'
         if (this.addForm.id) {
           url = '/employee/update'
@@ -260,10 +303,7 @@ export default {
         if (valid) {
           http.post(url, param).then(res => {
             if (res.data.success) {
-              // 赋值给部门
-              this.department = res.data.data
-              this.tenant = res.data.data
-              this.dialogFormVisible = false
+              this.dialogFormVisible = false;
               this.loadListData()
               message({ message: res.data.message, center: true, type: 'success', showClose: true })
             } else {
@@ -329,6 +369,10 @@ export default {
       this.loadListData()
     },
     loadListData() {
+      //查询角色
+      this.$http.get('/role/findAll').then(res=>{
+        this.roleList=res.data.data;
+      })
       // 查询到部门给参数
       this.$http.get('/department/findAll').then(res => {
         this.department = res.data.data

@@ -17,7 +17,17 @@
             </Poptip>
           </FormItem>
           <FormItem prop="name">
-            <Input type="text" v-model="searchForm.name" placeholder="输入合同单号"/>
+            <div>
+              <el-select v-model="searchForm.name" filterable placeholder="输入合同单号">
+                <el-option value="">请选择</el-option>
+                <el-option
+                  v-for="item in contractData"
+                  :key="item.id"
+                  :label="item.label"
+                  :value="item.sn">
+                </el-option>
+              </el-select>
+            </div>
           </FormItem>
           <FormItem>
             <Button type="primary" icon="ios-search" @click="loadListData">查询</Button>
@@ -26,27 +36,7 @@
       </Row>
 
       <!-- 表格数据 -->
-      <!--<Table border ref="selection" :loading="loading" :columns="columns1" :data="tableData" @on-selection-change="handleSelectionChange">
-        <template slot-scope="{ row, index }" slot="action" >
-          <div>
-            <el-button type="primary" size="mini" @click="handleShowEditDialog(row)">编辑</el-button>
-            <el-popconfirm
-              confirm-button-text="确认"
-              cancel-button-text="取消"
-              icon="el-icon-info"
-              icon-color="red"
-              title="你确定要删除当前数据？"
-              transition
-              placement="top"
-              @onConfirm="handleRemove(scope.row)">
-              <el-button slot="reference" type="danger" size="mini">删除</el-button>
-            </el-popconfirm>
-          </div>
-        </template>
-      </Table>-->
-
-      <!-- 表格数据2 -->
-      <el-table v-loading="loading" border :data="tableData" style="width: 100%" max-height="690" @selection-change="handleSelectionChange">
+      <el-table border v-loading="loading" :data="tableData" style="width: 100%" max-height="690" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="60" align="center" />
         <el-table-column type="index" label="序号" width="80" align="center" />
         <el-table-column prop="sn" label="保修单号" align="center" />
@@ -55,7 +45,6 @@
         <el-table-column prop="contract.sn" label="所属合同单号" align="center" />
         <el-table-column prop="contract.customer.name" label="所属客户" align="center" />
         <el-table-column prop="contract.tenant.companyName" label="所属租户" align="center" />
-
         <el-table-column label="操作" width="200" align="center">
           <template slot-scope="scope">
             <!-- 查看明细 -->
@@ -76,37 +65,55 @@
       </el-table>
 
       <!-- 分页 -->
-      <Page
-        :total="total"
-        :current="page"
-        :page-size="pageSize"
-        :page-size-opts="[5,10,20]"
-        show-elevator
-        show-sizer
-        show-total
-        styles="float: right; margin: 12px; overflow: hidden"
-        @on-change="handleCurrentChange"
-        @on-page-size-change="handleSizeChange"
-      ></Page>
+      <div style="float: right; margin: 12px; overflow: hidden">
+        <Page
+          :total="total"
+          :current="page"
+          :page-size="pageSize"
+          :page-size-opts="[5,10,20]"
+          show-elevator
+          show-sizer
+          show-total
+          @on-change="handleCurrentChange"
+          @on-page-size-change="handleSizeChange"
+        ></Page>
+      </div>
       <br/>
       <br/>
 
       <!-- 新增编辑窗口 -->
       <el-dialog title="添加信息" :visible.sync="dialogFormVisible" :close-on-click-modal="false" width="35%">
-        <el-form ref="addForm" :model="addForm" :rules="rules">
+        <el-form ref="addForm" label-width="80px" :model="addForm" :rules="rules">
           <el-form-item v-show="false" prop="id">
             <el-input v-model="addForm.id" />
           </el-form-item>
-          <el-form-item label="保修截止日期" prop="endDate">
+          <el-form-item v-show="false" label="开始日期" prop="signTime">
             <el-date-picker
-              v-model="addForm.endDate"
+              v-model="addForm.contract.signTime"
               type="date"
-              placeholder="保修截止日期"
-              format="yyyy 年 MM 月 dd 日">
+              placeholder="保修开始日期">
             </el-date-picker>
           </el-form-item>
-          <el-form-item label="所属合同单号" prop="contractSn">
-            <el-input v-model="addForm.contract.sn" placeholder="所属合同单号" autocomplete="off" />
+
+          <el-form-item v-if="addForm.id" label="截止日期" prop="endDate">
+            <el-date-picker
+              v-model="addForm.endDate"
+              align="right"
+              type="date"
+              placeholder="保修截止日期"
+              :picker-options="pickerOptions">
+            </el-date-picker>
+            <el-button type="primary" @click="changeEndDate(addForm.contract.signTime)">续费</el-button>
+          </el-form-item>
+          <el-form-item label="合同单号" prop="contractSn">
+            <el-select v-model="addForm.contract.sn" filterable placeholder="选择合同单号">
+              <el-option
+                v-for="item in contractData"
+                :key="item.id"
+                :label="item.label"
+                :value="item.sn">
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="submitForm('addForm')">提交</el-button>
@@ -121,6 +128,26 @@
 export default {
   data() {
     return {
+      //日期选择器
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() > Date.now();
+        },
+        shortcuts: [{
+          text: '今天',
+          onClick(picker) {
+            picker.$emit('pick', new Date());
+          }
+        }, {
+          text: '加时一年',
+          onClick(picker) {
+            const date = new Date();
+            date.setTime(date.getTime() + 3600 * 1000 * 24 * 365);
+            picker.$emit('pick', date);
+          }
+        }]
+      },
+
       title: '保修单管理',
       page: 1, // 第几页
       pageSize: 5, // 每页条数
@@ -214,6 +241,9 @@ export default {
       ],
       //table【数据】
       tableData: [],
+      //下拉列表数据
+      contractData: [],
+
       row: [],
       //搜索条件
       searchForm: {
@@ -225,7 +255,8 @@ export default {
         endDate: '',
         contract: {
           id: '',
-          sn: ''
+          sn: '',
+          signTime: ''
         },
         customer: {
           id: '',
@@ -252,6 +283,13 @@ export default {
     this.loadListData()
   },
   methods: {
+    //续费endDate
+    changeEndDate(endDate) {
+      var str2 = Date.parse(new Date(endDate))
+      const date = new Date(str2 + 3600 * 1000 * 24 * 365)
+      this.addForm.endDate = date
+    },
+
     // 显示添加弹窗
     handleShowAddDialog() {
       this.showDateVisible = false
@@ -269,8 +307,8 @@ export default {
         this.addForm = Object.assign({}, row)/* 复制*/
       })
     },
-
-    submitForm(formName) { /* 确认保存*/
+    //确认保存
+    submitForm(formName) {
       var refs = this.$refs
       var http = this.$http
       var message = this.$message
@@ -367,6 +405,15 @@ export default {
           this.total = res.data.data.totalRows
           this.page = res.data.data.currentPage
           this.loading = false
+        } else {
+          message.error('查询失败[' + res.data.message + ']')
+        }
+      }).catch(error => {
+        message.error('查询失败[' + error.message + ']')
+      })
+      http.get('/contract/findAll').then(res => {
+        if (res.data.success) {
+          this.contractData = res.data.data
         } else {
           message.error('查询失败[' + res.data.message + ']')
         }

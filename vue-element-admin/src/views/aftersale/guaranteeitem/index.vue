@@ -19,7 +19,15 @@
             </Poptip>
           </FormItem>
           <FormItem prop="name">
-            <Input type="text" v-model="searchForm.name" placeholder="输入合同单号"/>
+            <el-select v-model="searchForm.name" filterable placeholder="输入保修单号">
+              <el-option value="">请选择</el-option>
+              <el-option
+                v-for="item in guaranteeDate"
+                :key="item.id"
+                :label="item.label"
+                :value="item.sn">
+              </el-option>
+            </el-select>
           </FormItem>
           <FormItem>
             <Button type="primary" icon="ios-search" @click="loadListData">查询</Button>
@@ -76,18 +84,19 @@
       </Table>
 
       <!-- 分页 -->
-      <Page
-        :total="total"
-        :current="page"
-        :page-size="pageSize"
-        :page-size-opts="[5,10,20]"
-        show-elevator
-        show-sizer
-        show-total
-        styles="float: right; margin: 12px; overflow: hidden"
-        @on-change="handleCurrentChange"
-        @on-page-size-change="handleSizeChange"
-      ></Page>
+      <div style="float: right; margin: 12px; overflow: hidden">
+        <Page
+          :total="total"
+          :current="page"
+          :page-size="pageSize"
+          :page-size-opts="[5,10,20]"
+          show-elevator
+          show-sizer
+          show-total
+          @on-change="handleCurrentChange"
+          @on-page-size-change="handleSizeChange"
+        ></Page>
+      </div>
       <br/>
       <br/>
 
@@ -95,17 +104,25 @@
       <el-dialog title="添加信息" :visible.sync="dialogFormVisible" :close-on-click-modal="false" width="35%">
         <el-form ref="addForm" :model="addForm" label-width="100px" :rules="rules">
           <el-form-item label="保修单号" prop="sn">
-            <el-input v-model="addForm.guaranteeSn" placeholder="输入保修单号" autocomplete="off" />
-          </el-form-item>
-          <el-form-item label="保修内容" prop="endDate">
-            <el-input v-model="addForm.details" placeholder="输入保修内容" autocomplete="off" />
+            <el-select v-model="addForm.guaranteeSn" filterable placeholder="输入保修单号">
+              <el-option
+                v-for="item in guaranteeDate"
+                :key="item.id"
+                :label="item.label"
+                :value="item.sn">
+              </el-option>
+            </el-select>
           </el-form-item>
 
-          <el-form-item label="保修状态" prop="status">
+          <el-form-item label="保修内容" prop="endDate">
+            <el-input type="textarea" v-model="addForm.details" :rows="2" placeholder="输入保修内容" autocomplete="off" />
+          </el-form-item>
+
+          <el-form-item label="处理状态" prop="status">
             <el-select v-model="addForm.status" placeholder="选择状态">
               <el-option
                 v-for="item in statusList"
-                :key="item.value"
+                :key="item.id"
                 :label="item.label"
                 :value="item.value">
               </el-option>
@@ -125,6 +142,8 @@
 export default {
   data() {
     return {
+      title: '保修单明细',
+
       columns: [
         {
           type: 'selection',
@@ -155,7 +174,7 @@ export default {
           align: 'center'
         },
         {
-          title: '保修状态',
+          title: '处理状态',
           slot: 'status',
           width: 150,
           align: 'center'
@@ -166,7 +185,9 @@ export default {
           width: 200,
           align: 'center'
         }
-      ],//table数据
+      ],//table表头
+      tableData: [],//table数据
+      guaranteeDate: [],
       statusList: [
         {
           value: '0',
@@ -181,17 +202,15 @@ export default {
           label: '正在处理'
         }
       ],//status状态
-      model1: '',
 
-      title: '保修单明细',
       page: 1, // 第几页
       pageSize: 5, // 每页条数
       total: 0,
-      tableData: [],
       loading: false,
       row: [],
 
       editIndex: -1,
+      valueSn: '',//保修单号
 
       //搜索框
       searchForm: {
@@ -209,7 +228,6 @@ export default {
       addForm: {
         id: '',
         guaranteeSn: '',
-        inputDate: '',
         details: '',
         status: ''
       },
@@ -245,27 +263,19 @@ export default {
     },
     /* 确认保存*/
     submitAddForm(formName) {
-      var refs = this.$refs
-      var http = this.$http
       var message = this.$message
-      refs[formName].validate((valid) => {
-        const param = Object.assign({}, this.addForm)
-        let url = '/guaranteeItem/save'
-        if (valid) {
-          http.post(url, param).then(res => {
-            if (res.data.success) {
-              this.dialogFormVisible = false
-              this.loadListData()
-              message({ message: res.data.message, center: true, type: 'success', showClose: true })
-            } else {
-              message.error('操作失败[' + res.data.message + ']')
-            }
-          }).catch(error => {
-            message.error('操作失败[' + error.message + ']')
-          })
+      const param = Object.assign({}, this.addForm)
+      let url = '/guaranteeItem/save'
+      this.$http.post(url, param).then(res => {
+        if (res.data.success) {
+          this.dialogFormVisible = false
+          this.loadListData()
+          message({ message: res.data.message, center: true, type: 'success', showClose: true })
         } else {
-          message.error('请按照规则填写表单')
+          message.error('操作失败[' + res.data.message + ']')
         }
+      }).catch(error => {
+        message.error('操作失败[' + error.message + ']')
       })
     },
 
@@ -273,6 +283,7 @@ export default {
     handleSave (index) {
       this.editForm.id = this.tableData[index].id
       this.editIndex = -1
+      var message = this.$Message
       let url = '/guaranteeItem/update'
       this.$http.post(url, this.editForm).then(res => {
         if (res.data.success) {
@@ -356,6 +367,15 @@ export default {
           this.total = res.data.data.totalRows
           this.page = res.data.data.currentPage
           this.loading = false
+        } else {
+          message.error('查询失败[' + res.data.message + ']')
+        }
+      }).catch(error => {
+        message.error('查询失败[' + error.message + ']')
+      })
+      http.get('/guarantee/findAll').then(res => {
+        if (res.data.success) {
+          this.guaranteeDate = res.data.data
         } else {
           message.error('查询失败[' + res.data.message + ']')
         }

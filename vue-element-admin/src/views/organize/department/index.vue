@@ -49,7 +49,7 @@
         <el-table-column prop="name" label="名称" />
         <el-table-column prop="sn" label="部门编号" />
         <el-table-column prop="manager.realName" label="部门经理" />
-        <el-table-column prop="parentId.name" label="父级部门" :formatter="formatDept"/>
+        <el-table-column prop="parent" label="父级部门" :formatter="formatDept"/>
         <el-table-column fixed="right" label="操作" width="150" align="center">
           <template slot-scope="scope">
             <el-button type="primary" size="small" @click="handleShowEditDialog(scope.row)">编辑</el-button>
@@ -81,12 +81,12 @@
       />
       <!--  新增、编辑-->
       <el-dialog title="信息管理" :visible.sync="dialogFormVisible" :close-on-click-modal="false" width="35%">
-        <el-form ref="addForm" :model="addForm" label-width="50px" :rules="rules">
+        <el-form ref="addForm" :model="addForm" label-width="80px" :rules="rules">
           <el-form-item v-show="false" prop="id">
             <el-input v-model="addForm.id" />
           </el-form-item>
           <el-form-item label="名称" prop="name">
-            <el-input v-model="addForm.name" autocomplete="off" />
+            <el-input  v-model="addForm.name" autocomplete="true" />
           </el-form-item>
           <el-form-item label="编号" prop="sn">
             <el-input v-model="addForm.sn" autocomplete="off" />
@@ -102,10 +102,10 @@
               />
             </el-select>
           </el-form-item>
-          <div title="请选择">
-          <Cascader   filterable :data="departmentList" v-model="addForm.children">
+          <el-form-item label="二级部门">
+          <Cascader   filterable :data="departmentList" v-model="addForm.parentId">
           </Cascader >
-          </div>
+          </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="submitForm('addForm')">确认提交</el-button>
             <el-button @click="resetForm('addForm')">重置</el-button>
@@ -126,7 +126,7 @@ export default {
         id: ''
       }],
       page: 1, // 第几页
-      pageSize: 5, // 每页条数
+      pageSize: 10, // 每页条数
       total: 0,
       tableData: [],
       loading: false,
@@ -143,7 +143,7 @@ export default {
           id: '',
           realName: ''
         },
-        children:[{
+        parentId:[{
             id:'',
             name:'',
         }],
@@ -159,13 +159,15 @@ export default {
     this.loadListData()
   },
   methods: {
+    //格式化部门
     formatDept:function (row,column) {
-        return row && row.name ? row.name : "";;
+        return row && row.name ? row.name : "";
 
     },
     // 显示添加弹窗
     findChildren(){
       this.$http.get('/department/findTreeData').then(res => {
+        //将对象转换数组
         this.formartData(res.data);
         this.departmentList = res.data;
       })
@@ -188,24 +190,31 @@ export default {
       });
       // 清空下拉框
       this.addForm.manager.id='';
-      this.addForm.children=[];
+      this.addForm.parentId=[];
     },
     // 编辑显示弹窗
     handleShowEditDialog(row) {
-      this.findChildren();
+
       // 数据回显
-      this.dialogFormVisible = true
+      this.findChildren();
+      this.dialogFormVisible = true;
+
       this.$nextTick(() => {
         this.$refs['addForm'].resetFields()/* 清空*/
         this.addForm = Object.assign({}, row)/* 复制*/
-      })
+      });
     },
     submitForm(formName) { /* 确认保存*/
       var refs = this.$refs
       var http = this.$http
-      var message = this.$message
+
+      var message = this.$message;
       refs[formName].validate((valid) => {
         const param = Object.assign({}, this.addForm);
+        //传唤json格式
+        if(this.addForm.parentId.length>0){
+            param['parentId']={id:this.addForm.parentId[this.addForm.parentId.length-1]}
+        }
         let url = '/department/save'
         if (this.addForm.id) {
           url = '/department/update'
@@ -215,7 +224,7 @@ export default {
             if (res.data.success) {
               // 赋值管理员
               this.manager = res.data.data
-              this.children =res.data;
+              this.parentId =res.data;
               this.dialogFormVisible = false
               this.loadListData()
               message({ message: res.data.message, center: true, type: 'success', showClose: true })
@@ -297,7 +306,6 @@ export default {
       var http = this.$http
       var message = this.$message
       http.post('/department/selectForPage', param).then(res => {
-        console.debug(res.data.data)
         if (res.data.success) {
           this.tableData = res.data.data.list
           this.total = res.data.data.totalRows

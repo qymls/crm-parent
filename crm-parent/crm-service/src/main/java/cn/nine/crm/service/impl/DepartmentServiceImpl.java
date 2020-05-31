@@ -30,6 +30,7 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department,Long, Depa
         return treeData;
     }
 
+
     @Override
     public List<Employee> getManagerByDepartMentName(String name) {
         return departmentMapper.getManagerByDepartMentName(name);

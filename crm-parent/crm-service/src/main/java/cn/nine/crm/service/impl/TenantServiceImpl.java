@@ -6,6 +6,7 @@ import cn.nine.crm.dto.TenantSettleInDto;
 import cn.nine.crm.mapper.EmployeeMapper;
 import cn.nine.crm.mapper.TenantMapper;
 import cn.nine.crm.query.TenantQuery;
+import cn.nine.crm.realm.MD5Utils;
 import cn.nine.crm.service.ITenantService;
 import cn.nine.crm.service.Impl.BaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,11 +46,15 @@ public class TenantServiceImpl extends BaseServiceImpl<Tenant, Long, TenantQuery
         tenant.setPay(true);
         tenant.setRegisterTime(date);
         tenant.setState("0");
+        tenant.setCompanyTel(emp.getTel());
+        tenant.setEmail(emp.getEmail());
         super.save(tenant);
 
         //保存管理员
         emp.setTenant(tenant);
         emp.setInputTime(date);
+        String md5Password = MD5Utils.getMD5Password(emp.getPassword());
+        emp.setPassword(md5Password);
         //emp.setSalt();
         //emp.setPassword();
 

@@ -1,3 +1,64 @@
+<style>
+  .process_style {
+    margin-top: 23px;
+  }
+
+  .upload_style .ivu-icon {
+    line-height: unset;
+  }
+
+  .demo-upload-list {
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    text-align: center;
+    line-height: 60px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #fff;
+    position: relative;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .2);
+    margin-right: 4px;
+  }
+
+  .imgLook_style .ivu-modal-body {
+    max-height: 360px;
+    overflow: auto;
+  }
+
+  ::-webkit-scrollbar { /*不要滚动条*/
+    width: 0;
+  }
+
+  .demo-upload-list img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .demo-upload-list-cover {
+    display: none;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, .6);
+  }
+
+  .demo-upload-list:hover .demo-upload-list-cover {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .demo-upload-list-cover i {
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    margin: 0 2px;
+  }
+</style>
 <template>
   <div style="height: calc(100vh - 84px);">
     <el-card class="box-card" style="height: 100%">
@@ -69,7 +130,11 @@
         <el-table-column prop="registerTime" label="注册时间" />
         <el-table-column prop="state" label="状态" :formatter="stateFormatter" />
         <el-table-column prop="address" label="公司地址" />
-        <el-table-column prop="logo" label="logo" />
+        <el-table-column prop="logo" label="logo" >
+          <template   slot-scope="scope">
+            <img :src="scope.row.logo"  min-width="70" height="70" />
+          </template>
+        </el-table-column>
         <el-table-column prop="meal.name" label="套餐" />
         <el-table-column fixed="right" label="操作" width="150" align="center">
           <template slot-scope="scope">
@@ -101,7 +166,7 @@
         @current-change="handleCurrentChange"
       />
       <!--  新增、编辑-->
-      <el-dialog title="信息管理" :visible.sync="dialogFormVisible" :close-on-click-modal="false" width="35%">
+      <Modal title="信息管理" v-model="dialogFormVisible" :close-on-click-modal="false" width="35%" :z-index="50">
         <el-form ref="addForm" :model="addForm" label-width="100px" :rules="rules">
           <el-form-item v-show="false" prop="id">
             <el-input v-model="addForm.id" />
@@ -130,9 +195,9 @@
           </el-form-item>
           <el-form-item label="状态" prop="state">
             <el-radio-group v-model="addForm.state">
-              <el-radio label="0">注册</el-radio>
-              <el-radio label="1">付费</el-radio>
-              <el-radio label="2">欠费</el-radio>
+              <el-radio :label="0">注册</el-radio>
+              <el-radio :label="1">付费</el-radio>
+              <el-radio :label="2">欠费</el-radio>
             </el-radio-group>
           </el-form-item>
           <el-form-item label="公司地址" prop="address">
@@ -148,9 +213,48 @@
               <bm-local-search :keyword="addForm.address" :auto-viewport="true" :panel="false" />
             </baidu-map>
           </el-form-item>
-          <el-form-item label="logo" prop="logo">
-            <el-input v-model="addForm.logo" autocomplete="off" />
+
+          <el-form-item prop="logo" v-show="false">
+            <i-input type="text" v-model="addForm.logo"/>
           </el-form-item>
+
+          <el-form-item label="logo">
+          <div class="demo-upload-list"
+               v-if="addForm.logo||uploadfile.status==='start'||uploadfile.status==='finished'">
+            <template v-if="uploadfile.status === 'finished'||uploadfile.defaultshow">
+              <img :src="addForm.logo">
+              <div class="demo-upload-list-cover">
+                <Icon type="ios-eye-outline"
+                      @click.native="handleView(addForm.logo)"/>
+                <Icon type="ios-trash-outline"
+                      @click.native="handleRemoveImg(addForm.logo)"/>
+              </div>
+            </template>
+            <template v-else>
+              <i-Progress class="process_style" v-if="uploadfile.showProgress"
+                          :percent="uploadfile.percentage" hide-info
+                          :stroke-color="['#108ee9', '#87d068']"/>
+            </template>
+          </div>
+          <Upload ref="upload"
+                  action="/upload/tenant"
+                  style="width: 58px;display: inline-block;"
+                  class="upload_style" :show-upload-list="false" name="file" type="drag"
+                  :format="['jpg','jpeg','png']"
+                  :on-format-error="handleFormatError"
+                  :on-progress="handleProgress"
+                  :on-success="upload_success"
+                  :before-upload="handleBeforeUpload"
+                  :data="{'logo':addForm.logo}"
+          >
+            <div style="width: 58px;height:58px;line-height: 58px;">
+              <Icon type="ios-camera" size="20"/>
+            </div>
+          </Upload>
+          <Modal title="预览图片" class="imgLook_style" v-model="visible" draggable :z-index="100">
+            <img :src="addForm.logo" v-if="visible" style="width: 100%">
+          </Modal>
+        </el-form-item>
           <el-form-item label="套餐" prop="meal">
             <el-select v-model="addForm.meal.id" placeholder="请选择套餐">
               <!--key:id -->
@@ -168,7 +272,7 @@
           </el-form-item>
         </el-form>
 
-      </el-dialog>
+      </Modal>
     </el-card>
   </div>
 </template>
@@ -178,7 +282,7 @@ export default {
     return {
       meals: [],
       page: 1, // 第几页
-      pageSize: 5, // 每页条数
+      pageSize: 10, // 每页条数
       total: 0,
       tableData: [],
       loading: false,
@@ -206,13 +310,25 @@ export default {
         name: [
           { required: true, message: '请输入名称', trigger: 'blur' }
         ]
-      }
+      },
+      visible: false,/*预览图片*/
+      uploadfile: {
+        status: '',
+        showProgress: false,
+        percentage: 0,
+        defaultshow: true,
+      },/*上传的文件属性*/
     }
   },
   mounted() {
     this.loadListData()
   },
   methods: {
+    handleUploadSuccess(res, file) {
+      this.employee.logo = res.data;
+    },
+    handleUploadRemove(res, file) {
+    },
     // 显示添加弹窗
     handleShowAddDialog() {
       this.$http.get('/meal/findAll').then(res => {
@@ -230,10 +346,11 @@ export default {
       });
       // 数据回显
       this.dialogFormVisible = true
-      console.log(row)
+      console.log(row);
       this.$nextTick(() => {
         this.$refs['addForm'].resetFields()/* 清空*/
-        this.addForm = Object.assign({}, row)
+        this.addForm = Object.assign({}, row);
+        console.log("数据"+row.data);
         this.addForm.state = row.state;
       })
     },
@@ -356,8 +473,65 @@ export default {
     confirmAdd() {
       this.addForm.address = document.getElementById('searchInput').value
       this.mapDialogVisible = false
+    },
+
+    /*图片上传的相关方法*/
+    upload_success(response, file, fileList) {
+      this.addForm.logo = response.data;
+      this.uploadfile.status = 'finished';/*上传完成*/
+    },
+
+    handleProgress(event, file, fileList) {/*没有调试好，无法使用*/
+      // 手动设置显示上传进度条 以及上传百分比
+      // 调用监听 上传进度 的事件
+      let uploadPercent = parseFloat(((event.loaded / event.total) * 100).toFixed(2))	// 保留两位小数，具体根据自己需求做更改
+      this.uploadfile.percentage = uploadPercent/*进度*/
+      console.log(uploadPercent)
+    },
+    handleView(name) {
+      this.addForm.logo = name
+      this.visible = true;
+    },
+    handleRemoveImg(path) {
+      var page = this;
+      $.ajax({
+        type: "POST",
+        contentType: "application/x-www-form-urlencoded",
+        url: "/upload/deleteImg",
+        data: {"path": path},
+        dataType: 'json',
+        traditional: true,//防止深度序列化
+        async: false,/*取消异步加载*/
+        success: function (result) {/*用了框架的*/
+          page.addForm.logo = '';/*删除了重置headimg*/
+          page.uploadfile = ''/*上传文件为初始值*/
+        }
+      });
+    },
+    handleFormatError(file) {
+      this.$Notice.error({
+        title: '文件类型错误',
+        desc: '文件 ' + file.name + '类型错误,请选择jpg，jepg，png类型'
+      });
+      this.uploadfile = {
+        status: '',
+        showProgress: false,/*上传前就开始显示进度条了*/
+        percentage: 0,
+        defaultshow: true
+      }
+    },
+    handleBeforeUpload() {/*因为上传单个，每次上传前回复到默认状态*/
+      this.uploadfile = {
+        status: 'start',
+        showProgress: true,/*上传前就开始显示进度条了*/
+        percentage: 0
+      }
+      return true;
     }
-  }
+
+
+}
+
 
 }
 </script>
