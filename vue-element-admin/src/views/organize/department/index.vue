@@ -49,7 +49,7 @@
         <el-table-column prop="name" label="名称" />
         <el-table-column prop="sn" label="部门编号" />
         <el-table-column prop="manager.realName" label="部门经理" />
-        <el-table-column prop="parentId.name" label="父级部门" :formatter="formatDept"/>
+        <el-table-column prop="parent" label="父级部门" :formatter="formatDept"/>
         <el-table-column fixed="right" label="操作" width="150" align="center">
           <template slot-scope="scope">
             <el-button type="primary" size="small" @click="handleShowEditDialog(scope.row)">编辑</el-button>
@@ -81,12 +81,12 @@
       />
       <!--  新增、编辑-->
       <el-dialog title="信息管理" :visible.sync="dialogFormVisible" :close-on-click-modal="false" width="35%">
-        <el-form ref="addForm" :model="addForm" label-width="50px" :rules="rules">
+        <el-form ref="addForm" :model="addForm" label-width="80px" :rules="rules">
           <el-form-item v-show="false" prop="id">
             <el-input v-model="addForm.id" />
           </el-form-item>
           <el-form-item label="名称" prop="name">
-            <el-input v-model="addForm.name" autocomplete="off" />
+            <el-input  v-model="addForm.name" autocomplete="true" />
           </el-form-item>
           <el-form-item label="编号" prop="sn">
             <el-input v-model="addForm.sn" autocomplete="off" />
@@ -102,8 +102,10 @@
               />
             </el-select>
           </el-form-item>
+          <el-form-item label="二级部门">
           <Cascader   filterable :data="departmentList" v-model="addForm.parentId">
           </Cascader >
+          </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="submitForm('addForm')">确认提交</el-button>
             <el-button @click="resetForm('addForm')">重置</el-button>
@@ -300,8 +302,8 @@ export default {
       var http = this.$http
       var message = this.$message
       http.post('/department/selectForPage', param).then(res => {
-        console.debug(res.data.data)
         if (res.data.success) {
+          console.debug(res.data.data);
           this.tableData = res.data.data.list
           this.total = res.data.data.totalRows
           this.page = res.data.data.currentPage

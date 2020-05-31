@@ -6,4 +6,6 @@ import cn.nine.crm.query.EmployeeQuery;
 public interface IEmployeeService extends IBaseService<Employee,Long,EmployeeQuery>{
 
     Employee findEmployeeByDepartmentName(String departmentName);
+
+
 }

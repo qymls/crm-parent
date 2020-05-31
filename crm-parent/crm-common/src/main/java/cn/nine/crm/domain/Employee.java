@@ -35,5 +35,5 @@ public class Employee extends BaseDomain{
     //所属租户
     private Tenant tenant;
     //关联角色
-    private List<Role> roles = new ArrayList<>();
+    private List<Role> role = new ArrayList<>();
 }
