@@ -15,14 +15,15 @@
         <id column="d_id" property="id"/>
         <result column="name" property="name"/>
         <result column="sn" property="sn"/>
-        <association property="parentId" javaType="cn.nine.crm.domain.Department">
-            <id column="f_id" property="id"/>
-            <result column="f_name" property="name"/>
-        </association>
         <association property="manager"
                      javaType="cn.nine.crm.domain.Employee">
             <id column="e_id" property="id"/>
             <id column="realName" property="realName"/>
+        </association>
+        <!--查询父级部门-->
+        <association property="parentId" javaType="cn.nine.crm.domain.Department">
+            <id column="f_id" property="id"/>
+            <result column="f_name" property="name"/>
         </association>
     </resultMap>
     <select id="selectForPage" resultMap="baseMap">
@@ -31,7 +32,6 @@
         d.name,
         d.sn,
         d.manager,
-        d.parent_id AS d_id,
 
         e.id AS e_id,
         e.realName,
