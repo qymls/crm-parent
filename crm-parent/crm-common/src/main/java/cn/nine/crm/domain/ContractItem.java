@@ -27,6 +27,8 @@ public class ContractItem extends BaseDomain {
     //所属合同 通过合同订单id关联
     private Contract contract;
 
+    private String contractSn;
+
     //付款时间 默认是合同签订时间
     private Date payTime;
 //    如何实现合同金额的分批次支付及进度条 查询需要设置搜索下拉选择框

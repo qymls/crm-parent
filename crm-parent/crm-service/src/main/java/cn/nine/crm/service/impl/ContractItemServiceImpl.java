@@ -16,9 +16,8 @@ public class ContractItemServiceImpl extends BaseServiceImpl<ContractItem,Long, 
 
     @Autowired
     private ContractItemMapper contractItemMapper;
-    //合同明细表自动生成
     @Override
-    public int saveByContract(ContractItem contractItem) {
-        return contractItemMapper.saveByContract(contractItem);
+    public ContractItem findByContractSn(String contractSn) {
+        return contractItemMapper.findByContractSn(contractSn);
     }
 }

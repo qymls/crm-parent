@@ -60,19 +60,46 @@
         LEFT JOIN contractitem ci ON co.contractitem_id = ci.id
         LEFT JOIN tenant t ON co.tenant_id = t.id
     </select>
+    <!--查询所有数据-->
+    <select id="findOne" resultMap="baseMap">
+        select
+        co.id as co_id,
+        co.sn,
+
+        cu.id as cu_id,
+        cu.name,
+
+        co.signTime,
+
+        e.id as e_id,
+        e.username,
+
+        co.totalAmount,
+        co.intro,
+
+        ci.id as ci_id,
+
+        t.id as t_id,
+        t.companyName
+
+        from contract co
+        LEFT JOIN customer cu ON  co.customer_id = cu.id
+        LEFT JOIN employee e ON co.seller_id = e.id
+        LEFT JOIN contractitem ci ON co.contractitem_id = ci.id
+        LEFT JOIN tenant t ON co.tenant_id = t.id
+        WHERE co.id = #{id}
+    </select>
 
     <!--抽取sql 查询-->
     <sql id="baseWhere">
         /*查询 ：客户姓名 营销人员姓名*/
         <where>
-            <where>
-                <if test=" keyword !=null ">
-                    and cu.name like  CONCAT("%",#{keyword},"%"
+                <if test="keyword != null">
+                    and cu.id = #{keyword}
                 </if>
-                <if test=" keyword !=null ">
-                    AND e.username like CONCAT("%",#{keyword},"%")
+                <if test=" username != null ">
+                    and e.id = #{username}
                 </if>
-            </where>
         </where>
     </sql>
     <!--查询总条数-->
@@ -115,8 +142,9 @@
         <include refid="baseWhere"/>
         LIMIT #{start} , #{pageSize}
     </select>
+
     <!--添加-->
-    <insert id="save" parameterType="cn.nine.crm.domain.Contract">
+    <insert id="save" useGeneratedKeys="true" keyColumn="id" keyProperty="id" parameterType="cn.nine.crm.domain.Contract">
         INSERT INTO contract
         (
         sn,
@@ -153,7 +181,7 @@
             <if test="signTime != null">
                 signTime = #{signTime},
             </if>
-            <if test="seller != null seller.id != ''">
+            <if test="seller != null and seller.id != ''">
                 seller_id = #{seller.id},
             </if>
             <if test="totalAmount != null">
