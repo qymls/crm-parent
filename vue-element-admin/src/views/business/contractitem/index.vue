@@ -23,7 +23,7 @@
           <Form ref="searchForm" :model="searchForm" inline style="margin-left: 20px;" @submit.native.prevent>
             <!-- 所属合同编号-->
             <FormItem prop="sn">
-              <Input v-model="searchForm.contract.sn" type="text" clearable style="cursor: pointer" placeholder="请输入查找合同编号" @on-enter="click_enter">
+              <Input v-model="searchForm.contractSn" type="text" clearable style="cursor: pointer" placeholder="请输入查找合同编号" @on-enter="click_enter">
               </Input>
             </FormItem>
             <FormItem>
@@ -51,9 +51,11 @@
                 @on-ok="handleRemove(row)">
                 <Button type="error" size="small">删除</Button>
               </Poptip>
+
             </template>
-            <template slot-scope="{ row, index }" slot="contract">
-              {{row.contract.sn}}
+            <template slot-scope="{ row, index }" slot="isPayment">
+              <span v-if="row.isPayment ==0" style="color: red">未支付</span>
+              <span v-if="row.isPayment ==1" style="color: green">已支付</span>
             </template>
           </Table>
         </div>
@@ -76,34 +78,33 @@
           </div>
         </div>
         <Modal v-model="dialogFormVisible" title="合同明细管理" class-name="vertical-center-modal" footer-hide draggable
-               :styles="{top: '200px'}">
+               :styles="{top: '90px'}">
           <Form ref="addForm" :model="addForm" :rules="rules" :label-width="80">
             <!--id 值隐藏-->
             <FormItem v-show="false" prop="id">
               <Input v-model="addForm.id" type="text"></Input>
             </FormItem>
             <FormItem label="合同编号" prop="sn">
-              <Input v-model="addForm.contract.sn" placeholder="请输入合同编号"></Input>
+              <Input v-model="addForm.contractSn" placeholder="请输入合同编号"></Input>
             </FormItem>
             <FormItem label="付款时间" prop="payTime">
-              <div class="block" >
+              <div class="block">
                 <el-date-picker
                   v-model="addForm.payTime"
-                  align="right"
-                  type="date"
-                  placeholder="请选择日期"
-                  :picker-options="pickerOptions">
+                  type="datetime"
+                  placeholder="选择日期时间"
+                  default-time="12:00:00">
                 </el-date-picker>
               </div>
             </FormItem>
             <FormItem label="所占比例" prop="scale">
               <Input v-model="addForm.scale" placeholder="请输入所占比例(%)"></Input>
             </FormItem>
-            <FormItem label="是否支付" prop="isPayment" :formatter = "formatterPay">
-              <el-radio-group v-model="addForm.isPayment">
-                <el-radio :label="0">未支付</el-radio>
-                <el-radio :label="1">已支付</el-radio>
-              </el-radio-group>
+            <FormItem label="是否支付" prop="isPayment" >
+              <RadioGroup  v-model="addForm.isPayment">
+                <Radio label="0">未支付</Radio>
+                <Radio label="1">已支付</Radio>
+              </RadioGroup>
             </FormItem>
             <FormItem>
               <Button type="primary" @click="submitForm('addForm')">确认</Button>
@@ -129,40 +130,12 @@
         loading: false,
         row: [],
         //时间选择
-        pickerOptions: {
-          disabledDate(time) {
-            return time.getTime() > Date.now();
-          },
-          shortcuts: [{
-            text: '今天',
-            onClick(picker) {
-              picker.$emit('pick', new Date());
-            }
-          }, {
-            text: '昨天',
-            onClick(picker) {
-              const date = new Date();
-              date.setTime(date.getTime() - 3600 * 1000 * 24);
-              picker.$emit('pick', date);
-            }
-          }, {
-            text: '一周前',
-            onClick(picker) {
-              const date = new Date();
-              date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
-              picker.$emit('pick', date);
-            }
-          }]
-        },
         payTime:'',//付款时间测试
 
-        isPayment: '',
+        isPayment: 0,
         //查询
         searchForm: {
-          contract:{
-            id:'',
-            sn:''
-          },
+          contractSn:''
         },
         contract:{
           id:'',
@@ -171,10 +144,7 @@
         dialogFormVisible: false,
         addForm: {
           id: '',
-          contract:{
-            id:'',
-            sn:''
-          },
+          contractSn:'',
           payTime:'',
           scale:'',
           isPayment:''
@@ -189,14 +159,15 @@
           {
             title: '序号',
             type: 'index',
-            width: 100,
+            width: 70,
             align: 'center'
           },
           {
             title: '合同编号',
             width: 250,
             align: 'center',
-            slot: 'contract',
+            key: 'contractSn',
+            sortable:'true'
           },
           {
             title: '付款时间',
@@ -207,15 +178,17 @@
           },
           {
             title: '所占比例(%)',
-            width: 200,
+            width: 180,
             align: 'center',
-            key: 'scale'
+            key: 'scale',
+            sortable:'true'
           },
           {
             title: '是否支付',
             width: 120,
             align: 'center',
-            key: 'isPayment'
+            slot: 'isPayment',
+            sortable:'true'
           },
           {
             title: '操作',
@@ -379,15 +352,11 @@
         var http = this.$http
         var Message = this.$Message
         this.loading = true
-        // vue加载完成，发送ajax请求动态获取数据
-        this.$http.get("/contract/findByContractitemId").then(res=>{
-          // console.debug(res.data.data)
-          this.contract.sn = res.data.data.sn;
-        })
+        // vue加载完成，发送ajax请求动态获取数据 分页查询
         const param = {
           'currentPage': this.page,
           'pageSize': this.pageSize,
-          'keyword': this.searchForm.name
+          'keyword': this.searchForm.contractSn
         }
         http.post('/contractitem/selectForPage', param).then(res => {
           if (res.data.success) {
