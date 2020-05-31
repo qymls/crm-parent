@@ -23,7 +23,19 @@
             <id column="tt_id" property="id"/>
             <result column="companyName" property="companyName"/>
         </association>
+        <collection
+                property="role"
+                ofType="cn.nine.crm.domain.Role"
+                column="te_id"
+                select="cn.nine.crm.mapper.EmployeeMapper.findRoleList">
+        </collection>
     </resultMap>
+    <!--多对多查询角色-->
+    <select id="findRoleList" resultType="cn.nine.crm.domain.Role">
+      SELECT  r.*
+      FROM employee_role er
+      left JOIN role r ON er.role_id = r.id WHERE er.employee_id = #{id}
+    </select>
     <!--添加员工-->
     <insert id="save" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
         INSERT INTO employee
@@ -52,6 +64,9 @@
             #{tenant.id}
         )
 
+    </insert>
+    <insert id="saveRole" >
+        INSERT INTO employee_role(role_id,employee_id) VALUES(#{role_id},#{employee_id})
     </insert>
     <update id="update" parameterType="cn.nine.crm.domain.Employee">
         UPDATE employee
@@ -96,6 +111,11 @@
         <foreach collection="list" open="(" item="id" close=")" separator=",">
             #{id}
         </foreach>
+    </delete>
+    <!--删除所属角色-->
+    <delete id="deleteRole">
+        DELETE FROM  employee_role WHERE employee_id=#{employee_id}
+
     </delete>
     <!--查询所有数据-->
     <select id="findAll" resultMap="baseMap">

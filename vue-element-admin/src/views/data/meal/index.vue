@@ -114,8 +114,8 @@
             />
           </el-form-item>
           <el-form-item label="状态" prop="status">
-            <el-radio v-model="addForm.status" label="false">停用</el-radio>
-            <el-radio v-model="addForm.status" label="true">启用</el-radio>
+            <el-radio v-model="addForm.status" :label="false">停用</el-radio>
+            <el-radio v-model="addForm.status" :label="true">启用</el-radio>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="submitForm('addForm')">确认提交</el-button>
@@ -223,7 +223,7 @@ export default {
       var notify = this.$notify
       http.post('/meal/batchDelete', param).then(res => {
         if (res.data.success) {
-          notify({ title: '删除成功', message: '恭喜你，你已经成功删除', type: 'success', offset: 100 })
+          notify({ title: '删除成功', message: '恭喜你，你已经成功删除', type: 'success', offset: 100 });
           this.loadListData()
         } else {
           notify({ title: '删除失败', message: res.data.message, type: 'error', offset: 100 })
@@ -234,8 +234,8 @@ export default {
     },
 
     handleRemove(row) {
-      var http = this.$http
-      var notify = this.$notify
+      var http = this.$http;
+      var notify = this.$notify;
       http.delete('/meal/delete/' + row.id).then(res => {
         if (res.data.success) {
           notify({ title: '删除成功', message: '恭喜你，你已经成功删除', type: 'success', offset: 100 })
@@ -248,28 +248,28 @@ export default {
       })
     },
     handleSizeChange(val) {
-      this.pageSize = val
+      this.pageSize = val;
       this.loadListData()
     },
     handleCurrentChange(val) {
-      this.page = val
+      this.page = val;
       this.loadListData()
     },
     loadListData() {
-      this.loading = true
+      this.loading = true;
       // vue加载完成，发送ajax请求动态获取数据
       const param = {
         'currentPage': this.page,
         'pageSize': this.pageSize,
         'keyword': this.searchForm.name
       }
-      var http = this.$http
-      var message = this.$message
+      var http = this.$http;
+      var message = this.$message;
       http.post('/meal/selectForPage', param).then(res => {
         if (res.data.success) {
-          this.tableData = res.data.data.list
-          this.total = res.data.data.totalRows
-          this.page = res.data.data.currentPage
+          this.tableData = res.data.data.list;
+          this.total = res.data.data.totalRows;
+          this.page = res.data.data.currentPage;
           this.loading = false
         } else {
           message.error('查询失败[' + res.data.message + ']')
@@ -278,15 +278,8 @@ export default {
         message.error('查询失败[' + error.message + ']')
       })
     },
-    statusFormatter(row) {
-      const status = row.status
-      if (status == 0) {
-        return '注册'
-      } else if (status == 1) {
-        return '付费'
-      } else {
-        return '欠费'
-      }
+    statusFormatter:function(row) {
+      return row.status == 0 ? '停用':'启用';
     }
   }
 

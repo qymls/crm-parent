@@ -9,4 +9,6 @@ import java.util.List;
 public interface IEmployeeService extends IBaseService<Employee,Long,EmployeeQuery>{
 
     List<Employee> findEmployeeByDepartmentName(String departmentName);
+
+
 }
