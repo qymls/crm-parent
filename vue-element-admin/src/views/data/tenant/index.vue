@@ -349,7 +349,8 @@ export default {
       console.log(row);
       this.$nextTick(() => {
         this.$refs['addForm'].resetFields()/* 清空*/
-        this.addForm = Object.assign({}, row)
+        this.addForm = Object.assign({}, row);
+        console.log("数据"+row.data);
         this.addForm.state = row.state;
       })
     },
