@@ -39,7 +39,9 @@
           <Table border :loading="loading" :columns="columns" :data="tableData"
                  height="350"
                  @on-selection-change="handleSelectionChange"
-                 :default-sort = "{key: 'payTime', order: 'descending'}">
+                 :default-sort = "{key: 'payTime', order: 'descending'}"
+                 max-height="690"
+          >
 
             <template slot-scope="{ row, index }" slot="action">
               <Button type="primary" size="small" style="margin-right: 5px"
@@ -197,21 +199,8 @@
             width: 190
           }
         ],
-        /*添加规则*/
-        // rules: {
-        //   sn: [
-        //     { required: false, message: '请输入合同编号', trigger: 'blur' }
-        //   ],
-        //   // payTime: [
-        //   //   { required: true, message: '请选择支付时间', trigger: 'blur' }
-        //   // ],
-        //   scale: [
-        //     { required: true, message: '请输入所占比例(%)', trigger: 'blur' }
-        //   ],
-        //   // isPayment: [
-        //   //   { required: true, message: '请选择是否支付', trigger: 'blur' }
-        //   // ]
-        // }
+        /*添加 编辑规则*/
+        rules: {}
       }
     },
     mounted() {
@@ -239,10 +228,10 @@
       },
       // 编辑显示弹窗
       handleShowEditDialog(row) {
-        // 数据回显
         this.dialogFormVisible = true
         //回显状态
-        this.addForm.isPayment = row.isPayment;
+        row.isPayment = row.isPayment.toString();
+
         this.$refs['addForm'].resetFields()/* 清空*/
         this.addForm = Object.assign({}, row)/* 复制*/
       },
