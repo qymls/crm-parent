@@ -126,7 +126,7 @@ export default {
         id: ''
       }],
       page: 1, // 第几页
-      pageSize: 5, // 每页条数
+      pageSize: 10, // 每页条数
       total: 0,
       tableData: [],
       loading: false,

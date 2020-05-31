@@ -91,11 +91,10 @@
     <insert id="save" parameterType="cn.nine.crm.domain.Department"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         insert into department
-        (name, sn,manager)
+        (name, sn,manager,parent_id)
         values
-        (#{name},#{sn},#{manager.id})
+        (#{name},#{sn},#{manager.id},#{parentId.id})
     </insert>
-
 
     <!--修改-->
     <update id="update" parameterType="cn.nine.crm.domain.Department">
