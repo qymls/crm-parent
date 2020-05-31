@@ -214,8 +214,7 @@
           var parentValueList = this.getAllMenuParent(data.menu.id);
           parentValueList.push(data.menu.id.toString())
           this.$nextTick(() => {/*必须放在这个里面，不然值不会刷新的*/
-            this
-
+            this.menuValue = parentValueList;
           })
         }
       },
