@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.nine.crm.mapper.CustomertransferMapper">
+
+    <resultMap id="result" type="cn.nine.crm.domain.Customertransfer">
+        <result property="id" column="id"/>
+        <result property="transtime" column="transtime"/>
+        <result property="transreason" column="transreason"/>
+        <association property="tenant" column="tenant" javaType="cn.nine.crm.domain.Tenant"
+                     select="cn.nine.crm.mapper.TenantMapper.findOne"/>
+
+        <association property="customer" column="customer" javaType="cn.nine.crm.domain.Customer"
+                     select="cn.nine.crm.mapper.CustomerMapper.findOne"/>
+
+        <association property="transuser" column="transuser" javaType="cn.nine.crm.domain.Employee"
+                     select="cn.nine.crm.mapper.EmployeeMapper.findOne"/>
+
+        <association property="oldseller" column="oldseller" javaType="cn.nine.crm.domain.Employee"
+                     select="cn.nine.crm.mapper.EmployeeMapper.findOne"/>
+
+        <association property="newseller" column="newseller" javaType="cn.nine.crm.domain.Employee"
+                     select="cn.nine.crm.mapper.EmployeeMapper.findOne"/>
+    </resultMap>
+    <select id="findAll" resultMap="result">
+        select
+        <include refid="base_cloumn"/>
+        from customertransfer
+    </select>
+
+    <select id="selectForPage" parameterType="cn.nine.crm.query.CustomertransferQuery"  resultMap="result">
+        select
+        <include refid="base_cloumn"/>
+        from customertransfer
+        <include refid="base_where"/>
+        limit #{start},#{pageSize}
+
+    </select>
+
+    <select id="selectForCount" resultType="long">
+        select
+        count(*)
+        from customertransfer
+        <include refid="base_where"/>
+    </select>
+
+    <sql id="base_cloumn">
+         id, customer, transuser, transtime, oldseller, newseller, transreason, tenant
+    </sql>
+    <!--抽取where-->
+    <sql id="base_where">
+        <where>
+            <if test="keyword != null">
+                and customer = #{keyword}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findOne" parameterType="long"  resultMap="result">
+        select
+        <include refid="base_cloumn"/>
+        from customertransfer  where id = #{id}
+    </select>
+
+
+    <insert id="save" parameterType="cn.nine.crm.domain.Customertransfer"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into customertransfer
+        (customer, transuser, transtime, oldseller, newseller, transreason, tenant)
+        values
+        (#{customer.id},#{transuser.id},#{transtime},#{oldseller.id},#{newseller.id},#{transreason},#{tenant.id})
+    </insert>
+
+    <update id="update" parameterType="cn.nine.crm.domain.Customertransfer">
+        update customertransfer
+        set
+        customer = #{customer.id},
+        transuser = #{transuser.id},
+        transtime = #{transtime},
+        oldseller = #{oldseller.id},
+        newseller = #{newseller.id},
+        transreason = #{transreason},
+        tenant = #{tenant.id}
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        delete from customertransfer where id = #{id}
+    </delete>
+
+    <delete id="batchDelete">
+        <!--open最前面的字符,close在最后的字符separator分隔符,每次循环使用什么分隔-->
+        delete from customertransfer where id in
+        <foreach collection="list" open="(" item="id" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+
+</mapper>

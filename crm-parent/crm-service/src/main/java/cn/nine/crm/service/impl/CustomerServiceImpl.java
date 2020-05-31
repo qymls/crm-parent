@@ -7,6 +7,9 @@ import cn.nine.crm.service.ICustomerService;
 import cn.nine.crm.service.Impl.BaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+
 /**
  * (Customer)表Service层接口
  *
@@ -21,5 +24,20 @@ public class CustomerServiceImpl extends BaseServiceImpl<Customer,Long,CustomerQ
     @Autowired
     public void setCustomerMapper(CustomerMapper customerMapper) {
         this.customerMapper = customerMapper;
+    }
+
+    @Override
+    public void updateStateByid(Boolean state,Long id) {
+        customerMapper.updateStateByid(state,id);
+    }
+
+    @Override
+    public List<Customer> getdevCustomer(String status) {
+        return customerMapper.getdevCustomer(status);
+    }
+
+    @Override
+    public List<Customer> getreSourceByState(Boolean state) {
+        return customerMapper.getreSourceByState(state);
     }
 }

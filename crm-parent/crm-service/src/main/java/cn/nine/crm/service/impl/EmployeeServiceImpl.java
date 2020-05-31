@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import java.util.List;
+
 
 @Service
 public class EmployeeServiceImpl extends BaseServiceImpl<Employee,Long,EmployeeQuery>
@@ -21,7 +23,7 @@ public class EmployeeServiceImpl extends BaseServiceImpl<Employee,Long,EmployeeQ
 
     //根据部门id查员工
     @Override
-    public Employee findEmployeeByDepartmentName(String departmentName) {
+    public List<Employee> findEmployeeByDepartmentName(String departmentName) {
 
         return employeeMapper.findEmployeeByDepartmentName(departmentName);
     }

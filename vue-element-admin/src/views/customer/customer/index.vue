@@ -6,8 +6,17 @@
         信息管理
       </p>
       <Row>
-        <Col span="3">
+        <Col span="6">
           <Button type="primary" icon="md-add" @click="handleShowAddDialog">添加</Button>
+          <Poptip
+            confirm
+            placement="right"
+            transfer
+            title="您确认将其移动到客户资源池吗?"
+            @on-ok="movetoResource"
+          >
+            <Button type="info" icon="ios-trash">移入资源池</Button>
+          </Poptip>
           <Poptip
             confirm
             placement="right"
@@ -18,7 +27,7 @@
             <Button v-if="row.length>0" type="error" icon="ios-trash">删除</Button>
           </Poptip>
         </Col>
-        <Col span="21">
+        <Col span="18">
           <Form ref="searchForm" :model="searchForm" inline style="margin-left: 20px;" @submit.native.prevent>
             <FormItem prop="name">
               <Input v-model="searchForm.name" type="text" clearable style="cursor: pointer" placeholder="请输入查找的名称"
@@ -38,8 +47,19 @@
         <div style="margin-top:20px">
           <Table border :loading="loading" :columns="columns" :data="tableData" max-height="690"
                  @on-selection-change="handleSelectionChange">
+            <template slot-scope="{ row, index }" slot="status">
+              <Tag color="success" v-if="row.status=='初始录入'">{{row.status}}</Tag>
+              <Tag color="error" v-if="row.status=='正常客户'">{{row.status}}</Tag>
+            </template>
+            <template slot-scope="{ row, index }" slot="seller">
+              <span v-if="row.seller">{{row.seller.username}}</span>
+            </template>
+            <template slot-scope="{ row, index }" slot="sex">
+              <span v-if="row.sex ==true">男</span>
+              <span v-if="row.sex ==false">女</span>
+            </template>
             <template slot-scope="{ row, index }" slot="action">
-              <Button type="primary" size="small" style="margin-right: 5px" @click="handleShowEditDialog(row)">编辑
+              <Button type="primary" size="small" style="margin-right: 5px" @click="handleShowEditDialog(row,index)">编辑
               </Button>
               <Poptip
                 confirm
@@ -108,13 +128,15 @@
             <Row>
               <form-item label="扩展信息"/>
             </Row>
-            <FormItem label="营销人员" prop="seller">
+            <FormItem label="营销人员" prop="sellerId">
               <Select v-model="addForm.sellerId" style="width:200px" placeholder="请选择相关值">
                 <Option v-for="item in employeeList" v-model="item.id" :key="item.id">{{ item.username}}</Option>
               </Select>
             </FormItem>
-            <FormItem label="职业" prop="job">
-              <Input v-model="addForm.job" placeholder="请输入相关值"/>
+            <FormItem label="职业" prop="jobId">
+              <Select v-model="addForm.jobId" style="width:200px" placeholder="请选择相关值">
+                <Option v-for="item in jobList" v-model="item.id" :key="item.id">{{ item.name}}</Option>
+              </Select>
             </FormItem>
             <FormItem label="收入水平" prop="salarylevel">
               <Input v-model="addForm.salarylevel" placeholder="请输入相关值"/>
@@ -123,9 +145,9 @@
               <Input v-model="addForm.customersource" placeholder="请输入相关值"/>
             </FormItem>
             <Row>
-              <form-item label="扩展信息"/>
+              <form-item label="其他信息"/>
             </Row>
-            <FormItem label="所属租户" prop="tenant">
+            <FormItem label="所属租户" prop="tenantId">
               <Select v-model="addForm.tenantId" style="width:200px" placeholder="请选择相关值">
                 <Option v-for="item in tenantList" v-model="item.id" :key="item.id">{{ item.companyName}}</Option>
               </Select>
@@ -134,7 +156,7 @@
             <FormItem label="顾客状态" prop="status">
               <Select v-model="addForm.status" style="width:200px" placeholder="请选择相关值">
                 <Option value="初始录入">初始录入</Option>
-                <Option value="初始录入">正常客户</Option>
+                <Option value="正常客户">正常客户</Option>
               </Select>
             </FormItem>
             <Row/>
@@ -158,7 +180,9 @@
   </div>
 </template>
 <script>
+  import expandRow from './table-expand.vue';
   export default {
+    components: { expandRow },
     data() {
       return {
         page: 1, // 第几页
@@ -175,13 +199,13 @@
           id: '',
           name: '',
           age: '',
-          sex: '',
+          sex: 'true',
           tel: '',
           email: '',
           qq: '',
           wechat: '',
           sellerId: '',
-          job: '',
+          jobId: '',
           salarylevel: '',
           customersource: '',
           tenantId: '',
@@ -191,6 +215,17 @@
           state: '',
         },
         columns: [
+          {
+            type: 'expand',
+            width: 50,
+            render: (h, params) => {
+              return h(expandRow, {
+                props: {
+                  row: params.row
+                }
+              })
+            }
+          },
           {
             type: 'selection',
             width: 60,
@@ -214,7 +249,7 @@
           },
           {
             title: '客户性别',
-            key: 'sex',
+            slot: 'sex',
             align: 'center'
           },
           {
@@ -224,7 +259,7 @@
           },
           {
             title: '营销人员',
-            key: 'seller',
+            slot: 'seller',
             align: 'center'
           },
 
@@ -240,7 +275,7 @@
           },
           {
             title: '客户状态',
-            key: 'status',
+            slot: 'status',
             align: 'center'
           },
 
@@ -264,6 +299,8 @@
         },
         employeeList:[],
         tenantList:[],
+        jobList:[],
+        tempindex:''/*临时字段*/
       }
     },
     mounted() {
@@ -275,8 +312,30 @@
       this.loadListData()
     },
     methods: {
+      movetoResource(){
+        if (this.row.length>0){
+          const ids = this.row.map(function (obj, index, arr) {
+            return obj.id
+          })
+          this.$http.post('/customer/moveToResource',{ids:ids}).then(res => {
+            if (res.data.success){
+              this.$Message.success('移入成功');
+              this.loadListData();
+            }else {
+              this.$Message.error('移入失败'+res.data.message);
+            }
+          })
+        }else {
+          this.$Message.error('请选择需要移入到资源池的客户');
+        }
+      },
+      getAllJob(){
+        this.$http.post('/customer/getAllJob',{jonName:"职位"}).then(res => {
+          this.jobList = res.data.data;
+        })
+      },
       getAllEmployeebyDepartmentName(){
-        this.$http.post('/customer/getAllEmployeebyDepartmentName').then(res => {
+        this.$http.post('/customer/getAllEmployeebyDepartmentName',{departmentName:"营销部"}).then(res => {
           this.employeeList = res.data.data;
         })
       },
@@ -294,15 +353,16 @@
         this.$refs['addForm'].resetFields()/* 清空*/
         this.getAllEmployeebyDepartmentName();
         this.getAllTenant();
+        this.getAllJob();
       },
       // 编辑显示弹窗
-      handleShowEditDialog(row) {
-        console.log(row)
+      handleShowEditDialog(row,index) {
         // 数据回显
         this.dialogFormVisible = true
         this.$refs['addForm'].resetFields()/* 清空*/
         this.getAllEmployeebyDepartmentName();
         this.getAllTenant();
+        this.getAllJob();
         row.sex = row.sex.toString();
         row.age = row.age.toString();
         row.successrate = Number(row.successrate)
@@ -312,9 +372,11 @@
         if(row.tenant){
           row.tenantId = row.tenant.id
         }
-
+        if(row.job){
+          row.jobId = row.job.id
+        }
         this.addForm = Object.assign({}, row)/* 复制*/
-        console.log(this.addForm)
+        this.tempindex = index
       },
 
       submitForm(formName) { /* 确认保存*/
@@ -323,10 +385,19 @@
         var Message = this.$Message
         refs[formName].validate((valid) => {
           const param = Object.assign({}, this.addForm)
-          param['seller'] = {id:param.sellerId}
-          param['tenant'] = {id:param.tenantId}
+          if(param.sellerId){
+            param['seller'] = {id:param.sellerId}
+          }
+         if(param.tenantId){
+           param['tenant'] = {id:param.tenantId}
+         }
+         if(param.jobId){
+           param['job'] = {id:param.jobId}
+         }
+
           delete param['tenantId']
           delete param['sellerId']
+          delete param['jobId']
           let url = '/customer/save'
           if (this.addForm.id) {
             url = '/customer/update'
@@ -337,8 +408,15 @@
                 Message.error(res.data.msg)
               } else {
                 if (res.data.success) {
-                  this.dialogFormVisible = false
                   this.loadListData()
+                  this.dialogFormVisible = false
+                  if (url.indexOf("update")!=-1){
+                     var $page = this;
+                    setTimeout(function(){/*axios的异步引起的*/
+                      $page.tableData.splice();
+                      $page.tableData[$page.tempindex]._expanded = true
+                    }, 500);
+                  }
                   Message.success(res.data.message)
                 } else {
                   Message.error('操作失败[' + res.data.message + ']')
@@ -444,6 +522,7 @@
         const param = {
           'currentPage': this.page,
           'pageSize': this.pageSize,
+          'state':true,/*只查询没有在资源池的用户*/
           'keyword': this.searchForm.name
         }
         http.post('/customer/selectForPage', param).then(res => {

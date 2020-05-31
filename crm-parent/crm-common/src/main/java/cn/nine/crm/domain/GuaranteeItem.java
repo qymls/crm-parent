@@ -1,6 +1,8 @@
 package cn.nine.crm.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -29,4 +31,12 @@ public class GuaranteeItem extends BaseDomain {
     //保修状态：0未处理 1已处理 2正在处理
     private Integer status = STATUS_UNPROCESS;
 
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
+    public Date getInputDate() {
+        return inputDate;
+    }
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    public void setInputDate(Date inputDate) {
+        this.inputDate = inputDate;
+    }
 }
