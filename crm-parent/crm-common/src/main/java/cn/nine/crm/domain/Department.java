@@ -17,6 +17,6 @@ public class Department extends BaseDomain {
     //子部门
     private List<Department> children = new ArrayList<>();
     //父部门
-    private Department prentId;
+    private Department parentId;
     private Employee manager;
 }

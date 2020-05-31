@@ -15,7 +15,7 @@
         <id column="d_id" property="id"/>
         <result column="name" property="name"/>
         <result column="sn" property="sn"/>
-        <association property="prentId" javaType="cn.nine.crm.domain.Department">
+        <association property="parentId" javaType="cn.nine.crm.domain.Department">
             <id column="f_id" property="id"/>
             <result column="name" property="name"/>
         </association>
@@ -83,6 +83,10 @@
     <select id="findByParentId" resultMap="baseResultMap">
         SELECT id,name FROM department WHERE parent_id=#{id}
     </select>
+    <!--新增接口通过部门名称查询员工-->
+    <select id="getManagerByDepartMentName" resultType="cn.nine.crm.domain.Employee">
+        select e.* from department d join employee e  on d.manager = e.id where d.name = #{name}
+    </select>
     <!--新增-->
     <insert id="save" parameterType="cn.nine.crm.domain.Department"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
@@ -91,6 +95,9 @@
         values
         (#{name},#{sn},#{manager.id})
     </insert>
+
+
+    <!--修改-->
     <update id="update" parameterType="cn.nine.crm.domain.Department">
         update department
                 <set>
@@ -102,6 +109,9 @@
                     </if>
                     <if test="manager !=null and manager.id !=''">
                     manager=#{manager.id}
+                    </if>
+                    <if test="parentId != null and parentId.id !='">
+                    parent_id=#{parentId.id}
                     </if>
                 </set>
                 where id = #{id}

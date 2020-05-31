@@ -28,7 +28,7 @@ import java.util.List;
 @Controller
 @RequestMapping("customer")
 @SuppressWarnings(value = "all")/*抑制警告*/
-public class CustomerController extends BaseController<Customer,Long, CustomerQuery>{
+public class CustomerController extends BaseController<Customer, Long, CustomerQuery> {
     private ICustomerService customerService;
     private IEmployeeService employeeService;
     private ITenantService tenantService;
@@ -62,24 +62,43 @@ public class CustomerController extends BaseController<Customer,Long, CustomerQu
         return super.save(customer);
     }
 
-    @PostMapping("/getAllEmployeebyDepartmentName/{departmentName}")
+    @PostMapping("/getAllEmployeebyDepartmentName")
     @ApiOperation("顾客页面查询所有员工通过部门名称")
-    public Result getAllEmployeebyDepartmentName(@PathVariable("departmentName") String departmentName){
-        List<Employee> employeeList = employeeService.findEmployeeByDepartmentName(departmentName);
+    public Result getAllEmployeebyDepartmentName(@RequestBody CustomerQuery customerQuery) {
+        List<Employee> employeeList = employeeService.findEmployeeByDepartmentName(customerQuery.getDepartmentName());
         return Result.ok(employeeList);
     }
 
     @PostMapping("/getAllTenant")
     @ApiOperation("顾客页面查询所有租户")
-    public Result getAllTenantList(){
+    public Result getAllTenantList() {
         List<Tenant> tenantList = tenantService.findAll();
         return Result.ok(tenantList);
     }
 
-    @PostMapping("/getAllJob/{name}")
-    @ApiOperation("顾客页面查询所有租户")
-    public Result getAllJob(@PathVariable("name") String name){
-       /* List<Systemdictionaryitem> systemdictionaryitemList = systemdictionaryitemService*/
+    @PostMapping("/getAllJob")
+    @ApiOperation("顾客页面查询所有职位")
+    public Result getAllJob(@RequestBody CustomerQuery customerQuery) {
+        List<Systemdictionaryitem> systemdictionaryitemList = systemdictionaryitemService.selectByName(customerQuery.getJonName());
+        return Result.ok(systemdictionaryitemList);
+    }
+
+    @PostMapping("/moveToResource")
+    @ApiOperation("顾客页面修改state")
+    public Result moveToResource(@RequestBody CustomerQuery customerQuery) {
+        for (Long id : customerQuery.getIds()) {
+            customerService.updateStateByid(false,id);
+        }
         return Result.ok();
     }
+
+    @PostMapping("/movetoCustomter")
+    @ApiOperation("顾客页面修改state,与上方代码重复可优化")
+    public Result movetoCustomter(@RequestBody CustomerQuery customerQuery) {
+        for (Long id : customerQuery.getIds()) {
+            customerService.updateStateByid(true,id);
+        }
+        return Result.ok();
+    }
+
 }

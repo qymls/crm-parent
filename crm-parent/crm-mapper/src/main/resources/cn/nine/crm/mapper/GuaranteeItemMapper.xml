@@ -11,6 +11,7 @@
             </if>
         </where>
     </sql>
+
     <!-- 抽取字段 -->
     <sql id="base_cloumn">
         id,input_date,guarantee_sn,details,status
@@ -27,63 +28,82 @@
 
     <!-- 查询全部数据 -->
     <select id="findAll" resultType="cn.nine.crm.domain.GuaranteeItem">
-        select <include refid="base_cloumn"/>
-        from t_guarantee_item
+        SELECT
+            <include refid="base_cloumn"/>
+        FROM guaranteeitem
+        <include refid="base_where"/>
     </select>
 
     <!-- 分页查询 -->
     <select id="selectForPage" parameterType="cn.nine.crm.query.GuaranteeItemQuery" resultMap="baseResultMap">
-        SELECT <include refid="base_cloumn"/>
-        FROM t_guarantee_item gi
+        SELECT
+            <include refid="base_cloumn"/>
+        FROM guaranteeitem
         <include refid="base_where"/>
-        ORDER BY gi.guarantee_sn ASC
+        ORDER BY guarantee_sn ASC
         limit #{start},#{pageSize}
     </select>
 
     <!-- 查询数据条数 -->
     <select id="selectForCount" resultType="long">
-        select
-          count(id)
-        from t_guarantee_item
+        SELECT
+            COUNT(id)
+        FROM guaranteeitem
         <include refid="base_where"/>
     </select>
 
     <!-- 查询单个数据 -->
     <select id="findOne" parameterType="long" resultType="cn.nine.crm.domain.GuaranteeItem">
-        select <include refid="base_cloumn"/>
-        from t_guarantee_item where guarantee_sn = #{guaranteeSn}
+        SELECT
+            <include refid="base_cloumn"/>
+        FROM guaranteeitem
+        WHERE guarantee_sn = #{guaranteeSn}
     </select>
 
     <!-- 新增数据 -->
     <insert id="save" parameterType="cn.nine.crm.domain.GuaranteeItem"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
-        insert into t_guarantee_item
-          (guarantee_sn,input_date,details,status)
-        values
-          (#{guaranteeSn},#{inputDate},#{details},#{status})
+        INSERT INTO guaranteeitem (
+            guarantee_sn,
+            input_date,
+            details,
+            status
+        )
+        VALUES (
+            #{guaranteeSn},
+            #{inputDate},
+            #{details},
+            #{status}
+        )
     </insert>
 
     <!-- 修改数据 -->
     <update id="update" parameterType="cn.nine.crm.domain.GuaranteeItem">
-        update t_guarantee_item
-        set input_date = #{inputDate},
+        UPDATE
+            guaranteeitem
+        SET
+            input_date = #{inputDate},
             details = #{details},
             status = #{status}
-        where id = #{id}
+        WHERE id = #{id}
     </update>
 
     <!-- 删除单个数据 -->
     <delete id="delete" parameterType="long">
-        delete from t_guarantee_item where id = #{id}
+        DELETE
+        FROM guaranteeitem
+        WHERE id = #{id}
     </delete>
 
     <!-- 删除多个数据 -->
     <delete id="batchDelete">
         <!--open最前面的字符,close在最后的字符separator分隔符,每次循环使用什么分隔-->
-        delete from t_guarantee_item where id in
-        <foreach collection="list" open="(" item="id" close=")" separator=",">
-            #{id}
-        </foreach>
+        DELETE
+        FROM guaranteeitem
+        WHERE id IN
+            <foreach collection="list" open="(" item="id" close=")" separator=",">
+                #{id}
+            </foreach>
     </delete>
 
 </mapper>

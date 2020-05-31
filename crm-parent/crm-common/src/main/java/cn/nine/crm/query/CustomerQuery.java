@@ -1,5 +1,9 @@
 package cn.nine.crm.query;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.swing.plaf.nimbus.State;
+import java.sql.PreparedStatement;
 import java.util.Date;
 
 /**
@@ -10,6 +14,12 @@ import java.util.Date;
  */
 @Data
 public class CustomerQuery extends BaseQuery{
+    private String departmentName;
 
+    private String jonName;
+
+    private Long[] ids;
+
+    private Boolean state;
 
 }

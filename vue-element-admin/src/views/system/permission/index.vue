@@ -216,7 +216,6 @@
           this.$nextTick(() => {/*必须放在这个里面，不然值不会刷新的*/
             this.menuValue = parentValueList;
           })
-
         }
       },
       getAllMenuParent(id){/*获取该菜单的所有父菜单*/
