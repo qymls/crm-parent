@@ -253,7 +253,7 @@ export default {
       //清空角色
       this.addForm.department.id ="";
       //清空角色
-      this.addForm.roleValueList=[];
+      this.roleValueList = []
       this.addForm.inputTime="";
       this.addForm.state = 0;
     },
@@ -264,9 +264,12 @@ export default {
       this.$nextTick(() => {
         this.$refs['addForm'].resetFields()/* 清空*/
         var data= Object.assign({}, row)/* 赋值*/
-        console.log(data)
         if(data.role.length>0){
-          data.roleValueList = data.role;
+          var tempDtae = []
+          for (let i = 0; i < data.role.length; i++) {
+            tempDtae.push(data.role[i].id)
+          }
+          this.roleValueList = tempDtae;
         }
         if (!data.department){
           data.department = {id:''};
