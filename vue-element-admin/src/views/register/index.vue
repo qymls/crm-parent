@@ -167,12 +167,12 @@
     border-radius: 5px;
     -moz-border-radius: 5px;
     background-clip: padding-box;
-    margin: 180px auto;
+    margin: 100px auto;
     width: 500px;
     padding: 35px 35px 15px 35px;
     background: #1de9ff;
     border: 1px solid #eaeaea;
-    box-shadow: 0 0 25px #cac6c6;
+    box-shadow: 0 0 25px #fffbfb;
   }
 
   .title {

@@ -102,8 +102,8 @@
           </el-form-item>
           <el-form-item label="状态" prop="state">
             <el-radio-group v-model="addForm.state">
-              <el-radio label="false">停用</el-radio>
-              <el-radio label="true">启用</el-radio>
+              <el-radio :label="false">停用</el-radio>
+              <el-radio :label="true">启用</el-radio>
             </el-radio-group>
           </el-form-item>
           <el-form-item label="租户" prop="tenant.name">
