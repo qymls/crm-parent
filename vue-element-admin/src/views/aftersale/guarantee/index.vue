@@ -1,70 +1,65 @@
 <template>
   <div style="height: calc(100vh - 84px);">
-    <el-card class="box-card" style="height: 100%">
-      <div slot="header" class="clearfix">
-        <span>保修单管理</span>
-      </div>
+    <Card tyle="height: 100%" dis-hover>
+      <p slot="title">
+        <Icon type="ios-list-box-outline" size="20" />
+        {{ title }}
+      </p>
+      <!-- 顶部工具 -->
+      <Row>
+        <Form :model="searchForm" inline>
+          <FormItem>
+            <Button type="primary" icon="ios-add-circle-outline" @click="handleShowAddDialog">新增</Button>
+          </FormItem>
+          <FormItem>
+            <Poptip v-if="row.length > 0" confirm title="你确定要删除这些内容吗？" @on-ok="handleBatchRemove">
+              <Button type="error" icon="ios-close-circle-outline">删除</Button>
+            </Poptip>
+          </FormItem>
+          <FormItem prop="name">
+            <Input type="text" v-model="searchForm.name" placeholder="输入合同单号"/>
+          </FormItem>
+          <FormItem>
+            <Button type="primary" icon="ios-search" @click="loadListData">查询</Button>
+          </FormItem>
+        </Form>
+      </Row>
 
-      <!-- 顶部工具条【查询，新增，批量删除】 -->
-      <el-row>
-        <!-- 新增删除 -->
-        <el-col :span="3">
-          <el-button
-            type="primary"
-            icon="el-icon-plus"
-            size="small"
-            style="float: left;"
-            @click="handleShowAddDialog"
-          >新增
-          </el-button>
-          <el-popconfirm
-            v-if="row.length>0"
-            icon="el-icon-info"
-            icon-color="red"
-            title="你确定要离我而去？"
-            placement="right"
-            @onConfirm="handleBatchRemove"
-          >
-            <el-button slot="reference" type="danger" icon="el-icon-delete" size="small" style="float: left;margin: auto 3px 20px 20px;">
-              删除
-            </el-button>
-          </el-popconfirm>
-        </el-col>
+      <!-- 表格数据 -->
+      <!--<Table border ref="selection" :loading="loading" :columns="columns1" :data="tableData" @on-selection-change="handleSelectionChange">
+        <template slot-scope="{ row, index }" slot="action" >
+          <div>
+            <el-button type="primary" size="mini" @click="handleShowEditDialog(row)">编辑</el-button>
+            <el-popconfirm
+              confirm-button-text="确认"
+              cancel-button-text="取消"
+              icon="el-icon-info"
+              icon-color="red"
+              title="你确定要删除当前数据？"
+              transition
+              placement="top"
+              @onConfirm="handleRemove(scope.row)">
+              <el-button slot="reference" type="danger" size="mini">删除</el-button>
+            </el-popconfirm>
+          </div>
+        </template>
+      </Table>-->
 
-        <!-- 查询 -->
-        <el-col :span="21" class="toolbar">
-          <el-form
-            :inline="true"
-            :model="searchForm"
-            size="small"
-            class="demo-form-inline"
-            style="float: left;"
-          >
-            <el-form-item label="合同单号">
-              <el-input v-model="searchForm.name" placeholder="合同单号" clearable />
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" icon="el-icon-search" @click="loadListData">查询</el-button>
-            </el-form-item>
-          </el-form>
-        </el-col>
-      </el-row>
-
-      <!-- 数据 -->
+      <!-- 表格数据2 -->
       <el-table v-loading="loading" border :data="tableData" style="width: 100%" max-height="690" @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="80" align="center" />
+        <el-table-column type="selection" width="60" align="center" />
         <el-table-column type="index" label="序号" width="80" align="center" />
-        <el-table-column prop="sn" label="保修单号" width="200" align="center" />
+        <el-table-column prop="sn" label="保修单号" align="center" />
         <el-table-column prop="contract.signTime" label="保修开始日期" align="center" />
         <el-table-column prop="endDate" label="保修截止日期" align="center" />
         <el-table-column prop="contract.sn" label="所属合同单号" align="center" />
         <el-table-column prop="contract.customer.name" label="所属客户" align="center" />
         <el-table-column prop="contract.tenant.companyName" label="所属租户" align="center" />
 
-        <el-table-column fixed="right" label="操作" width="150" align="center">
+        <el-table-column label="操作" width="200" align="center">
           <template slot-scope="scope">
             <!-- 查看明细 -->
-            <el-button type="primary" size="small" @click="handleShowEditDialog(scope.row)">编辑</el-button>
+            <el-button type="primary" size="mini" @click="handleShowEditDialog(scope.row)">编辑</el-button>
             <el-popconfirm
               confirm-button-text="确认"
               cancel-button-text="取消"
@@ -74,69 +69,183 @@
               transition
               placement="top"
               @onConfirm="handleRemove(scope.row)"
-            ><el-button slot="reference" type="danger" size="small">删除</el-button>
+            ><el-button slot="reference" type="danger" size="mini">删除</el-button>
             </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination
-        style="float: right;margin: 20px;overflow: hidden"
-        background
-        :current-page="page"
-        :page-sizes="[5,10, 20]"
-        :page-size="pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
 
-      <!-- 新增、编辑 -->
-      <el-dialog title="信息管理" :visible.sync="dialogFormVisible" :close-on-click-modal="false" width="35%">
-        <el-form ref="addForm" :model="addForm" label-width="50px" :rules="rules">
+      <!-- 分页 -->
+      <Page
+        :total="total"
+        :current="page"
+        :page-size="pageSize"
+        :page-size-opts="[5,10,20]"
+        show-elevator
+        show-sizer
+        show-total
+        styles="float: right; margin: 12px; overflow: hidden"
+        @on-change="handleCurrentChange"
+        @on-page-size-change="handleSizeChange"
+      ></Page>
+      <br/>
+      <br/>
+
+      <!-- 新增编辑窗口 -->
+      <el-dialog title="添加信息" :visible.sync="dialogFormVisible" :close-on-click-modal="false" width="35%">
+        <el-form ref="addForm" :model="addForm" :rules="rules">
           <el-form-item v-show="false" prop="id">
             <el-input v-model="addForm.id" />
           </el-form-item>
-          <el-form-item label="名称" prop="name">
-            <el-input v-model="addForm.name" autocomplete="off" />
+          <el-form-item label="保修截止日期" prop="endDate">
+            <el-date-picker
+              v-model="addForm.endDate"
+              type="date"
+              placeholder="保修截止日期"
+              format="yyyy 年 MM 月 dd 日">
+            </el-date-picker>
           </el-form-item>
-          <el-form-item label="sn" prop="sn">
-            <el-input v-model="addForm.sn" autocomplete="off" />
+          <el-form-item label="所属合同单号" prop="contractSn">
+            <el-input v-model="addForm.contract.sn" placeholder="所属合同单号" autocomplete="off" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="submitForm('addForm')">确认提交</el-button>
+            <el-button type="primary" @click="submitForm('addForm')">提交</el-button>
             <el-button @click="resetForm('addForm')">重置</el-button>
           </el-form-item>
         </el-form>
-
       </el-dialog>
-    </el-card>
+    </Card>
   </div>
 </template>
 <script>
 export default {
   data() {
     return {
+      title: '保修单管理',
       page: 1, // 第几页
       pageSize: 5, // 每页条数
-      total: 0,
+      total: 0,//总条数
+      //table【表头】
+      columns1: [
+        {
+          type: 'selection',
+          width: 60,
+          align: 'center'
+        },
+        {
+          type: 'index',
+          title: '编号',
+          width: 80,
+          align: 'center'
+        },
+        {
+          title: '保修单号',
+          key: 'sn',
+          align: 'center'
+        },
+        {
+          title: '到期时间',
+          key: 'endDate',
+          align: 'center'
+        },
+        /*{
+          title: '所属合同',
+          key: "contract.sn",
+          align: 'center'
+        },
+        {
+          title: '所属客户',
+          key: 'contract.customer.name',
+          align: 'center'
+        },
+        {
+          title: '所属租户',
+          key: 'contract.tenant.companyName',
+          align: 'center'
+        },*/
+        {
+          title: '操作',
+          slot: 'action',
+          width: 200,
+          align: 'center',
+          /*render: (h, params) => {
+            return h('div', [
+              h('Button', {
+                props: {
+                  type: 'primary',
+                  size: 'small'
+                },
+                style: {
+                  marginRight: '5px'
+                },
+                on: {
+                  click: () => {
+                    this.handleShowEditDialog(params.row)
+                  }
+                }
+              }, '编辑'),
+              h('Poptip',{
+                props: {
+                  confirm,
+                  title: '你确定要删除这些内容吗？',
+                },
+                on: {
+                  ok: () => {
+                    this.handleBatchRemove()
+                  }
+                }
+              },h('Button', {
+                props: {
+                  type: 'error',
+                  size: 'small'
+                },
+                style: {
+                  marginRight: '5px'
+                },
+                on: {
+                  click: () => {
+                    this.handleRemove(params.row)
+                  }
+                }
+              }, '删除')),
+            ]);
+          }*/
+        }
+      ],
+      //table【数据】
       tableData: [],
-      loading: false,
       row: [],
+      //搜索条件
       searchForm: {
         name: ''
       },
-      dialogFormVisible: false,
+      //添加编辑表单
       addForm: {
         id: '',
-        name: '',
-        sn: ''
+        endDate: '',
+        contract: {
+          id: '',
+          sn: ''
+        },
+        customer: {
+          id: '',
+          name: ''
+        },
+        tenant: {
+          id: '',
+          companyName: ''
+        },
       },
+      //新增编辑框 提示
       rules: {
         name: [
           { required: true, message: '请输入名称', trigger: 'blur' }
         ]
-      }
+      },
+
+      loading: false,//是否显示加载效果
+      dialogFormVisible: false,//添加编辑窗口 是否显示
+      showDateVisible: false
     }
   },
   mounted() {
@@ -145,14 +254,15 @@ export default {
   methods: {
     // 显示添加弹窗
     handleShowAddDialog() {
+      this.showDateVisible = false
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['addForm'].resetFields()/* 清空*/
       })
     },
-    // 编辑显示弹窗
+    //显示编辑弹窗
     handleShowEditDialog(row) {
-      // 数据回显
+      this.showDateVisible = true
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['addForm'].resetFields()/* 清空*/
