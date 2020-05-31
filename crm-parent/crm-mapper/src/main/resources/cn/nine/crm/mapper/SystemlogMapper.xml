@@ -13,6 +13,7 @@
         select *
         from systemlog
         <include refid="base_where"/>
+        order by optime desc
         limit #{start},#{pageSize}
 
     </select>
@@ -28,7 +29,10 @@
     <sql id="base_where">
         <where>
             <if test="keyword != null">
-                and name like CONCAT("%",#{keyword},"%")
+                and opuser =  #{keyword}
+            </if>
+            <if test="time != null">
+               ${time}
             </if>
         </where>
     </sql>

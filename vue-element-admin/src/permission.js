@@ -8,7 +8,7 @@ import getPageTitle from '@/utils/get-page-title'
 import Layout from '@/layout/index'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
-const whiteList = ['/login'] /*白名单*/
+const whiteList = ['/login','/register'] /*白名单*/
 
 
 router.beforeEach(async(to, from, next) => {
@@ -33,7 +33,7 @@ router.beforeEach(async(to, from, next) => {
       } else {
         try {
           // get user info
-          const  logininfo = await store.dispatch('user/getInfo')/*获取登录人的信息*/
+          const logininfo = await store.dispatch('user/getInfo')/*获取登录人的信息*/
           if(logininfo.menus.length>0){
             filterAsyncRouter(logininfo.menus)
             for (let i = 0; i <logininfo.menus.length; i++) {/*侧边栏显示菜单*/

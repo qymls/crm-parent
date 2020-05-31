@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 import java.util.List;
 
-@Transactional(readOnly = true)
+@Transactional/*(readOnly = true)*/
 public class BaseServiceImpl<T, ID extends Serializable, Q> implements IBaseService<T, ID, Q> {
     @Autowired
     private BaseMapper<T, ID, Q> baseMapper;

@@ -31,7 +31,7 @@
         ci.isPayment
 
         from contractitem ci
-        JOIN contract co ON  co.id = ci.contract_id
+        LEFT JOIN contract co ON  co.id = ci.contract_id
 
     </select>
 
@@ -40,14 +40,14 @@
         /*查询 ：合同编号*/
         <where>
             <if test=" keyword !=null ">
-                and co.sn like  CONCAT("%",#{keyword},"%")
+                and sn like  CONCAT("%",#{keyword},"%")
             </if>
         </where>
     </sql>
     <!--查询总条数  <include refid="baseWhere"/>-->
     <select id="selectForCount" resultType="java.lang.Long">
-        SELECT count(id) FROM contractitem
-
+        SELECT count(*) FROM contractitem
+        <include refid="baseWhere"/>
     </select>
     <!--分页查询 <include refid="baseWhere"/> -->
     <select id="selectForPage" resultMap="baseMap">
@@ -63,12 +63,32 @@
         ci.isPayment
 
         from contractitem ci
-        JOIN contract co ON  ci.contract_id = co.id
-
+        LEFT JOIN contract co ON  ci.contract_id = co.id
+        <include refid="baseWhere"/>
         LIMIT #{start} , #{pageSize}
     </select>
     <!--添加-->
-    <insert id="save" parameterType="cn.nine.crm.domain.ContractItem">
+    <insert id="save" parameterType="cn.nine.crm.domain.ContractItem"
+    useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO contractitem
+        (
+        contract_id,
+        payTime,
+        payMoney,
+        scale,
+        isPayment
+        )
+        VALUES
+        (
+        #{contract.id},
+        #{payTime},
+        #{payMoney},
+        #{scale},
+        #{isPayment}
+        )
+
+    </insert>
+    <insert id="saveByContract" parameterType="cn.nine.crm.domain.ContractItem">
         INSERT INTO contractitem
         (
         contract_id,
@@ -86,12 +106,13 @@
         #{scale},
         #{isPayment}
         )
+
     </insert>
     <!--更改-->
     <update id="update" parameterType="cn.nine.crm.domain.ContractItem">
         UPDATE contractitem
         <set>
-            <if test="contract != null and contract.id != null">
+            <if test="contract != null and contract.id != ''">
                 contract_id = #{contract.id},
             </if>
             <if test="payTime != null">

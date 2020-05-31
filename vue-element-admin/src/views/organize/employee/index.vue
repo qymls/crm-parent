@@ -63,7 +63,7 @@
         <el-table-column prop="email" label="邮箱" />
         <el-table-column prop="inputTime" label="录入时间" />
         <el-table-column prop="state" label="状态" :formatter="formatState">
-          <template scope="scope">
+          <template slot-scope="scope">
             <span v-if=" scope.row.state=== 0 " style="color: #2acd33">在职</span>
             <span v-else style="color: red">离职</span>
           </template>
@@ -105,20 +105,30 @@
           <el-form-item v-show="false" prop="id">
             <el-input v-model="addForm.id" />
           </el-form-item>
-          <el-form-item label="用户名" prop="username">
+          <el-form-item  label="用户名" prop="username" minlength="20">
+            <el-col :span="18">
             <el-input v-model="addForm.username" autocomplete="off" />
+            </el-col>
           </el-form-item>
           <el-form-item label="密码" prop="password">
+            <el-col :span="16">
             <el-input v-model="addForm.password" autocomplete="off" />
+            </el-col>
           </el-form-item>
           <el-form-item label="真实姓名" prop="realName">
+            <el-col :span="16">
             <el-input v-model="addForm.realName" autocomplete="off" />
+            </el-col>
           </el-form-item>
           <el-form-item label="邮箱地址" prop="email">
+            <el-col :span="16">
             <el-input v-model="addForm.email" autocomplete="off" />
+            </el-col>
           </el-form-item>
           <el-form-item label="联系方式" prop="tel">
+            <el-col :span="16">
             <el-input v-model="addForm.tel" autocomplete="off" />
+            </el-col>
           </el-form-item>
           <el-form-item label="注册时间" prop="registerTime">
             <el-date-picker

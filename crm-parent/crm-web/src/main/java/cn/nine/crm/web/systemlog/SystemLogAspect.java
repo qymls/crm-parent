@@ -5,6 +5,7 @@ import cn.nine.crm.domain.Employee;
 import cn.nine.crm.domain.Systemlog;
 import cn.nine.crm.service.ISystemlogService;
 import cn.nine.crm.util.LogAnnotations;
+import cn.nine.crm.web.controller.SystemlogController;
 import com.alibaba.fastjson.JSON;
 import org.apache.shiro.SecurityUtils;
 import org.aspectj.lang.JoinPoint;
@@ -105,7 +106,10 @@ public class SystemLogAspect {
 
         sysLog.setResult("success");
         //调用service保存SysLog实体类到数据库
-        systemLogService.save(sysLog);
+        Class clazz = joinPoint.getTarget().getClass();//具体要访问的类
+        if (clazz != SystemlogController.class){/*日志管理不记录*/
+            systemLogService.save(sysLog);
+        }
     }
     /**
      *  发生异常，走此方法
@@ -150,11 +154,12 @@ public class SystemLogAspect {
 
             systemlog.setRequesturi(url);
 
-            String exMsg = e.getCause().toString();
-
+            String exMsg =e.getMessage();
             systemlog.setResult("error: "+ exMsg);
-
-            systemLogService.save(systemlog);
+            Class clazz = joinPoint.getTarget().getClass();//具体要访问的类
+            if (clazz != SystemlogController.class){/*日志管理不记录*/
+                systemLogService.save(systemlog);
+            }
         } catch (Exception e1) {
            e1.printStackTrace();
         }

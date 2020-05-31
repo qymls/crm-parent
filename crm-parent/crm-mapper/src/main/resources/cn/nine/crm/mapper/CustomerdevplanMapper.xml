@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.nine.crm.mapper.CustomerdevplanMapper">
+
+    <resultMap id="result" type="cn.nine.crm.domain.Customerdevplan">
+        <result property="id" column="id"/>
+        <result property="palntime" column="palntime"/>
+        <result property="plansubject" column="plansubject"/>
+        <result property="plandetails" column="plandetails"/>
+        <result property="plantype" column="plantype"/>
+        <result property="inputuser" column="inputuser"/>
+        <result property="inputtime" column="inputtime"/>
+        <association property="customer" column="customer" javaType="cn.nine.crm.domain.Customer"
+                     select="cn.nine.crm.mapper.CustomerMapper.findOne"/>
+        <association property="tenant" column="tenant" javaType="cn.nine.crm.domain.Tenant"
+                     select="cn.nine.crm.mapper.TenantMapper.findOne"/>
+        <association property="inputuser" column="inputuser" javaType="cn.nine.crm.domain.Employee"
+                     select="cn.nine.crm.mapper.EmployeeMapper.findOne"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="result">
+        select
+       <include refid="base_cloumn"/>
+        from customerdevplan
+    </select>
+
+    <select id="selectForPage" parameterType="cn.nine.crm.query.CustomerdevplanQuery"  resultMap="result">
+        select
+        <include refid="base_cloumn"/>
+        from customerdevplan
+        <include refid="base_where"/>
+        limit #{start},#{pageSize}
+
+    </select>
+
+    <select id="selectForCount" resultType="long">
+        select
+        count(*)
+        from customerdevplan
+        <include refid="base_where"/>
+    </select>
+
+    <sql id="base_cloumn">
+        id, palntime, plansubject, plandetails, plantype, customer, inputuser, inputtime, tenant
+    </sql>
+    <!--抽取where-->
+    <sql id="base_where">
+        <where>
+            <if test="keyword != null">
+                and planSubject like CONCAT("%",#{keyword},"%")
+            </if>
+        </where>
+    </sql>
+
+    <select id="findOne" parameterType="long"  resultMap="result">
+        select
+        <include refid="base_cloumn"/>
+        from customerdevplan  where id = #{id}
+    </select>
+
+
+    <insert id="save" parameterType="cn.nine.crm.domain.Customerdevplan"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into customerdevplan
+        (palntime, plansubject, plandetails, plantype, customer, inputuser, inputtime, tenant)
+        values
+        (#{palntime},#{plansubject},#{plandetails},#{plantype},#{customer.id},#{inputuser.id},#{inputtime},#{tenant.id})
+    </insert>
+
+    <update id="update" parameterType="cn.nine.crm.domain.Customerdevplan">
+        update customerdevplan
+        set
+        palntime = #{palntime},
+        plansubject = #{plansubject},
+        plandetails = #{plandetails},
+        plantype = #{plantype},
+        customer = #{customer.id},
+        tenant = #{tenant.id}
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        delete from customerdevplan where id = #{id}
+    </delete>
+
+    <delete id="batchDelete">
+        <!--open最前面的字符,close在最后的字符separator分隔符,每次循环使用什么分隔-->
+        delete from customerdevplan where id in
+        <foreach collection="list" open="(" item="id" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+
+</mapper>

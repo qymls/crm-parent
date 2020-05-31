@@ -33,7 +33,7 @@
           o.id as o_id,
           o.sn,
 
-          cu.id as c_id,
+          cu.id as cu_id,
           cu.name,
 
           o.signTime,
@@ -48,26 +48,33 @@
           t.companyName
 
         from orders o
-            JOIN customer cu ON  o.customer_id = cu.id
-            JOIN employee e ON o.seller_id = e.id
-            JOIN tenant t ON o.tenant_id = t.id
+            LEFT JOIN customer cu ON  o.customer_id = cu.id
+            LEFT JOIN employee e ON o.seller_id = e.id
+            LEFT JOIN tenant t ON o.tenant_id = t.id
     </select>
 
     <!--抽取sql 查询-->
     <sql id="baseWhere">
-        /*查询 ：客户姓名 营销人员姓名 后期补充：查询签订时间*/
+        /*查询 ：客户姓名 营销人员姓名*/
         <where>
             <if test=" keyword !=null ">
-              and (cu.name like  CONCAT("%",#{keyword},"%") OR e.name like CONCAT("%",#{keyword},"%"))
+              and cu.name like  CONCAT("%",#{keyword},"%"
+            </if>
+            <if test=" keyword !=null ">
+                AND e.username like CONCAT("%",#{keyword},"%")
             </if>
         </where>
     </sql>
     <!--查询总条数 <include refid="baseWhere"/>-->
     <select id="selectForCount" resultType="java.lang.Long">
-        SELECT count(*) FROM orders
-
+        SELECT count(o.id)
+        from orders o
+        LEFT JOIN customer cu ON  o.customer_id = cu.id
+        LEFT JOIN employee e ON o.seller_id = e.id
+        LEFT JOIN tenant t ON o.tenant_id = t.id
+        <include refid="baseWhere"/>
     </select>
-    <!--分页查询 <include refid="baseWhere"/>-->
+    <!--分页查询 -->
     <select id="selectForPage" resultMap="baseMap">
         select
             o.id as o_id,
@@ -87,10 +94,10 @@
             t.id as t_id,
             t.companyName
         from orders o
-            JOIN customer cu ON  o.customer_id = cu.id
-            JOIN employee e ON o.seller_id = e.id
-            JOIN tenant t ON o.tenant_id = t.id
-
+        LEFT JOIN customer cu ON  o.customer_id = cu.id
+        LEFT JOIN employee e ON o.seller_id = e.id
+        LEFT JOIN tenant t ON o.tenant_id = t.id
+        <include refid="baseWhere"/>
           LIMIT #{start} , #{pageSize}
     </select>
     <!--添加-->
@@ -124,13 +131,13 @@
             <if test="sn != null">
                 sn = #{sn},
             </if>
-            <if test="customer != null and customer.id != null">
+            <if test="customer != null and customer.id != ''">
                 customer_id = #{customer.id},
             </if>
             <if test="signTime != null">
                 signTime = #{signTime},
             </if>
-            <if test="seller != null and seller.id != null">
+            <if test="seller != null and seller.id != ''">
                 seller_id = #{seller.id},
             </if>
             <if test="amount != null">
@@ -139,7 +146,7 @@
             <if test="intro != null">
                 intro = #{intro},
             </if>
-            <if test="tenant != null and tenant.id != null ">
+            <if test="tenant != null and tenant.id != '' ">
                 tenant_id = #{tenant.id}
             </if>
         </set>

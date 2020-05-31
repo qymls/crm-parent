@@ -21,12 +21,11 @@
         <!--查询操作展示列-->
         <Col span="21">
           <Form ref="searchForm" :model="searchForm" inline style="margin-left: 20px;" @submit.native.prevent>
-            <!-- -->
-            <FormItem prop="name">
-              <Input v-model="searchForm.contract.sn" type="text" clearable style="cursor: pointer" placeholder="请输入查找的名称" @on-enter="click_enter">
+            <!-- 所属合同编号-->
+            <FormItem prop="sn">
+              <Input v-model="searchForm.contract.sn" type="text" clearable style="cursor: pointer" placeholder="请输入查找合同编号" @on-enter="click_enter">
               </Input>
             </FormItem>
-
             <FormItem>
               <Button type="info" icon="ios-search" @click="loadListData">查找</Button>
             </FormItem>
@@ -34,11 +33,14 @@
         </Col>
 
       </Row>
-
-      <Row justify="center" align="middle">
+      <!--列表-->
+      <Row justify="center" align="middle" >
         <div style="margin-top:20px">
-          <Table border :loading="loading" :columns="columns" :data="tableData" max-height="690"
-                 @on-selection-change="handleSelectionChange">
+          <Table border :loading="loading" :columns="columns" :data="tableData"
+                 height="350"
+                 @on-selection-change="handleSelectionChange"
+                 :default-sort = "{key: 'payTime', order: 'descending'}">
+
             <template slot-scope="{ row, index }" slot="action">
               <Button type="primary" size="small" style="margin-right: 5px"
                       @click="handleShowEditDialog(row)">编辑</Button>
@@ -73,7 +75,7 @@
             />
           </div>
         </div>
-        <Modal v-model="dialogFormVisible" title="添加信息" class-name="vertical-center-modal" footer-hide draggable
+        <Modal v-model="dialogFormVisible" title="合同明细管理" class-name="vertical-center-modal" footer-hide draggable
                :styles="{top: '200px'}">
           <Form ref="addForm" :model="addForm" :rules="rules" :label-width="80">
             <!--id 值隐藏-->
@@ -98,14 +100,10 @@
               <Input v-model="addForm.scale" placeholder="请输入所占比例(%)"></Input>
             </FormItem>
             <FormItem label="是否支付" prop="isPayment" :formatter = "formatterPay">
-              <el-select v-model="addForm.isPayment" placeholder="请选择">
-                <el-option
-                  v-for="item in options"
-                  :key="item.isPayment"
-                  :label="item.label"
-                  :value="item.isPayment">
-                </el-option>
-              </el-select>
+              <el-radio-group v-model="addForm.isPayment">
+                <el-radio :label="0">未支付</el-radio>
+                <el-radio :label="1">已支付</el-radio>
+              </el-radio-group>
             </FormItem>
             <FormItem>
               <Button type="primary" @click="submitForm('addForm')">确认</Button>
@@ -119,11 +117,13 @@
   </div>
 </template>
 <script>
+  import ElRadioGroup from "element-ui/packages/radio/src/radio-group";
   export default {
+    components: {ElRadioGroup},
     data() {
       return {
         page: 1, // 第几页
-        pageSize: 5, // 每页条数
+        pageSize: 10, // 每页条数
         total: 0,
         tableData: [],
         loading: false,
@@ -155,25 +155,24 @@
           }]
         },
         payTime:'',//付款时间测试
-        /*是否支付下拉框*/
-        options: [{
-          value: '0',
-          label: '未支付'
-        }, {
-          value: '1',
-          label: '已支付'
-        }],
+
         isPayment: '',
         //查询
         searchForm: {
           contract:{
+            id:'',
             sn:''
           },
+        },
+        contract:{
+          id:'',
+          sn:''
         },
         dialogFormVisible: false,
         addForm: {
           id: '',
           contract:{
+            id:'',
             sn:''
           },
           payTime:'',
@@ -185,7 +184,7 @@
           {
             type: 'selection',
             width: 60,
-            align: 'center'
+            align: 'center',
           },
           {
             title: '序号',
@@ -195,25 +194,26 @@
           },
           {
             title: '合同编号',
-            width: 100,
+            width: 250,
             align: 'center',
-            slot: 'contract'
+            slot: 'contract',
           },
           {
             title: '付款时间',
-            width: 120,
+            width: 250,
             align: 'center',
-            key: 'payTime'
+            key: 'payTime',
+            sortable:'true'
           },
           {
             title: '所占比例(%)',
-            width: 120,
+            width: 200,
             align: 'center',
             key: 'scale'
           },
           {
             title: '是否支付',
-            width: 100,
+            width: 120,
             align: 'center',
             key: 'isPayment'
           },
@@ -221,24 +221,24 @@
             title: '操作',
             slot: 'action',
             align: 'center',
-            width: 150
+            width: 190
           }
         ],
         /*添加规则*/
-        rules: {
-          sn: [
-            { required: true, message: '请输入合同编号', trigger: 'blur' }
-          ],
-          // payTime: [
-          //   { required: true, message: '请选择支付时间', trigger: 'blur' }
-          // ],
-          scale: [
-            { required: true, message: '请输入所占比例(%)', trigger: 'blur' }
-          ],
-          // isPayment: [
-          //   { required: true, message: '请选择是否支付', trigger: 'blur' }
-          // ]
-        }
+        // rules: {
+        //   sn: [
+        //     { required: false, message: '请输入合同编号', trigger: 'blur' }
+        //   ],
+        //   // payTime: [
+        //   //   { required: true, message: '请选择支付时间', trigger: 'blur' }
+        //   // ],
+        //   scale: [
+        //     { required: true, message: '请输入所占比例(%)', trigger: 'blur' }
+        //   ],
+        //   // isPayment: [
+        //   //   { required: true, message: '请选择是否支付', trigger: 'blur' }
+        //   // ]
+        // }
       }
     },
     mounted() {
@@ -249,28 +249,27 @@
       this.loadListData()
     },
     methods: {
-      /*是否支付*/
-      formatterPay(row,colum){
-        if (row.isPayment == 0){
-          return "未支付";
-        }
-        if(row.isPayment == 1){
-          return "已支付";
-        }
-
+      // 格式化支付状态
+      formatterPay: function(row, column) {
+        return row.isPayment == 0 ? '未支付' : '已支付'
       },
       click_enter() { /* 键盘事件,调用查找方法*/
         this.loadListData()
       },
       // 显示添加弹窗
       handleShowAddDialog() {
-        this.dialogFormVisible = true
+        // 清空表单
+        this.dialogFormVisible = true;
+        //重置数据
+        // this.addForm.isPayment = 0;
         this.$refs['addForm'].resetFields()/* 清空*/
       },
       // 编辑显示弹窗
       handleShowEditDialog(row) {
         // 数据回显
         this.dialogFormVisible = true
+        //回显状态
+        this.addForm.isPayment = row.isPayment;
         this.$refs['addForm'].resetFields()/* 清空*/
         this.addForm = Object.assign({}, row)/* 复制*/
       },
@@ -303,8 +302,10 @@
         })
       },
       resetForm(formName) { /* 重置*/
-        var refs = this.$refs
-        refs[formName].resetFields()/* 清空*/
+        this.$nextTick(() => {
+          var refs = this.$refs
+          refs[formName].resetFields()/* 清空*/
+        })
       },
       handleSelectionChange(selection) {
         this.row = selection
@@ -373,12 +374,16 @@
         this.page = val
         this.loadListData()
       },
-      /*查询事件*/
+      /*列表*/
       loadListData() {
         var http = this.$http
         var Message = this.$Message
         this.loading = true
         // vue加载完成，发送ajax请求动态获取数据
+        this.$http.get("/contract/findByContractitemId").then(res=>{
+          // console.debug(res.data.data)
+          this.contract.sn = res.data.data.sn;
+        })
         const param = {
           'currentPage': this.page,
           'pageSize': this.pageSize,

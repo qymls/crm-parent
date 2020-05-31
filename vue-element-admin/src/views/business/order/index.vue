@@ -15,18 +15,43 @@
             title="您确认删除这些信息吗?"
             @on-ok="handleBatchRemove"
           >
-            <Button v-if="row.length>0" type="error" icon="ios-trash">删除</Button>
+            <Button v-if="row.length>0" type="error" icon="ios-trash">批量删除</Button>
           </Poptip>
         </Col>
+        <!--查询工具条-->
         <Col span="21">
-          <Form ref="searchForm" :model="searchForm" inline style="margin-left: 20px;" @submit.native.prevent>
+          <Form ref="searchForm" :model="searchForm" inline style="margin-left: 20px;" @submit.native.prevent class="demo-form-inline">
+            <!--客户姓名查询-->
             <FormItem prop="name">
-              <Input v-model="searchForm.customer.name" type="text" clearable
-                     style="cursor: pointer" placeholder="请输入查找的客户姓名"
-                     @on-enter="click_enter">
-              </Input>
+              <el-select v-model="searchForm.customer.id" filterable placeholder="请选择需要查询的客户姓名">
+                <el-option
+                  v-for="item in customers"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <!--<Input v-model="searchForm.customer.name" type="text" clearable-->
+                     <!--style="cursor: pointer" placeholder="请输入查找的客户姓名"-->
+                     <!--@on-enter="click_enter">-->
+              <!--</Input>-->
             </FormItem>
-
+            <!--营销人员查询-->
+            <FormItem prop="username">
+              <!--营销人员姓名搜索选择下拉框-->
+              <el-select v-model="searchForm.seller.id" filterable placeholder="请选择需要查询的营销人员姓名"  >
+                <el-option
+                  v-for="item in sellers"
+                  :key="item.id"
+                  :label="item.username"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+             <!--<Input v-model="searchForm.seller.username" type="text" clearable-->
+                     <!--style="cursor: pointer" placeholder="请输入查找的营销人员姓名"-->
+                     <!--@on-enter="click_enter">-->
+              <!--</Input>-->
+            </FormItem >
             <FormItem>
               <Button type="info" icon="ios-search" @click="loadListData">查找</Button>
             </FormItem>
@@ -34,11 +59,14 @@
         </Col>
 
       </Row>
-      <!--列表-->
+      <!--列表  max-height="690"-->
       <Row justify="center" align="middle">
         <div style="margin-top:20px">
-          <Table border :loading="loading" :columns="columns" :data="tableData" max-height="690"
-                 @on-selection-change="handleSelectionChange">
+          <Table border :loading="loading" :columns="columns" :data="tableData"
+                 @on-selection-change="handleSelectionChange"
+                 height="350"
+                 :default-sort = "{key: 'signTime', order: 'descending'}"
+              >
             <template slot-scope="{ row, index }" slot="action">
               <Button type="primary" size="small" style="margin-right: 5px" @click="handleShowEditDialog(row)">编辑
               </Button>
@@ -80,24 +108,23 @@
             />
           </div>
         </div>
-        <!--弹出框-->
-        <Modal v-model="dialogFormVisible" title="添加信息" class-name="vertical-center-modal" footer-hide draggable
+        <!--添加/编辑弹出框-->
+        <Modal v-model="dialogFormVisible" title="订单管理" class-name="vertical-center-modal" footer-hide draggable
                :styles="{top: '200px'}">
           <Form ref="addForm" :model="addForm" :rules="rules" :label-width="80">
             <FormItem v-show="false" prop="id">
               <Input v-model="addForm.id" type="text"></Input>
             </FormItem>
             <FormItem label="客户姓名" prop="name">
-              <!--增添客户姓名带搜索下拉框-->
-              <el-select v-model="addForm.customer.name" filterable placeholder="请选择">
+              <!--增添客户姓名带搜索下拉框 配置搜索方法 dataFilter-->
+              <el-select v-model="addForm.customer.id" filterable placeholder="请选择客户姓名">
                 <el-option
-                  v-for="item in options"
-                  :key="item.addForm.customer.name"
-                  :label="item.label"
-                  :value="item.addForm.customer.name">
+                  v-for="item in customers"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
                 </el-option>
               </el-select>
-              <Input v-model="addForm.customer.name" placeholder="请选择客户姓名"></Input>
             </FormItem>
             <FormItem label="签定时间" prop="signTime">
               <div class="block" >
@@ -111,13 +138,33 @@
               </div>
             </FormItem>
             <FormItem label="营销人员" prop="username">
-              <Input v-model="addForm.seller.username" placeholder="请输入营销人员姓名"></Input>
+              <!--营销人员姓名搜索选择下拉框-->
+              <el-select v-model="addForm.seller.id" filterable placeholder="请选择营销人员姓名" >
+                <el-option
+                  v-for="item in sellers"
+                  :key="item.id"
+                  :label="item.username"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <!--<Input v-model="addForm.seller.username" placeholder="请输入营销人员姓名"></Input>-->
             </FormItem>
             <FormItem label="订金金额" prop="amount">
               <Input v-model="addForm.amount" placeholder="请输入订金金额"></Input>
             </FormItem>
             <FormItem label="摘要" prop="intro">
               <Input v-model="addForm.intro" placeholder="请输入摘要"></Input>
+            </FormItem>
+            <FormItem label="所属公司" prop="companyName">
+              <el-select v-model="addForm.tenant.id" filterable placeholder=""  >
+                <el-option
+                  v-for="item in tenants"
+                  :key="item.id"
+                  :label="item.companyName"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <!--<Input v-model="addForm.tenant.id" placeholder="请选择所属公司"></Input>-->
             </FormItem>
 
             <FormItem>
@@ -132,18 +179,32 @@
   </div>
 </template>
 <script>
+  import ElRadioGroup from "element-ui/packages/radio/src/radio-group";
   export default {
+    components: {ElRadioGroup},
     data() {
       return {
         page: 1, // 第几页
-        pageSize: 5, // 每页条数
+        pageSize: 10, // 每页条数
         total: 0,
         tableData: [],
         loading: false,
         row: [],
-        /*客户姓名选择*/
-        options: [],
-        value: '',
+        customers:[{id:''}],
+        sellers:[{id:''}],
+        tenants:[{id:''}],
+        customer: {
+          id:'',
+          name:''
+        },
+        seller:{
+          id:'',
+          username:''
+        },
+        tenant:{
+          id:'',
+          companyName:''
+        },
         //时间选择
         pickerOptions: {
           disabledDate(time) {
@@ -173,34 +234,54 @@
         signTime:'',//签订时间测试
         searchForm: {
           customer:{
+            id:'',
             name: ''
-          }
+          },
+          seller:{
+            id:'',
+            username:''
+          },
+          signTime:''
         },
         dialogFormVisible: false,
 
         addForm: {
           id: '',
           customer:{
+            id:"",
             name: '',
           },
           signTime:'',
           seller:{
+            id:'',
             username:''
           },
           amount:'',
-          intro: ''
+          intro: '',
+          tenant:{
+            id:'',
+            companyName:''
+          }
+
         },
         columns: [
           {
             type: 'selection',
             width: 60,
-            align: 'center'
+            align: 'center',
+
           },
           {
             title: '序号',
             type: 'index',
-            width: 100,
-            align: 'center'
+            width: 80,
+            align: 'center',
+          },
+          {
+            title: '订单编号',
+            width: 120,
+            align: 'center',
+            key: 'sn',
           },
           {
             title: '客户姓名',
@@ -210,9 +291,10 @@
           },
           {
             title: '签订时间',
-            width: 120,
+            width: 180,
             align: 'center',
-            key: 'signTime'
+            key: 'signTime',
+            sortable:'true'
           },
           {
             title: '营销人员',
@@ -243,7 +325,7 @@
             title: '操作',
             slot: 'action',
             align: 'center',
-            width: 150
+            width: 180
           }
         ],
         rules: {
@@ -262,6 +344,7 @@
           intro: [
             { required: true, message: '请输入订单摘要', trigger: 'change' }
           ],
+
         }
       }
     },
@@ -278,15 +361,19 @@
       },
       // 显示添加弹窗
       handleShowAddDialog() {
-        this.dialogFormVisible = true
-        this.$refs['addForm'].resetFields()/* 清空*/
+        // 清空表单
+        this.addForm.customer.id = "";
+        this.addForm.seller.id = "";
+        this.addForm.tenant.id = '';
+        this.dialogFormVisible = true;
+        this.$refs['addForm'].resetFields()
       },
       // 编辑显示弹窗
       handleShowEditDialog(row) {
         // 数据回显
         this.dialogFormVisible = true
         this.$refs['addForm'].resetFields()/* 清空*/
-        this.addForm = Object.assign({}, row)/* 复制*/
+        this.addForm = Object.assign({}, row)/* 赋值*/
       },
 
       submitForm(formName) { /* 确认保存*/
@@ -302,6 +389,9 @@
           if (valid) {
             http.post(url, param).then(res => {
               if (res.data.success) {
+                this.customers = res.data.data;
+                this.sellers = res.data.data;
+                this.tenants = res.data.data;
                 this.dialogFormVisible = false
                 this.loadListData()
                 Message.success(res.data.message)
@@ -317,8 +407,10 @@
         })
       },
       resetForm(formName) { /* 重置*/
-        var refs = this.$refs
-        refs[formName].resetFields()/* 清空*/
+        this.$nextTick(() => {
+          var refs = this.$refs
+          refs[formName].resetFields()/* 清空*/
+        })
       },
       handleSelectionChange(selection) {
         this.row = selection
@@ -386,25 +478,20 @@
         this.loadListData()
       },
       loadListData() {
+        this.$http.get("/customer/findAll").then(res=>{
+          // console.debug(res.data.data)
+          this.customers = res.data.data;
+        })
+        this.$http.get("/employee/findAll").then(res=>{
+          // console.debug(res.data.data)
+          this.sellers = res.data.data;
+        })
+        this.$http.get("/tenant/findAll").then(res=>{
+          this.tenants = res.data.data;
+          })
         var http = this.$http
         var Message = this.$Message
         this.loading = true
-        //获取客户姓名的下拉框
-        var paramName = {
-          "customer":this.addForm.customer
-        }
-        http.get("/order/findAll" ,paramName).then(res=>{
-          if (res.data.success) {
-            this.options = res.data.data.list
-            this.addForm.customer.name = res.data.data.customer.name
-            this.loading = false
-
-          }else {
-            Message.error('查询失败[' + res.data.message + ']')
-          }
-          }).catch(error => {
-            Message.error('查询失败[' + error.message + ']')
-        })
         // vue加载完成，发送ajax请求动态获取数据
         //分页
         const param = {
@@ -414,6 +501,7 @@
         }
         http.post('/order/selectForPage', param).then(res => {
           if (res.data.success) {
+
             this.tableData = res.data.data.list
             this.total = res.data.data.totalRows
             this.page = res.data.data.currentPage

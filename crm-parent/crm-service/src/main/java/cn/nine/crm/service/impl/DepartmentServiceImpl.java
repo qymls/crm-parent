@@ -1,6 +1,7 @@
 package cn.nine.crm.service.impl;
 
 
+import cn.nine.crm.domain.Employee;
 import cn.nine.crm.query.DepartmentQuery;
 import cn.nine.crm.service.IDepartmentService;
 import cn.nine.crm.domain.Department;
@@ -23,8 +24,14 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department,Long, Depa
 
     @Override
     public List<Department> findTreeData() {
+
         List<Department> treeData = departmentMapper.findTreeData();
 
         return treeData;
+    }
+
+    @Override
+    public List<Employee> getManagerByDepartMentName(String name) {
+        return departmentMapper.getManagerByDepartMentName(name);
     }
 }

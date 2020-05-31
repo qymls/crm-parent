@@ -15,28 +15,70 @@
             title="您确认删除这些信息吗?"
             @on-ok="handleBatchRemove"
           >
-            <Button v-if="row.length>0" type="error" icon="ios-trash">删除</Button>
+            <Button v-if="row.length>0" type="error" icon="ios-trash">批量删除</Button>
           </Poptip>
         </Col>
-        <Col span="21">
-          <Form ref="searchForm" :model="searchForm" inline style="margin-left: 20px;" @submit.native.prevent>
+        <Col span="21" class="toolbar">
+          <Form ref="searchForm" :model="searchForm"
+                inline
+                style="margin-left: 20px;"
+                @submit.native.prevent
+                class="demo-form-inline">
+            <!--客户姓名查询-->
             <FormItem prop="name">
-              <Input v-model="searchForm.customer.name" type="text" clearable style="cursor: pointer" placeholder="请输入查找的名称" @on-enter="click_enter">
-              </Input>
+              <el-select v-model="searchForm.customer.id" filterable placeholder="请选择需要查询的客户姓名">
+                <el-option
+                  v-for="item in customers"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <!--<Input v-model="searchForm.customer.name"  clearable-->
+                     <!--style="cursor: pointer" placeholder="请输入查找的客户姓名"-->
+                      <!--/>&lt;!&ndash;@on-enter="click_enter"&ndash;&gt;-->
             </FormItem>
-
+            <!--营销人员查询-->
+            <FormItem prop="username">
+              <!--营销人员姓名搜索选择下拉框-->
+              <el-select v-model="searchForm.seller.id" filterable placeholder="请选择需要查询的营销人员姓名"  >
+                <el-option
+                  v-for="item in sellers"
+                  :key="item.id"
+                  :label="item.username"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </FormItem >
             <FormItem>
               <Button type="info" icon="ios-search" @click="loadListData">查找</Button>
             </FormItem>
           </Form>
         </Col>
-
       </Row>
-
+      <!--列表 max-height="690"-->
       <Row justify="center" align="middle">
         <div style="margin-top:20px">
-          <Table border :loading="loading" :columns="columns" :data="tableData" max-height="690"
-                 @on-selection-change="handleSelectionChange">
+          <Table border :loading="loading" :columns="columns"
+                 :data="tableData"  height="350"
+                 @on-selection-change="handleSelectionChange"
+                 :default-sort = "{key: 'signTime', order: 'descending'}">
+              <!--合同明细 按钮 -->
+              <template slot-scope="{ row, index }" slot="detail">
+                <el-button type="success" size="small" plain @click="dialogDetailVisible = true">明细</el-button>
+                <el-dialog
+                  title="明细单"
+                  :visible.sync="dialogDetailVisible"
+                  width="30%">
+                    <span>
+
+                    </span>
+                  <span slot="footer" class="dialog-footer">
+                  <el-button type="primary" @click="dialogDetailVisible = false">确 定</el-button>
+                  </span>
+                </el-dialog>
+              </template>
+
             <template slot-scope="{ row, index }" slot="action">
               <Button type="primary" size="small" style="margin-right: 5px" @click="handleShowEditDialog(row)">编辑
               </Button>
@@ -78,14 +120,25 @@
             />
           </div>
         </div>
-        <Modal v-model="dialogFormVisible" title="添加信息" class-name="vertical-center-modal" footer-hide draggable
+        <Modal v-model="dialogFormVisible" title="合同管理" class-name="vertical-center-modal" footer-hide draggable
                :styles="{top: '200px'}">
           <Form ref="addForm" :model="addForm" :rules="rules" :label-width="80">
             <FormItem v-show="false" prop="id">
               <Input v-model="addForm.id" type="text"></Input>
             </FormItem>
             <FormItem label="客户姓名" prop="name">
-              <Input v-model="addForm.name" placeholder="请输入客户姓名"></Input>
+              <!--增添客户姓名带搜索下拉框 配置搜索方法 dataFilter
+              v-model="addForm.customer.id 其值是提交到表单的最终字段 在这里需要提交的是客户的id
+              -->
+              <el-select v-model="addForm.customer.id" filterable placeholder="请选择客户姓名"  >
+                <el-option
+                  v-for="item in customers"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+
             </FormItem>
             <FormItem label="签定时间" prop="signTime">
               <div class="block" >
@@ -99,13 +152,32 @@
               </div>
             </FormItem>
             <FormItem label="营销人员" prop="username">
-              <Input v-model="addForm.seller.username" placeholder="请输入营销人员姓名"></Input>
+              <!--营销人员姓名搜索选择下拉框-->
+              <el-select v-model="addForm.seller.id" filterable placeholder="请选择营销人员姓名"  >
+                <el-option
+                  v-for="item in sellers"
+                  :key="item.id"
+                  :label="item.username"
+                  :value="item.id">
+                </el-option>
+              </el-select>
             </FormItem>
             <FormItem label="合同金额" prop="totalAmount">
               <Input v-model="addForm.totalAmount" placeholder="请输入合同总金额"></Input>
             </FormItem>
             <FormItem label="摘要" prop="intro">
               <Input v-model="addForm.intro" placeholder="请输入摘要"></Input>
+            </FormItem>
+            <FormItem label="所属公司" prop="companyName">
+              <!--所属公司搜索选择下拉框-->
+              <el-select v-model="addForm.tenant.id" filterable placeholder="请选择所属公司名称"  >
+                <el-option
+                  v-for="item in tenants"
+                  :key="item.id"
+                  :label="item.companyName"
+                  :value="item.id">
+                </el-option>
+              </el-select>
             </FormItem>
             <FormItem>
               <Button type="primary" @click="submitForm('addForm')">确认</Button>
@@ -119,15 +191,38 @@
   </div>
 </template>
 <script>
+  import ElRadioGroup from "element-ui/packages/radio/src/radio-group";
   export default {
+    components: {ElRadioGroup},
     data() {
       return {
         page: 1, // 第几页
-        pageSize: 5, // 每页条数
+        pageSize: 10, // 每页条数
         total: 0,
         tableData: [],
         loading: false,
         row: [],
+        customers:[{
+          id:''
+        }],
+        sellers:[{
+          id:''
+        }],
+        tenants:[{
+          id:''
+        }],
+        customer: {
+          id:'',
+          name:''
+        },
+        seller:{
+          id:'',
+          username:''
+        },
+        tenant:{
+          id:'',
+          companyName:''
+        },
         //时间选择
         pickerOptions: {
           disabledDate(time) {
@@ -154,30 +249,48 @@
             }
           }]
         },
-        signTime:'',//签订时间测试
+        signTime:'',
         searchForm: {
-          customer:{name: ''},
+          customer:{id:'',name: ''},
+          seller:{id:'',username:''}
         },
         dialogFormVisible: false,
+        dialogDetailVisible :false,
         addForm: {
           id: '',
-          customer:{name: ''},
-          seller:{username:''},
+          customer:{
+            id:'',
+            name: ''
+          },
+          seller:{
+            id:'',
+            username:''
+          },
           intro: '',
           signTime:'',
-          totalAmount:''
+          totalAmount:'',
+          tenant:{
+            id:'',
+            companyName:''
+          }
         },
         columns: [
           {
             type: 'selection',
             width: 60,
-            align: 'center'
+            align: 'center',
           },
           {
             title: '序号',
             type: 'index',
-            width: 100,
+            width: 90,
             align: 'center'
+          },
+          {
+            title: '合同编号',
+            width: 100,
+            align: 'center',
+            key: 'sn',
           },
           {
             title: '客户姓名',
@@ -189,7 +302,8 @@
             title: '签订时间',
             width: 120,
             align: 'center',
-            key: 'signTime'
+            key: 'signTime',
+            sortable:'true'
           },
           {
             title: '营销人员',
@@ -213,7 +327,7 @@
             title: '合同明细',
             width: 100,
             align: 'center',
-            key: 'intro'
+            slot: 'detail',
           },
           {
             title: '所属公司',
@@ -230,20 +344,24 @@
         ],
         rules: {
           // name: [
-          //   { required: true, message: '请输入客户姓名', trigger: 'blur' }
+          //   { required: false, message: '请输入客户姓名', trigger: 'blur' }
           // ],
           // signTime: [
-          //   { required: true, message: '请选择签订时间', trigger: 'blur' }
+          //   { required: false, message: '请选择签订时间', trigger: 'blur' }
           // ],
           // username: [
-          //   { required: true, message: '请输入营销人员姓名', trigger: 'blur' }
+          //   { required: false, message: '请选择营销人员姓名', trigger: 'blur' }
           // ],
-          totalAmount: [
-            { required: true, message: '请输入合同金额', trigger: 'blur' }
-          ],
+          // totalAmount: [
+          //   { required: true, message: '请输入合同金额', trigger: 'blur' }
+          // ],
           // intro: [
-          //   { required: true, message: '请输入合同摘要', trigger: 'blur' }
-          // ]
+          //   { required: false, message: '请输入合同摘要', trigger: 'blur' }
+          // ],
+          // companyName: [
+          //   { required: false, message: '请输入合同摘要', trigger: 'blur' }
+          // ],
+
         }
       }
     },
@@ -255,11 +373,16 @@
       this.loadListData()
     },
     methods: {
-      click_enter() { /* 键盘事件,调用查找方法*/
-        this.loadListData()
-      },
+
+      // click_enter() { /* 键盘事件,调用查找方法*/
+      //   this.loadListData()
+      // },
       // 显示添加弹窗
       handleShowAddDialog() {
+        //清空数据
+        this.addForm.customer.id = "";
+        this.addForm.seller.id = "";
+        this.addForm.tenant.id = "";
         this.dialogFormVisible = true
         this.$refs['addForm'].resetFields()/* 清空*/
       },
@@ -267,6 +390,8 @@
       handleShowEditDialog(row) {
         // 数据回显
         this.dialogFormVisible = true
+        //回显状态
+        this.addForm.customer.name = row.customer.name;
         this.$refs['addForm'].resetFields()/* 清空*/
         this.addForm = Object.assign({}, row)/* 复制*/
       },
@@ -284,6 +409,10 @@
           if (valid) {
             http.post(url, param).then(res => {
               if (res.data.success) {
+                //赋值
+                this.customers = res.data.data;
+                this.sellers = res.data.data;
+                this.tenants = res.data.data;
                 this.dialogFormVisible = false
                 this.loadListData()
                 Message.success(res.data.message)
@@ -299,8 +428,10 @@
         })
       },
       resetForm(formName) { /* 重置*/
-        var refs = this.$refs
-        refs[formName].resetFields()/* 清空*/
+        this.$nextTick(() => {
+          var refs = this.$refs
+          refs[formName].resetFields()/* 清空*/
+        })
       },
       handleSelectionChange(selection) {
         this.row = selection
@@ -368,6 +499,19 @@
         this.loadListData()
       },
       loadListData() {
+        //发送ajax请求动态获取数据
+        this.$http.get("/customer/findAll").then(res=>{
+          // console.debug(res.data.data)
+          this.customers = res.data.data;
+        })
+        this.$http.get("/employee/findAll").then(res=>{
+          // console.debug(res.data.data)
+          this.sellers = res.data.data;
+        })
+        this.$http.get("/tenant/findAll").then(res=>{
+          // console.debug(res.data.data)
+          this.tenants = res.data.data;
+        })
         var http = this.$http
         var Message = this.$Message
         this.loading = true
