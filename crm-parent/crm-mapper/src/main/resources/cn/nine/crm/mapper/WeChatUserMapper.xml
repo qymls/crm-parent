@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.nine.crm.mapper.WeChatUserMapper">
+
+    <insert id="insert" parameterType="cn.nine.crm.domain.WeChatUser">
+        insert into wechatuser
+        (openid, nickname, sex, province, city, country, headimgurl, privilege, unionid,emp_id)
+        values
+        (#{openid}, #{nickname}, #{sex}, #{province}, #{city}, #{country}, #{headimgurl}, #{privilege}, #{unionid},#{empId})
+
+    </insert>
+    <update id="update" parameterType="cn.nine.crm.domain.WeChatUser">
+        update wechatuser set
+            openid = #{openid},
+            nickname = #{nickname},
+            sex = #{sex},
+            province = #{province},
+            city = #{city},
+            country = #{country},
+            headimgurl = #{headimgurl},
+            privilege = #{privilege},
+            unionid = #{unionid},
+            emp_id = #{empId}
+        where id = #{id}
+    </update>
+
+    <select id="selectByOpenId" parameterType="string" resultType="cn.nine.crm.domain.WeChatUser">
+        select * from wechatuser where openid = #{openId}
+    </select>
+
+</mapper>

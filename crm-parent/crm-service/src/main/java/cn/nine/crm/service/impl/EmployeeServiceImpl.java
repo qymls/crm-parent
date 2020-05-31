@@ -28,6 +28,11 @@ public class EmployeeServiceImpl extends BaseServiceImpl<Employee,Long,EmployeeQ
         return employeeMapper.findEmployeeByDepartmentName(departmentName);
     }
 
+    @Override
+    public Employee findByUsername(String username) {
+        return employeeMapper.findByUsername(username);
+    }
+
     /**
      * 保存员工角色表
      * @param

@@ -10,5 +10,8 @@ public interface IEmployeeService extends IBaseService<Employee,Long,EmployeeQue
 
     List<Employee> findEmployeeByDepartmentName(String departmentName);
 
+    /*通过用户名查询*/
+    Employee findByUsername(String username);
+
 
 }

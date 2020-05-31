@@ -6,7 +6,7 @@
     <!--定义一个自定义的realm -->
     <bean id="authenRealm" class="cn.nine.crm.realm.AuthenRealm">
         <property name="credentialsMatcher"><!--配置md5方式加密-->
-            <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+            <bean class="cn.nine.crm.credential.MyHashedCredentialMatcher"><!--自定义验证密码规则-->
                 <property name="hashAlgorithmName" value="MD5"/>
                 <property name="hashIterations" value="9"/>
             </bean>

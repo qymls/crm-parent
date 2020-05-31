@@ -222,6 +222,7 @@ public class MenuController extends BaseController<Menu, Long, MenuQuery> {
     @ApiOperation("根据用户查询菜单")
     public  Map<Object, Object> findMenuByEmployeeId() {
         Employee employee = (Employee) SecurityUtils.getSubject().getPrincipal();
+        System.out.println(employee);
         /*获取登录用户*/
         List<Menu> menuByEmployeeId = menuService.findMenuByEmployeeId(employee.getId());
         HashMap<Object, Object> map = new HashMap<>();
