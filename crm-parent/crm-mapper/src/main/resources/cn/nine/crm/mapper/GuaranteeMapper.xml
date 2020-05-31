@@ -80,7 +80,8 @@
         FROM guarantee g
         <include refid="base_join"/>
         <include refid="base_where"/>
-        ORDER BY guarantee_sn ASC
+        GROUP BY g.sn
+        ORDER BY g.sn ASC
         limit #{start},#{pageSize}
     </select>
 

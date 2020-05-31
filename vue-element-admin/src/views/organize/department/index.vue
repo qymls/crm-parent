@@ -49,7 +49,7 @@
         <el-table-column prop="name" label="名称" />
         <el-table-column prop="sn" label="部门编号" />
         <el-table-column prop="manager.realName" label="部门经理" />
-        <el-table-column prop="parent" label="父级部门" :formatter="formatDept"/>
+        <el-table-column prop="parentId.name" label="父级部门" :formatter="formatDept"/>
         <el-table-column fixed="right" label="操作" width="150" align="center">
           <template slot-scope="scope">
             <el-button type="primary" size="small" @click="handleShowEditDialog(scope.row)">编辑</el-button>
@@ -126,7 +126,7 @@ export default {
         id: ''
       }],
       page: 1, // 第几页
-      pageSize: 5, // 每页条数
+      pageSize: 10, // 每页条数
       total: 0,
       tableData: [],
       loading: false,
@@ -159,6 +159,7 @@ export default {
     this.loadListData()
   },
   methods: {
+    //格式化部门
     formatDept:function (row,column) {
         return row && row.name ? row.name : "";
 
@@ -166,6 +167,8 @@ export default {
     // 显示添加弹窗
     findChildren(){
       this.$http.get('/department/findTreeData').then(res => {
+
+        //将对象转换数组
         this.formartData(res.data);
         this.departmentList = res.data;
       })
@@ -192,13 +195,23 @@ export default {
     },
     // 编辑显示弹窗
     handleShowEditDialog(row) {
-      this.findChildren();
+      console.debug(row.parentId);
       // 数据回显
-      this.dialogFormVisible = true
+      this.findChildren();
+
+      this.dialogFormVisible = true;
+      //定义一个空数组
+      var deptArr=[]
+      //循环迭代对象
+      for(let i in  row.parentId){
+          deptArr.push(row.parentId[i])
+      }
+      console.debug(deptArr);
       this.$nextTick(() => {
         this.$refs['addForm'].resetFields()/* 清空*/
-        this.addForm = Object.assign({}, row)/* 复制*/
-      })
+        this.addForm = Object.assign({}, row)/* 赋值*/
+
+      });
     },
     submitForm(formName) { /* 确认保存*/
       var refs = this.$refs
@@ -207,7 +220,7 @@ export default {
       var message = this.$message;
       refs[formName].validate((valid) => {
         const param = Object.assign({}, this.addForm);
-        //传唤json格式
+        //转换json格式
         if(this.addForm.parentId.length>0){
             param['parentId']={id:this.addForm.parentId[this.addForm.parentId.length-1]}
         }
@@ -303,7 +316,6 @@ export default {
       var message = this.$message
       http.post('/department/selectForPage', param).then(res => {
         if (res.data.success) {
-          console.debug(res.data.data);
           this.tableData = res.data.data.list
           this.total = res.data.data.totalRows
           this.page = res.data.data.currentPage

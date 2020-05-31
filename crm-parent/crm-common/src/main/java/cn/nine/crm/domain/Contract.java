@@ -28,8 +28,6 @@ public class Contract extends BaseDomain{
     //所属租户 设置下拉框选择
     private Tenant tenant;
 
-
-
     public String getSn() {
         return sn;
     }

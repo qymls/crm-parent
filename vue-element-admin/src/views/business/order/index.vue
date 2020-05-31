@@ -23,7 +23,7 @@
           <Form ref="searchForm" :model="searchForm" inline style="margin-left: 20px;" @submit.native.prevent class="demo-form-inline">
             <!--客户姓名查询-->
             <FormItem prop="name">
-              <el-select v-model="searchForm.customer.id" filterable placeholder="请选择需要查询的客户姓名">
+              <el-select v-model="searchForm.customer.name" clearable filterable placeholder="请选择需要查询的客户姓名">
                 <el-option
                   v-for="item in customers"
                   :key="item.id"
@@ -31,15 +31,11 @@
                   :value="item.id">
                 </el-option>
               </el-select>
-              <!--<Input v-model="searchForm.customer.name" type="text" clearable-->
-                     <!--style="cursor: pointer" placeholder="请输入查找的客户姓名"-->
-                     <!--@on-enter="click_enter">-->
-              <!--</Input>-->
             </FormItem>
             <!--营销人员查询-->
             <FormItem prop="username">
               <!--营销人员姓名搜索选择下拉框-->
-              <el-select v-model="searchForm.seller.id" filterable placeholder="请选择需要查询的营销人员姓名"  >
+              <el-select v-model="searchForm.seller.username" clearable filterable placeholder="请选择需要查询的营销人员姓名"  >
                 <el-option
                   v-for="item in sellers"
                   :key="item.id"
@@ -110,7 +106,7 @@
         </div>
         <!--添加/编辑弹出框-->
         <Modal v-model="dialogFormVisible" title="订单管理" class-name="vertical-center-modal" footer-hide draggable
-               :styles="{top: '200px'}">
+               :styles="{top: '90px'}">
           <Form ref="addForm" :model="addForm" :rules="rules" :label-width="80">
             <FormItem v-show="false" prop="id">
               <Input v-model="addForm.id" type="text"></Input>
@@ -127,13 +123,12 @@
               </el-select>
             </FormItem>
             <FormItem label="签定时间" prop="signTime">
-              <div class="block" >
+              <div class="block">
                 <el-date-picker
                   v-model="addForm.signTime"
-                  align="right"
-                  type="date"
-                  placeholder="请选择日期"
-                  :picker-options="pickerOptions">
+                  type="datetime"
+                  placeholder="选择日期时间"
+                  default-time="12:00:00">
                 </el-date-picker>
               </div>
             </FormItem>
@@ -179,9 +174,7 @@
   </div>
 </template>
 <script>
-  import ElRadioGroup from "element-ui/packages/radio/src/radio-group";
   export default {
-    components: {ElRadioGroup},
     data() {
       return {
         page: 1, // 第几页
@@ -190,7 +183,7 @@
         tableData: [],
         loading: false,
         row: [],
-        customers:[{id:''}],
+        customers:[],
         sellers:[{id:''}],
         tenants:[{id:''}],
         customer: {
@@ -274,58 +267,63 @@
           {
             title: '序号',
             type: 'index',
-            width: 80,
+            width: 70,
             align: 'center',
           },
           {
             title: '订单编号',
-            width: 120,
+            width: 160,
             align: 'center',
             key: 'sn',
+            sortable:'true'
           },
           {
             title: '客户姓名',
-            width: 100,
+            width: 120,
             align: 'center',
-            slot: 'customer'
+            slot: 'customer',
+            sortable:'true'
           },
           {
             title: '签订时间',
-            width: 180,
+            width: 120,
             align: 'center',
             key: 'signTime',
             sortable:'true'
           },
           {
             title: '营销人员',
-            width: 100,
+            width: 120,
             align: 'center',
-            slot: 'seller'
+            slot: 'seller',
+            sortable:'true'
           },
           {
             title: '订金金额',
-            width: 100,
+            width: 120,
             align: 'center',
-            key: 'amount'
+            key: 'amount',
+            sortable:'true'
           },
           {
             title: '摘要',
-            width: 100,
+            width: 95,
             align: 'center',
             key: 'intro'
           },
           {
             title: '所属公司',
-            width: 150,
+            width: 115,
             align: 'center',
-            slot: 'tenant'
+            slot: 'tenant',
+            sortable:'true'
           },
 
           {
             title: '操作',
             slot: 'action',
             align: 'center',
-            width: 180
+            width: 140
           }
         ],
         rules: {
@@ -497,7 +495,8 @@
         const param = {
           'currentPage': this.page,
           'pageSize': this.pageSize,
-          'keyword': this.searchForm.name
+          'keyword': this.searchForm.customer.name,
+          'username':this.searchForm.seller.username
         }
         http.post('/order/selectForPage', param).then(res => {
           if (res.data.success) {

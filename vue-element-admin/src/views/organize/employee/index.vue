@@ -94,7 +94,7 @@
         @current-change="handleCurrentChange"
       />
       <!--  新增、编辑-->
-      <el-dialog  title="员工管理" :visible.sync="dialogFormVisible" maxheight="1000px" :close-on-click-modal="false" width="35%">
+      <el-dialog  title="员工管理" :visible.sync="dialogFormVisible" :close-on-click-modal="false" width="35%">
         <hr style="margin-right: auto"/>
         <el-form ref="addForm" :model="addForm" label-width="80px">
           <el-form-item v-show="false" prop="id">
@@ -280,6 +280,9 @@ export default {
         this.addForm = data;
         //回显状态
       })
+
+
+
     },
     submitForm(formName) { /* 确认保存*/
       var refs = this.$refs

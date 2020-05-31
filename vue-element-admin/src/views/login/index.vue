@@ -3,7 +3,7 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <h3 class="title">登录</h3>
       </div>
 
       <el-form-item prop="username">
@@ -183,46 +183,46 @@
       overflow: hidden;
     }
 
-    .tips {
-      font-size: 14px;
-      color: #fff;
-      margin-bottom: 10px;
+  .tips {
+    font-size: 14px;
+    color: #fff;
+    margin-bottom: 10px;
 
-      span {
-        &:first-of-type {
-          margin-right: 16px;
-        }
+    span {
+      &:first-of-type {
+        margin-right: 16px;
       }
-    }
-
-    .svg-container {
-      padding: 6px 5px 6px 15px;
-      color: $dark_gray;
-      vertical-align: middle;
-      width: 30px;
-      display: inline-block;
-    }
-
-    .title-container {
-      position: relative;
-
-      .title {
-        font-size: 26px;
-        color: $light_gray;
-        margin: 0px auto 40px auto;
-        text-align: center;
-        font-weight: bold;
-      }
-    }
-
-    .show-pwd {
-      position: absolute;
-      right: 10px;
-      top: 7px;
-      font-size: 16px;
-      color: $dark_gray;
-      cursor: pointer;
-      user-select: none;
     }
   }
+
+  .svg-container {
+    padding: 6px 5px 6px 15px;
+    color: $dark_gray;
+    vertical-align: middle;
+    width: 30px;
+    display: inline-block;
+  }
+
+  .title-container {
+    position: relative;
+
+    .title {
+      font-size: 26px;
+      color: $light_gray;
+      margin: 0px auto 40px auto;
+      text-align: center;
+      font-weight: bold;
+    }
+  }
+
+  .show-pwd {
+    position: absolute;
+    right: 10px;
+    top: 7px;
+    font-size: 16px;
+    color: $dark_gray;
+    cursor: pointer;
+    user-select: none;
+  }
+}
 </style>

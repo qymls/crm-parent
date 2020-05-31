@@ -12,4 +12,6 @@ public interface IDepartmentService extends IBaseService<Department,Long, Depart
     List<Department> findTreeData();
 
     List<Employee> getManagerByDepartMentName(String name);
+
+
 }

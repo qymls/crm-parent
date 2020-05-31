@@ -20,6 +20,7 @@ public class FilterChainDefinitionMap {
         map.put("/Admin/qqLogin", "anon");
         map.put("/admin/login", "anon");
         map.put("/admin/logout", "anon");
+        map.put("/settleIn/settleIn", "anon");
         map.put("/wechat/**", "anon");
         map.put("/weixin/**", "anon");
         map.put("/swagger-ui.html","anon");
@@ -29,13 +30,14 @@ public class FilterChainDefinitionMap {
         map.put("*.js","anon");
         map.put("/configuration/ui","anon");
         map.put("*.html","anon");
+        map.put("/settleIn/upload","anon");//入驻页面放开拦截
 
        /* map.put("/Admin/Employee/save", "perms[employee:save]");
         map.put("/Admin/Employee/delete", " perms[employee:delete]");
         map.put("/Admin/Employee/findAll", "perms[employee:findALL]");*/
         //拿到所有权限
         List<Permission> permissions = permissionMapper.findAllPermission();
-        //2.遍历权限，拿到权限与资源
+        //2.遍历权限, 拿到权限与资源
         for (Permission permission : permissions) {
             String url = permission.getUrl();//资源
             String sn = permission.getSn();//权限

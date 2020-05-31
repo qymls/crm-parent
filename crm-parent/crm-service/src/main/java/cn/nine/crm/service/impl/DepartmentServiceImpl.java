@@ -1,11 +1,11 @@
 package cn.nine.crm.service.impl;
 
 
+import cn.nine.crm.domain.Department;
 import cn.nine.crm.domain.Employee;
+import cn.nine.crm.mapper.DepartmentMapper;
 import cn.nine.crm.query.DepartmentQuery;
 import cn.nine.crm.service.IDepartmentService;
-import cn.nine.crm.domain.Department;
-import cn.nine.crm.mapper.DepartmentMapper;
 import cn.nine.crm.service.Impl.BaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,4 +35,5 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department,Long, Depa
     public List<Employee> getManagerByDepartMentName(String name) {
         return departmentMapper.getManagerByDepartMentName(name);
     }
+
 }
