@@ -76,18 +76,19 @@
       </Table>
 
       <!-- 分页 -->
-      <Page
-        :total="total"
-        :current="page"
-        :page-size="pageSize"
-        :page-size-opts="[5,10,20]"
-        show-elevator
-        show-sizer
-        show-total
-        style="float: right; margin: 12px; overflow: hidden"
-        @on-change="handleCurrentChange"
-        @on-page-size-change="handleSizeChange"
-      ></Page>
+      <div style="float: right; margin: 12px; overflow: hidden">
+        <Page
+          :total="total"
+          :current="page"
+          :page-size="pageSize"
+          :page-size-opts="[5,10,20]"
+          show-elevator
+          show-sizer
+          show-total
+          @on-change="handleCurrentChange"
+          @on-page-size-change="handleSizeChange"
+        ></Page>
+      </div>
       <br/>
       <br/>
 
@@ -95,10 +96,18 @@
       <el-dialog title="添加信息" :visible.sync="dialogFormVisible" :close-on-click-modal="false" width="35%">
         <el-form ref="addForm" :model="addForm" label-width="100px" :rules="rules">
           <el-form-item label="保修单号" prop="sn">
-            <el-input v-model="addForm.guaranteeSn" placeholder="输入保修单号" autocomplete="off" />
+            <el-select v-model="addForm.guaranteeSn" filterable placeholder="输入保修单号">
+              <el-option
+                v-for="item in contractDate"
+                :key="item.sn"
+                :label="item.label"
+                :value="item.sn">
+              </el-option>
+            </el-select>
           </el-form-item>
+
           <el-form-item label="保修内容" prop="endDate">
-            <el-input v-model="addForm.details" placeholder="输入保修内容" autocomplete="off" />
+            <el-input type="textarea" v-model="addForm.details" :rows="2" placeholder="输入保修内容" autocomplete="off" />
           </el-form-item>
 
           <el-form-item label="保修状态" prop="status">
@@ -125,6 +134,8 @@
 export default {
   data() {
     return {
+      title: '保修单明细',
+
       columns: [
         {
           type: 'selection',
@@ -166,7 +177,9 @@ export default {
           width: 200,
           align: 'center'
         }
-      ],//table数据
+      ],//table表头
+      tableData: [],//table数据
+      contractDate: [],
       statusList: [
         {
           value: '0',
@@ -181,17 +194,15 @@ export default {
           label: '正在处理'
         }
       ],//status状态
-      model1: '',
 
-      title: '保修单明细',
       page: 1, // 第几页
       pageSize: 5, // 每页条数
       total: 0,
-      tableData: [],
       loading: false,
       row: [],
 
       editIndex: -1,
+      valueSn: '',//保修单号
 
       //搜索框
       searchForm: {
@@ -273,6 +284,7 @@ export default {
     handleSave (index) {
       this.editForm.id = this.tableData[index].id
       this.editIndex = -1
+      var message = this.$Message
       let url = '/guaranteeItem/update'
       this.$http.post(url, this.editForm).then(res => {
         if (res.data.success) {

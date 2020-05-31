@@ -17,7 +17,15 @@
             </Poptip>
           </FormItem>
           <FormItem prop="name">
-            <Input type="text" v-model="searchForm.name" placeholder="输入合同单号"/>
+            <div>
+              <el-select v-model="searchForm.name" filterable placeholder="所属合同单号">
+                <el-option
+                  v-for="item in contractDate"
+                  :key="item.sn"
+                  :value="item.sn">
+                </el-option>
+              </el-select>
+            </div>
           </FormItem>
           <FormItem>
             <Button type="primary" icon="ios-search" @click="loadListData">查询</Button>
@@ -76,28 +84,29 @@
       </el-table>
 
       <!-- 分页 -->
-      <Page
-        :total="total"
-        :current="page"
-        :page-size="pageSize"
-        :page-size-opts="[5,10,20]"
-        show-elevator
-        show-sizer
-        show-total
-        style="float: right; margin: 12px; overflow: hidden"
-        @on-change="handleCurrentChange"
-        @on-page-size-change="handleSizeChange"
-      ></Page>
+      <div style="float: right; margin: 12px; overflow: hidden">
+        <Page
+          :total="total"
+          :current="page"
+          :page-size="pageSize"
+          :page-size-opts="[5,10,20]"
+          show-elevator
+          show-sizer
+          show-total
+          @on-change="handleCurrentChange"
+          @on-page-size-change="handleSizeChange"
+        ></Page>
+      </div>
       <br/>
       <br/>
 
       <!-- 新增编辑窗口 -->
       <el-dialog title="添加信息" :visible.sync="dialogFormVisible" :close-on-click-modal="false" width="35%">
-        <el-form ref="addForm" :model="addForm" :rules="rules">
+        <el-form ref="addForm" label-width="80px" :model="addForm" :rules="rules">
           <el-form-item v-show="false" prop="id">
             <el-input v-model="addForm.id" />
           </el-form-item>
-          <el-form-item label="保修截止日期" prop="endDate">
+          <el-form-item label="截止日期" prop="endDate">
             <el-date-picker
               v-model="addForm.endDate"
               type="date"
@@ -105,8 +114,14 @@
               format="yyyy 年 MM 月 dd 日">
             </el-date-picker>
           </el-form-item>
-          <el-form-item label="所属合同单号" prop="contractSn">
-            <el-input v-model="addForm.contract.sn" placeholder="所属合同单号" autocomplete="off" />
+          <el-form-item label="合同单号" prop="contractSn">
+            <el-select v-model="addForm.contract.sn" filterable placeholder="所属合同单号">
+              <el-option
+                v-for="item in contractDate"
+                :key="item.sn"
+                :value="item.sn">
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="submitForm('addForm')">提交</el-button>
@@ -214,6 +229,7 @@ export default {
       ],
       //table【数据】
       tableData: [],
+      contractDate: [],
       row: [],
       //搜索条件
       searchForm: {
@@ -367,6 +383,15 @@ export default {
           this.total = res.data.data.totalRows
           this.page = res.data.data.currentPage
           this.loading = false
+        } else {
+          message.error('查询失败[' + res.data.message + ']')
+        }
+      }).catch(error => {
+        message.error('查询失败[' + error.message + ']')
+      })
+      http.get('/contract/findAll').then(res => {
+        if (res.data.success) {
+          this.contractDate = res.data.data
         } else {
           message.error('查询失败[' + res.data.message + ']')
         }
