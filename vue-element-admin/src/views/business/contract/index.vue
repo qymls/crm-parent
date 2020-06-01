@@ -62,7 +62,8 @@
                  :data="tableData"  height="350"
                  @on-selection-change="handleSelectionChange"
                  :default-sort = "{key: 'signTime', order: 'descending'}"
-                  >
+                 max-height="690"
+          >
             <!--合同明细  点击 对话弹窗事件-->
             <template slot-scope="{ row, index }" slot="detail">
               <Button type="success" plain size="small" @click="showDetail(row)">查看</Button>
@@ -230,9 +231,7 @@
         tableData: [],
         loading: false,
         row: [],
-        customers:[{
-          id:''
-        }],
+        customers:[],
         sellers:[{
           id:''
         }],
@@ -397,12 +396,11 @@
       this.loadListData()
     },
     methods: {
-      /**/
+      /*合同明细数据*/
       showDetail(row){
         this.dialogDetailVisible = true;
         this.$http.get("/contractitem/findByContractSn/"+ row.sn).then(res=>{
           this.detail = res.data.data
-          // this.detail.sn = res.data.data.contractSn;
         })
 
       },
@@ -422,8 +420,6 @@
       handleShowEditDialog(row) {
         // 数据回显
         this.dialogFormVisible = true
-        //回显状态
-        this.addForm.customer.name = row.customer.name;
         this.$refs['addForm'].resetFields()/* 清空*/
         this.addForm = Object.assign({}, row)/* 复制*/
       },

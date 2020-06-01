@@ -55,12 +55,13 @@
         </Col>
 
       </Row>
-      <!--列表  max-height="690"-->
+      <!--列表  -->
       <Row justify="center" align="middle">
         <div style="margin-top:20px">
           <Table border :loading="loading" :columns="columns" :data="tableData"
                  @on-selection-change="handleSelectionChange"
                  height="350"
+                 max-height="690"
                  :default-sort = "{key: 'signTime', order: 'descending'}"
               >
             <template slot-scope="{ row, index }" slot="action">
@@ -327,21 +328,6 @@
           }
         ],
         rules: {
-          // name: [
-          //   { required: true, message: '请输入客户姓名', trigger: 'blur' }
-          // ],
-          // signTime: [
-          //   { required: true, message: '请选择签订时间', trigger: 'blur' }
-          // ],
-          // username: [
-          //   { required: true, message: '请输入营销人员姓名', trigger: 'blur' }
-          // ],
-          // totalAmount: [
-          //   { required: true, message: '请输入订金金额', trigger: 'blur' }
-          // ],
-          intro: [
-            { required: true, message: '请输入订单摘要', trigger: 'change' }
-          ],
 
         }
       }
