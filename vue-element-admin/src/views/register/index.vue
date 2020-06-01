@@ -1,18 +1,46 @@
+<style >
+  body{
+     background-color: #2d3a4b;
+  }
+  .login-containers {
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    background-clip: padding-box;
+    margin: 100px auto;
+    width: 500px;
+    padding: 35px 35px 15px 35px;
+
+    border: 1px solid #eaeaea;
+    box-shadow: 0 0 25px #fffbfb;
+  }
+
+  .titles {
+    margin: 0px auto 40px auto;
+    text-align: center;
+    color: #0f29ea;
+  }
+
+  .remember {
+    margin: 0px 0px 35px 0px;
+  }
+</style>
 <template>
   <!--:model="tenant" 数据双向绑定-->
   <!--ref="tenantForm" id="tenantForm",给form去一个名字-->
   <!--:rules="formRules" 校验规则-->
+  <div>
   <el-form :model="employee" ref="tenantForm" :rules="formRules" label-position="left" label-width="100px"
-           class="demo-ruleForm login-container">
-    <h3 class="title">公司入驻</h3>
+           class="demo-ruleForm login-containers">
+    <h3 class="titles">公司入驻</h3>
     <el-form-item prop="companyName" label="公司名称">
-      <el-input type="text" v-model="employee.companyName" auto-complete="off" placeholder="请输入公司名称！"></el-input>
+      <el-input type="text" v-model="employee.companyName" auto-complete="off" placeholder="请输入公司名称！"/>
     </el-form-item>
     <el-form-item prop="companyNum" label="信用代码">
-      <el-input type="text" v-model="employee.companyNum" auto-complete="off" placeholder="请输入信用代码！"></el-input>
+      <el-input type="text" v-model="employee.companyNum" auto-complete="off" placeholder="请输入信用代码！"/>
     </el-form-item>
     <el-form-item prop="address" label="公司地址">
-      <el-input type="text" v-model="employee.address" auto-complete="off" placeholder="请输入地址！"></el-input>
+      <el-input type="text" v-model="employee.address" auto-complete="off" placeholder="请输入地址！"/>
     </el-form-item>
     <el-form-item prop="logo" label="公司Logo">
       <el-upload
@@ -21,7 +49,7 @@
         :on-success="handleUploadSuccess"
         :on-remove="handleUploadRemove"
         list-type="picture"
-        :name="settleIn">
+        name="file">
         <el-button size="small" type="primary">点击上传</el-button>
         <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
       </el-upload>
@@ -46,8 +74,8 @@
       <el-button type="primary" style="width:100%;" @click.native.prevent="settledIn">入驻</el-button>
     </el-form-item>
   </el-form>
+  </div>
 </template>
-
 <script>
   export default {
     data() {
@@ -105,6 +133,7 @@
         }
       };
     },
+
     methods: {
       handleUploadSuccess(res, file) {
         this.employee.logo = res.data;
@@ -161,27 +190,4 @@
 
 </script>
 
-<style lang="scss" scoped>
-  .login-container {
-    -webkit-border-radius: 5px;
-    border-radius: 5px;
-    -moz-border-radius: 5px;
-    background-clip: padding-box;
-    margin: 100px auto;
-    width: 500px;
-    padding: 35px 35px 15px 35px;
-    background: #1de9ff;
-    border: 1px solid #eaeaea;
-    box-shadow: 0 0 25px #fffbfb;
-  }
 
-  .title {
-    margin: 0px auto 40px auto;
-    text-align: center;
-    color: #0f29ea;
-  }
-
-  .remember {
-    margin: 0px 0px 35px 0px;
-  }
-</style>

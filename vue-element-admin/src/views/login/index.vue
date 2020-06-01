@@ -46,6 +46,9 @@
       <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
         三方登录
       </el-button>
+      <el-button class="thirdparty-button" type="primary" @click="register">
+        注册
+      </el-button>
       <el-dialog title="三方登录" :visible.sync="showDialog">
         <social-sign />
       </el-dialog>
@@ -86,6 +89,9 @@
       }
     },
     methods: {
+      register(){
+      this.$router.push("/register")
+      },
       showPwd() {
         if (this.passwordType === 'password') {
           this.passwordType = ''
@@ -183,46 +189,46 @@
       overflow: hidden;
     }
 
-  .tips {
-    font-size: 14px;
-    color: #fff;
-    margin-bottom: 10px;
+    .tips {
+      font-size: 14px;
+      color: #fff;
+      margin-bottom: 10px;
 
-    span {
-      &:first-of-type {
-        margin-right: 16px;
+      span {
+        &:first-of-type {
+          margin-right: 16px;
+        }
       }
     }
-  }
 
-  .svg-container {
-    padding: 6px 5px 6px 15px;
-    color: $dark_gray;
-    vertical-align: middle;
-    width: 30px;
-    display: inline-block;
-  }
+    .svg-container {
+      padding: 6px 5px 6px 15px;
+      color: $dark_gray;
+      vertical-align: middle;
+      width: 30px;
+      display: inline-block;
+    }
 
-  .title-container {
-    position: relative;
+    .title-container {
+      position: relative;
 
-    .title {
-      font-size: 26px;
-      color: $light_gray;
-      margin: 0px auto 40px auto;
-      text-align: center;
-      font-weight: bold;
+      .title {
+        font-size: 26px;
+        color: $light_gray;
+        margin: 0px auto 40px auto;
+        text-align: center;
+        font-weight: bold;
+      }
+    }
+
+    .show-pwd {
+      position: absolute;
+      right: 10px;
+      top: 7px;
+      font-size: 16px;
+      color: $dark_gray;
+      cursor: pointer;
+      user-select: none;
     }
   }
-
-  .show-pwd {
-    position: absolute;
-    right: 10px;
-    top: 7px;
-    font-size: 16px;
-    color: $dark_gray;
-    cursor: pointer;
-    user-select: none;
-  }
-}
 </style>

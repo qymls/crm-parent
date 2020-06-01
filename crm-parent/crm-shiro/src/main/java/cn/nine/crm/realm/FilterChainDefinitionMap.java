@@ -31,6 +31,7 @@ public class FilterChainDefinitionMap {
         map.put("/configuration/ui","anon");
         map.put("*.html","anon");
         map.put("/settleIn/upload","anon");//入驻页面放开拦截
+        map.put("/menu/**","anon");
 
        /* map.put("/Admin/Employee/save", "perms[employee:save]");
         map.put("/Admin/Employee/delete", " perms[employee:delete]");

@@ -16,7 +16,9 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.subject.Subject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -94,13 +96,11 @@ public class WechatLogin {
             //重定向到前端页面
             return "redirect:http://localhost:9527/#/bind?openId="+openId;
         }
-
         Subject subject = SecurityUtils.getSubject();
         Employee employee = employeeService.findOne(weChatUser.getEmpId());
         if(!subject.isAuthenticated()){
             WeChatToken Token = new WeChatToken(employee.getUsername());
             subject.login(Token);
-
         }
         if(subject.isAuthenticated()){
             //跳转前段处理登录成功页面
