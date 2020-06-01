@@ -60,7 +60,6 @@
         <div style="margin-top:20px">
           <Table border :loading="loading" :columns="columns" :data="tableData"
                  @on-selection-change="handleSelectionChange"
-                 height="350"
                  max-height="690"
                  :default-sort = "{key: 'signTime', order: 'descending'}"
               >

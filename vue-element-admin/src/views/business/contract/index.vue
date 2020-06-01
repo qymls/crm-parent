@@ -59,7 +59,7 @@
       <Row justify="center" align="middle">
         <div style="margin-top:20px">
           <Table border :loading="loading" :columns="columns"
-                 :data="tableData"  height="350"
+                 :data="tableData"
                  @on-selection-change="handleSelectionChange"
                  :default-sort = "{key: 'signTime', order: 'descending'}"
                  max-height="690"

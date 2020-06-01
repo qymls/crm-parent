@@ -37,7 +37,6 @@
       <Row justify="center" align="middle" >
         <div style="margin-top:20px">
           <Table border :loading="loading" :columns="columns" :data="tableData"
-                 height="350"
                  @on-selection-change="handleSelectionChange"
                  :default-sort = "{key: 'payTime', order: 'descending'}"
                  max-height="690"
