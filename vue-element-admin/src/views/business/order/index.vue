@@ -324,7 +324,6 @@
             title: '操作',
             slot: 'action',
             align: 'center',
-            width: 140
           }
         ],
         rules: {
