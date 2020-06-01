@@ -196,7 +196,6 @@
             title: '操作',
             slot: 'action',
             align: 'center',
-            width: 190
           }
         ],
         /*添加 编辑规则*/
