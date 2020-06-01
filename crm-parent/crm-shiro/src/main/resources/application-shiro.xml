@@ -12,10 +12,15 @@
             </bean>
         </property>
     </bean>
+    <!--session管理器-->
+    <bean id="sessionManager" class="cn.nine.crm.session.SessionManager"/>
     <!-- 配置apache的管理器 -->
     <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
         <!-- 配置一个realm，到数据库中获取权限数据 -->
         <property name="realm" ref="authenRealm"/>
+
+        <!-- session管理器-->
+        <property name="sessionManager" ref="sessionManager"/>
     </bean>
 
     <!--lifecycleBeanPostProcessor：可以自动调用在Spring Ioc窗口中 Shiro bean的生成周期方法 -->

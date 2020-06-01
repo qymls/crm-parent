@@ -283,9 +283,12 @@ export default {
     handleSave (index) {
       this.editForm.id = this.tableData[index].id
       this.editIndex = -1
+
       var message = this.$Message
+      const param = Object.assign({}, this.editForm)
       let url = '/guaranteeItem/update'
       this.$http.post(url, this.editForm).then(res => {
+        console.debug(res.data.success)
         if (res.data.success) {
           this.editVisible = true
           this.loadListData()
@@ -293,10 +296,27 @@ export default {
         } else {
           message.error('操作失败[' + res.data.message + ']')
         }
-      }).catch(error => {
-        message.error('操作失败[' + error.message + ']')
       })
     },
+    /*handleSave (index) {
+      this.editForm.id = this.tableData[index].id
+      this.editIndex = -1
+      var message = this.$Message
+      let url = '/guaranteeItem/update'
+      this.$http.post(url, this.editForm).then(res => {
+        console.debug(res.data.success)
+        if (res.data.success) {
+          this.editVisible = true
+          this.loadListData()
+          message({ message: res.data.message, center: true, type: 'success', showClose: true })
+          console.debug(res.data.message)
+        } else {
+          message.error('操作失败[1' + res.data.message + ']')
+        }
+      }).catch(error => {
+        message.error('操作失败[2' + error.message + ']')
+      })
+    },*/
 
     //多选
     handleSelectionChange(selection) {

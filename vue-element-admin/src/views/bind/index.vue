@@ -55,6 +55,12 @@ export default {
     this.loginForm.openId = param[1]
     console.log(this.loginForm,param)
   },
+  created() {
+    this.$Notice.config({
+      top: 50,
+      duration: 3
+    });
+  },
   methods: {
     showPwd() {
       if (this.passwordType === 'password') {
@@ -72,12 +78,18 @@ export default {
         // sessionStorage.setItem('user', JSON.stringify(res.data.data.user));
         //
         // sessionStorage.setItem('sessionId', res.data.data.sessionId);
-        setToken(res.data.data.user)
-
-        this.$router.push("/dashboard")
+        if (res.data.success){
+          setToken(res.data.data.sessionId)
+          this.$router.push("/dashboard")
+        }else {
+          this.$Message.error(res.data.message);
+        }
       }).catch(error => {
         console.log(error);
-        alert(error.message);
+        this.$Notice.error({
+          title: '操作通知',
+          desc: '操作失败' +error.message
+        });
       })
     }
   }

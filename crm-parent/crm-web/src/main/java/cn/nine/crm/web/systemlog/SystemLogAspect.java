@@ -98,7 +98,11 @@ public class SystemLogAspect {
         //例：HttpSession session=((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest().getSession();
 
         Employee employee = (Employee) SecurityUtils.getSubject().getPrincipal();
-        sysLog.setOpuser(employee.getUsername());
+        String username = "employee为空";
+        if (employee != null) {
+            username = employee.getUsername();
+        }
+        sysLog.setOpuser(username);
         //获取用户ip地址
         HttpServletRequest request = ((ServletRequestAttributes)
                 RequestContextHolder.getRequestAttributes()).getRequest();
@@ -107,12 +111,14 @@ public class SystemLogAspect {
         sysLog.setResult("success");
         //调用service保存SysLog实体类到数据库
         Class clazz = joinPoint.getTarget().getClass();//具体要访问的类
-        if (clazz != SystemlogController.class){/*日志管理不记录*/
+        if (clazz != SystemlogController.class) {/*日志管理不记录*/
             systemLogService.save(sysLog);
         }
     }
+
     /**
-     *  发生异常，走此方法
+     * 发生异常，走此方法
+     *
      * @param joinPoint
      * @param e
      */
@@ -141,7 +147,10 @@ public class SystemLogAspect {
             systemlog.setOptime(new Date());
             // 用户id
             Employee employee = (Employee) SecurityUtils.getSubject().getPrincipal();
-            String username = employee.getUsername();
+            String username = "employee为空";
+            if (employee != null) {
+                username = employee.getUsername();
+            }
             //设置用户名
             systemlog.setOpuser(username);
             HttpServletRequest request = ((ServletRequestAttributes)
@@ -154,17 +163,16 @@ public class SystemLogAspect {
 
             systemlog.setRequesturi(url);
 
-            String exMsg =e.getMessage();
-            systemlog.setResult("error: "+ exMsg);
+            String exMsg = e.getMessage();
+            systemlog.setResult("error: " + exMsg);
             Class clazz = joinPoint.getTarget().getClass();//具体要访问的类
-            if (clazz != SystemlogController.class){/*日志管理不记录*/
+            if (clazz != SystemlogController.class) {/*日志管理不记录*/
                 systemLogService.save(systemlog);
             }
         } catch (Exception e1) {
-           e1.printStackTrace();
+            e1.printStackTrace();
         }
     }
-
 
 
     public String getIpAddress(HttpServletRequest request) {

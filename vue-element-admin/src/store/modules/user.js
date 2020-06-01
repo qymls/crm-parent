@@ -79,6 +79,7 @@ const actions = {
       logout(state.token).then(() => {
         commit('SET_TOKEN', '')
         removeToken()
+        sessionStorage.clear()
         resetRouter()
         resolve()
       }).catch(error => {

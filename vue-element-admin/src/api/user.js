@@ -1,5 +1,4 @@
 import request from '@/utils/request'
-import qs from 'qs'
 
 export function login(data) {
   return request({
@@ -24,7 +23,6 @@ export function getMenus(id) {
     /*/menu/findMenuByEmployeeId*/
     url: '/menu/findMenuByEmployeeId',
     method: 'post',
-    data:qs.stringify(id)
   })
 }
 
