@@ -10,12 +10,12 @@
       console.log('----->', window.location.href)
       console.log('----->', getRequest)
       let user = JSON.parse(getRequest.user.replace(/%3A/g, ':'))
-      let sessionId = getRequest.sessionId
-      console.log(sessionId)
-      console.log(user)
-      setToken(sessionId)
+      let sessionId = getRequest.sessionId;
       sessionStorage.clear()
       sessionStorage.setItem('sessionId', sessionId);
+      Cookies.set("JSESSIONID",sessionId)/*必须这样设置，否则admin-token和JSESSIONID会不一致，无法获取权限的*/
+      setToken(sessionId);
+
       //this.$router.push({path:'/dashboard'})
       this.$router.push("/dashboard")
     },
