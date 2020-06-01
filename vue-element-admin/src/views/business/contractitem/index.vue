@@ -222,6 +222,7 @@
         this.dialogFormVisible = true;
         //重置数据
         // this.addForm.isPayment = 0;
+        this.addForm.contractSn = ""
         this.$refs['addForm'].resetFields()/* 清空*/
       },
       // 编辑显示弹窗

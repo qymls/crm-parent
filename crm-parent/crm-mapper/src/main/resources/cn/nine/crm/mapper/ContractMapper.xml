@@ -118,7 +118,7 @@
         co.id as co_id,
         co.sn,
 
-        cu.id as c_id,
+        cu.id as cu_id,
         cu.name,
 
         co.signTime,
