@@ -14,7 +14,6 @@
       console.log(sessionId)
       console.log(user)
       setToken(sessionId)
-      console.log(Cookies.get("JSESSIONID"))
       sessionStorage.clear()
       sessionStorage.setItem('sessionId', sessionId);
       //this.$router.push({path:'/dashboard'})
